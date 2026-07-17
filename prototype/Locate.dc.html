@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Rina Alvarez" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px"><div style="font-weight:500">Rina Alvarez</div><div style="color:var(--text-3);font-size:11px">CSR · personal lines</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <h1 style="margin:0;font-size:17px;font-weight:500">Locate</h1>
+      <span style="font-size:13px;color:var(--text-3)">find any client, prospect, or policy — fast</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="phone-incoming" label="Calls" variant="outline" hint-size="36px,36px"></x-import>
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="bell" label="Notifications" hint-size="36px,36px"></x-import>
+      </div>
+    </header>
+
+    <main style="flex:1;overflow-y:auto;padding:22px 24px">
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:1240px">
+
+        <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
+            <div style="width:180px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Locate" hint-size="180px,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Clients</option><option>Prospects</option><option>Companies</option><option>All accounts</option></x-import></x-import></div>
+            <div style="width:200px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Search by" hint-size="200px,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" value="{{ field }}" on-change="{{ setField }}" hint-size="100%,40px"><option value="any">Anything</option><option value="name">Name</option><option value="email">Email address</option><option value="phone">Phone number</option><option value="code">Lookup code</option><option value="policy">Policy number</option></x-import></x-import></div>
+            <div style="flex:1;min-width:280px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="{{ queryLabel }}" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" icon="search" placeholder="Start typing — results filter as you go" value="{{ query }}" on-change="{{ setQuery }}" hint-size="100%,40px"></x-import></x-import></div>
+            <div style="padding-bottom:2px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="primary" icon="search" hint-size="auto,40px">Locate</x-import></div>
+          </div>
+          <div style="display:flex;gap:28px;flex-wrap:wrap;border-top:1px solid var(--border-1);padding-top:12px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="Insureds" checked="{{ fInsured }}" on-change="{{ toggleInsured }}" hint-size="auto,22px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="Prospects" checked="{{ fProspect }}" on-change="{{ toggleProspect }}" hint-size="auto,22px"></x-import>
+            <span style="width:1px;background:var(--border-1)"></span>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="Active" checked="{{ fActive }}" on-change="{{ toggleActive }}" hint-size="auto,22px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="Inactive" checked="{{ fInactive }}" on-change="{{ toggleInactive }}" hint-size="auto,22px"></x-import>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Results</div>
+              <span style="font-size:13px;color:var(--text-3)">{{ resultCount }}</span>
+              <a style="margin-left:auto;font-size:13px;cursor:pointer">Select columns</a>
+            </div>
+            <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+              <div style="overflow-x:auto;min-width:0"><div style="min-width:820px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ cols }}" rows="{{ rows }}" on-row-click="{{ selectRow }}" hint-size="100%,320px"></x-import></div></div>
+            </sc-if>
+            <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ false }}">
+              <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="user-search" title="No accounts match" body="Check the spelling, or widen the filters — inactive and prospect accounts are hidden unless ticked. Still nothing? This might be a new client." hint-size="100%,200px"></x-import>
+              </div>
+              <div><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="user-plus" hint-size="auto,34px">Create new household</x-import></div>
+            </sc-if>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);flex:1">Selected account</div>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="{{ sel.tone }}" dot="{{ true }}" hint-size="auto,20px">{{ sel.status }}</x-import>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="{{ sel.name }}" size="md" hint-size="40px,40px"></x-import>
+                <div style="min-width:0"><div style="font-weight:500;font-size:14.5px">{{ sel.name }}</div><div style="font-size:12px;color:var(--text-3)">{{ sel.code }} · {{ sel.type }}</div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;color:var(--text-2);border-top:1px solid var(--border-1);padding-top:10px">
+                <span style="display:flex;align-items:center;gap:8px"><i class="ti ti-map-pin" style="font-size:15px;color:var(--text-3)"></i>{{ sel.fullAddr }}</span>
+                <span style="display:flex;align-items:center;gap:8px"><i class="ti ti-phone" style="font-size:15px;color:var(--text-3)"></i>{{ sel.phone }}</span>
+                <span style="display:flex;align-items:center;gap:8px;min-width:0"><i class="ti ti-mail" style="font-size:15px;color:var(--text-3)"></i><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ sel.email }}</span></span>
+                <span style="display:flex;align-items:center;gap:8px"><i class="ti ti-message-circle" style="font-size:15px;color:var(--text-3)"></i>Prefers {{ sel.via }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--border-1);padding-top:10px">
+                <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:8px;font-size:13.5px"><i class="ti ti-users" style="font-size:15px"></i>Open household record</a>
+                <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:8px;font-size:13.5px"><i class="ti ti-shield" style="font-size:15px"></i>View policies ({{ sel.policies }})</a>
+                <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:8px;font-size:13.5px"><i class="ti ti-arrows-exchange" style="font-size:15px"></i>New transaction</a>
+                <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:8px;font-size:13.5px"><i class="ti ti-certificate" style="font-size:15px"></i>Issue proof of insurance</a>
+              </div>
+            </div>
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Recent locates</div>
+              <sc-for list="{{ recents }}" as="r" hint-placeholder-count="3">
+                <a on-click="{{ r.onClick }}" style="display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer;color:var(--text-2)"><i class="ti ti-history" style="font-size:15px;color:var(--text-3)"></i>{{ r.name }}<span style="margin-left:auto;font-size:11.5px;color:var(--text-3)">{{ r.when }}</span></a>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { query: "", field: "any", selected: "OKONKA01", fInsured: true, fProspect: false, fActive: true, fInactive: true };
+  setQuery = (e) => this.setState({ query: e && e.target ? e.target.value : "" });
+  setField = (e) => this.setState({ field: e && e.target ? e.target.value : "any" });
+  toggleInsured = (v) => this.setState({ fInsured: v });
+  toggleProspect = (v) => this.setState({ fProspect: v });
+  toggleActive = (v) => this.setState({ fActive: v });
+  toggleInactive = (v) => this.setState({ fInactive: v });
+  selectRow = (r) => this.setState({ selected: r.code });
+
+  ACCOUNTS = [
+    { code: "OKONKA01", name: "Amara Okonkwo & Daniel Mensah", type: "Insured", status: "Active", addr: "42 Sunnybrae Crescent", city: "Brampton", prov: "ON", postal: "L6Z 1R6", phone: "(647) 555-0182", email: "amara.okonkwo@email.ca", via: "phone", policies: "AUTO · TENA", pCount: "2" },
+    { code: "NGUYEA01", name: "An & Bao Nguyen", type: "Insured", status: "Active", addr: "77 Vodden St E", city: "Brampton", prov: "ON", postal: "L6V 2W1", phone: "(905) 555-0217", email: "an.nguyen@email.ca", via: "email", policies: "AUTO", pCount: "1" },
+    { code: "TREMBL01", name: "Luc Tremblay", type: "Insured", status: "Active", addr: "12 Rue Principale", city: "Caledon", prov: "ON", postal: "L7C 4H8", phone: "(647) 555-0529", email: "luc.tremblay@email.ca", via: "phone", policies: "HOME", pCount: "1" },
+    { code: "BOYCHU01", name: "Daryna Boychuk", type: "Insured", status: "Active", addr: "31 Kennedy Rd S", city: "Brampton", prov: "ON", postal: "L6W 3E2", phone: "(416) 555-0771", email: "d.boychuk@email.ca", via: "text message", policies: "CONDO", pCount: "1" },
+    { code: "FERREI01", name: "João Ferreira", type: "Insured", status: "Active", addr: "204 Main St N", city: "Brampton", prov: "ON", postal: "L6X 1N4", phone: "(905) 555-0348", email: "joao.ferreira@email.ca", via: "phone", policies: "AUTO — lapse risk", pCount: "1" },
+    { code: "CASTEL01", name: "Maria Castellanos", type: "Insured", status: "Active", addr: "9 Queen St E, Unit 12", city: "Brampton", prov: "ON", postal: "L6W 2A7", phone: "(647) 555-0904", email: "m.castellanos@email.ca", via: "email", policies: "TENA", pCount: "1" },
+    { code: "PETROV01", name: "Nikolai Petrov", type: "Insured", status: "Inactive", addr: "88 Bovaird Dr W", city: "Brampton", prov: "ON", postal: "L7A 0H3", phone: "(905) 555-0466", email: "n.petrov@email.ca", via: "email", policies: "cancelled Jun 30", pCount: "0" },
+    { code: "SANDHU01", name: "Gurpreet Sandhu", type: "Prospect", status: "Active", addr: "15 Father Tobin Rd", city: "Brampton", prov: "ON", postal: "L6R 0V3", phone: "(416) 555-0633", email: "g.sandhu@email.ca", via: "phone", policies: "quoting — AUTO", pCount: "0" },
+  ];
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const Badge = NS.Badge;
+    const s = this.state;
+
+    const q = s.query.trim().toLowerCase();
+    const fieldOf = (a) => ({ any: [a.name, a.email, a.phone, a.code, a.policies].join(" "), name: a.name, email: a.email, phone: a.phone, code: a.code, policy: a.policies }[s.field] || a.name);
+    const filtered = this.ACCOUNTS.filter((a) => {
+      if (a.type === "Insured" && !s.fInsured) return false;
+      if (a.type === "Prospect" && !s.fProspect) return false;
+      if (a.status === "Active" && !s.fActive) return false;
+      if (a.status === "Inactive" && !s.fInactive) return false;
+      return !q || fieldOf(a).toLowerCase().includes(q);
+    });
+
+    const sel = this.ACCOUNTS.find((a) => a.code === s.selected) || this.ACCOUNTS[0];
+    const cols = [
+      { header: "Lookup code", render: (r) => h("span", { style: { fontWeight: 500, fontVariantNumeric: "tabular-nums", color: r.code === s.selected ? "var(--tenant-primary-deep)" : "var(--text-1)" } }, r.code) },
+      { header: "Account name", render: (r) => h("span", { style: { fontWeight: 500 } }, r.name) },
+      { header: "Type", render: (r) => (Badge ? h(Badge, { tone: r.type === "Prospect" ? "accent" : "neutral" }, r.type) : r.type) },
+      { header: "Status", render: (r) => (Badge ? h(Badge, { tone: r.status === "Active" ? "success" : "neutral", dot: true }, r.status) : r.status) },
+      { header: "Address", render: (r) => h("div", null, h("div", null, r.addr), h("div", { style: { fontSize: 12, color: "var(--text-3)" } }, r.city + ", " + r.prov + " " + r.postal)) },
+      { header: "Phone", key: "phone" },
+      { header: "Email", render: (r) => h("span", { style: { maxWidth: 170, display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", verticalAlign: "bottom" } }, r.email) },
+    ];
+
+    const recents = [
+      { name: "An & Bao Nguyen", when: "10 min ago", onClick: () => this.setState({ selected: "NGUYEA01" }) },
+      { name: "João Ferreira", when: "1 h ago", onClick: () => this.setState({ selected: "FERREI01" }) },
+      { name: "Maria Castellanos", when: "yesterday", onClick: () => this.setState({ selected: "CASTEL01" }) },
+    ];
+
+    const labels = { any: "Search for", name: "Name begins with", email: "Email begins with", phone: "Phone number contains", code: "Lookup code begins with", policy: "Policy number contains" };
+
+    return {
+      query: s.query, setQuery: this.setQuery, field: s.field, setField: this.setField,
+      queryLabel: labels[s.field] || "Search for",
+      fInsured: s.fInsured, fProspect: s.fProspect, fActive: s.fActive, fInactive: s.fInactive,
+      toggleInsured: this.toggleInsured, toggleProspect: this.toggleProspect,
+      toggleActive: this.toggleActive, toggleInactive: this.toggleInactive,
+      cols, rows: filtered, selectRow: this.selectRow,
+      hasResults: filtered.length > 0,
+      resultCount: filtered.length + (filtered.length === 1 ? " account" : " accounts"),
+      sel: { ...sel, tone: sel.status === "Active" ? "success" : "neutral", fullAddr: sel.addr + ", " + sel.city + " " + sel.prov + " " + sel.postal },
+      recents,
+    };
+  }
+}
+</script>
+</body>
+</html>

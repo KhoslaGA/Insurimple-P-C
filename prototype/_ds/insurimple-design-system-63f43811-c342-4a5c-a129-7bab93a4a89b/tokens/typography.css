@@ -1,0 +1,18 @@
+/* One humanist sans, two weights. Serif reserved for editorial voice moments. */
+:root{
+--font-sans:"Inter",-apple-system,"Segoe UI",sans-serif;
+--font-serif:"Lora",Georgia,serif; /* editorial only — placeholder, see readme */
+/* scale: hero/h1/h2/body/small/caption = 34/22/18/16/13/11 */
+--text-hero:34px;
+--text-h1:22px;
+--text-h2:18px;
+--text-body:16px;
+--text-small:13px;
+--text-caption:11px;
+--weight-regular:400;
+--weight-medium:500;
+--leading-tight:1.25;
+--leading-body:1.55;
+--tracking-tight:-0.01em;
+--tracking-caps:0.06em;
+}

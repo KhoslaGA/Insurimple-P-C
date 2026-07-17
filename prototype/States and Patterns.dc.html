@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Rina Alvarez" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px"><div style="font-weight:500">Rina Alvarez</div><div style="color:var(--text-3);font-size:11px">CSR · personal lines</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <h1 style="margin:0;font-size:17px;font-weight:500">States &amp; patterns</h1>
+      <span style="font-size:13px;color:var(--text-3)">shared small screens the whole P&amp;C leg reuses</span>
+    </header>
+    <div style="padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Tabs" tabs="{{ tabs }}" value="{{ tab }}" on-change="{{ setTab }}" hint-size="100%,44px"></x-import>
+    </div>
+
+    <main style="flex:1;overflow-y:auto;padding:22px 24px">
+
+      <!-- TREE STATUSES -->
+      <sc-if value="{{ isTree }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:300px 1fr;gap:14px;max-width:1000px;align-items:start">
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;overflow:hidden">
+            <div style="padding:11px 14px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-1)">Policy tree — full status set</div>
+            <sc-for list="{{ treeItems }}" as="t" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border-1)">
+                <i class="{{ t.icon }}" style="font-size:17px;color:var(--text-2)"></i>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;font-weight:500">{{ t.name }}</div>
+                  <div style="font-size:11.5px;color:var(--text-3)">{{ t.sub }}</div>
+                </div>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="{{ t.tone }}" dot="{{ true }}" hint-size="auto,20px">{{ t.st }}</x-import>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Status legend</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:13.5px;line-height:1.5">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="success" dot="{{ true }}" hint-size="auto,22px">In force</x-import><span style="color:var(--text-2)">Active coverage, no open work. The quiet default.</span>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="info" dot="{{ true }}" hint-size="auto,22px">Pending</x-import><span style="color:var(--text-2)">Submitted or bound but not yet issued by the carrier.</span>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="accent" dot="{{ true }}" hint-size="auto,22px">Remarket in progress</x-import><span style="color:var(--text-2)">Being re-shopped — renewal offer on hold in the compare engine.</span>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="warning" dot="{{ true }}" hint-size="auto,22px">Lapsed</x-import><span style="color:var(--text-2)">Coverage stopped, reinstatement window still open — clock shown on the line.</span>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="danger" dot="{{ true }}" hint-size="auto,22px">Cancelled</x-import><span style="color:var(--text-2)">Terminated — kept in the tree for history, proofs, and loss runs.</span>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="neutral" dot="{{ true }}" hint-size="auto,22px">Expired</x-import><span style="color:var(--text-2)">Superseded term — collapse under the renewed line.</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- CONFLICT MODAL -->
+      <sc-if value="{{ isConflict }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
+          <div style="font-size:13.5px;color:var(--text-2);line-height:1.6">The download-conflict modal appears from the reconciliation queue when a carrier download disagrees with local data. Carrier values win by default — keeping local requires a reason, which is logged.</div>
+          <div><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="primary" icon="git-compare" on-click="{{ openModal }}" hint-size="auto,40px">Open the conflict modal</x-import></div>
+          <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Modal" open="{{ modalOpen }}" title="Download conflict — A55832101PLA" on-close="{{ closeModal }}" width="{{ 560 }}" footer="{{ modalFooter }}" hint-size="0px,0px">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:13.5px;color:var(--text-2)">True North's renewal download disagrees with the local record for Nguyen, An &amp; Bao. Pick which version to keep.</div>
+              <div style="border:1px solid var(--border-1);border-radius:10px;overflow:hidden">
+                <div style="display:grid;grid-template-columns:130px 1fr 1fr;font-size:13px">
+                  <div style="padding:9px 12px;color:var(--text-3);border-bottom:1px solid var(--border-1);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase">Field</div>
+                  <div style="padding:9px 12px;font-weight:500;border-bottom:1px solid var(--border-1);border-left:1px solid var(--border-1)">Local</div>
+                  <div style="padding:9px 12px;font-weight:500;border-bottom:1px solid var(--border-1);border-left:1px solid var(--border-1);color:var(--tenant-primary-deep)">Carrier download</div>
+                  <div style="padding:9px 12px;color:var(--text-2);border-bottom:1px solid var(--border-1)">Renewal premium</div>
+                  <div style="padding:9px 12px;border-bottom:1px solid var(--border-1);border-left:1px solid var(--border-1)">$3,890.00</div>
+                  <div style="padding:9px 12px;border-bottom:1px solid var(--border-1);border-left:1px solid var(--border-1);background:var(--tenant-primary-tint);font-weight:500">$3,912.00</div>
+                  <div style="padding:9px 12px;color:var(--text-2)">Comp deductible</div>
+                  <div style="padding:9px 12px;border-left:1px solid var(--border-1)">$500</div>
+                  <div style="padding:9px 12px;border-left:1px solid var(--border-1);background:var(--tenant-primary-tint);font-weight:500">$1,000</div>
+                </div>
+              </div>
+              <div style="font-size:12.5px;color:var(--text-3)">Accepting the carrier version updates the policy and notes the change in the service summary. Keeping local opens a carrier inquiry instead.</div>
+            </div>
+          </x-import>
+        </div>
+      </sc-if>
+
+      <!-- BACKDATING GUARD -->
+      <sc-if value="{{ isGuard }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:640px">
+          <div style="font-size:13.5px;color:var(--text-2);line-height:1.6">Any effective date earlier than today trips the guard: a warning with the day count, a required acknowledgment, and an automatic entry in the E&amp;O audit + principal review queue. Try it — set the date in the past.</div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:14px;align-items:flex-end">
+              <div style="width:200px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Effective date" hint-size="200px,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" icon="calendar" value="{{ guardDate }}" on-change="{{ setGuardDate }}" hint-size="100%,40px"></x-import></x-import></div>
+              <div style="font-size:13px;color:var(--text-3);padding-bottom:10px">Today is July 15, 2026</div>
+            </div>
+            <sc-if value="{{ guardTripped }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:12px;padding:12px 14px;border-radius:8px;background:var(--warning-tint, #FBF3E4);border:1px solid var(--warning, #B7791F)">
+                <i class="ti ti-alert-triangle" style="font-size:19px;color:var(--warning);flex:none;margin-top:1px"></i>
+                <div style="font-size:13.5px;line-height:1.55">
+                  <div style="font-weight:500">{{ guardMessage }}</div>
+                  <div style="color:var(--text-2)">Backdated transactions are logged for E&amp;O review and may need carrier approval. Check the date — or confirm you mean it.</div>
+                  <div style="margin-top:8px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="I confirm the effective date is intentional" hint-size="auto,22px"></x-import></div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ guardClear }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:8px;background:var(--success-tint, #E8F3EB);border:1px solid var(--success)">
+                <i class="ti ti-circle-check" style="font-size:18px;color:var(--success)"></i>
+                <span style="font-size:13.5px">Effective date is today or later — no guard needed.</span>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- QUEUE STATES -->
+      <sc-if value="{{ isStates }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1180px">
+          <div style="font-size:13.5px;color:var(--text-2);line-height:1.6">Every queue and list ships with the same three non-data states — live versions are on each queue's "View state" chips in <a href="Work Queues.dc.html">Work queues</a>.</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Empty — earned, not apologetic</div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;flex:1">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="cloud-check" title="All downloads reconciled" body="Last night's run matched cleanly. The next carrier run lands around 6 am." hint-size="100%,200px"></x-import>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Loading — quiet spinner</div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:200px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Spinner" size="{{ 28 }}" hint-size="28px,28px"></x-import>
+                <div style="font-size:13px;color:var(--text-3)">Loading the queue…</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Error — what happened, then what to do</div>
+              <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px;min-height:200px">
+                <i class="ti ti-alert-triangle" style="font-size:28px;color:var(--warning)"></i>
+                <div style="font-size:15px;font-weight:500">We couldn't load this queue</div>
+                <div style="font-size:13px;color:var(--text-2);line-height:1.55;max-width:280px">The connection timed out. Your items are safe — try again in a moment.</div>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="refresh" hint-size="auto,34px">Try again</x-import>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { tab: "tree", modalOpen: false, guardDate: "2026-07-01" };
+  setTab = (v) => this.setState({ tab: v });
+  openModal = () => this.setState({ modalOpen: true });
+  closeModal = () => this.setState({ modalOpen: false });
+  setGuardDate = (e) => this.setState({ guardDate: e && e.target ? e.target.value : this.state.guardDate });
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const s = this.state;
+
+    const tabs = [
+      { value: "tree", label: "Policy-tree statuses" }, { value: "conflict", label: "Download-conflict modal" },
+      { value: "guard", label: "Backdating guard" }, { value: "states", label: "Queue states" },
+    ];
+
+    const treeItems = [
+      { icon: "ti ti-car", name: "AUTO · personal automobile", sub: "expires Dec 24, 2026", tone: "success", st: "In force" },
+      { icon: "ti ti-home-plus", name: "HOME · homeowners", sub: "binds Jul 1, 2026", tone: "info", st: "Pending" },
+      { icon: "ti ti-home", name: "TENA · tenants package", sub: "renewal on hold — shopping", tone: "accent", st: "Remarket" },
+      { icon: "ti ti-car", name: "AUTO · second vehicle", sub: "reinstatement window: 3 days", tone: "warning", st: "Lapsed" },
+      { icon: "ti ti-motorbike", name: "MCY · motorcycle", sub: "cancelled Jun 30 — client request", tone: "danger", st: "Cancelled" },
+      { icon: "ti ti-home", name: "TENA · 2024–2025 term", sub: "superseded by renewal", tone: "neutral", st: "Expired" },
+    ];
+
+    const today = new Date("2026-07-15T00:00:00");
+    const picked = new Date(s.guardDate + "T00:00:00");
+    const valid = !isNaN(picked.getTime());
+    const days = valid ? Math.round((today - picked) / 86400000) : 0;
+    const tripped = valid && days > 0;
+
+    const modalFooter = [
+      NS.Button ? h(NS.Button, { key: "k", variant: "secondary", onClick: this.closeModal }, "Keep local — open inquiry") : null,
+      NS.Button ? h(NS.Button, { key: "a", variant: "primary", icon: "check", onClick: this.closeModal }, "Accept carrier version") : null,
+    ];
+
+    return {
+      tabs, tab: s.tab, setTab: this.setTab,
+      isTree: s.tab === "tree", isConflict: s.tab === "conflict", isGuard: s.tab === "guard", isStates: s.tab === "states",
+      treeItems,
+      modalOpen: s.modalOpen, openModal: this.openModal, closeModal: this.closeModal, modalFooter,
+      guardDate: s.guardDate, setGuardDate: this.setGuardDate,
+      guardTripped: tripped, guardClear: !tripped,
+      guardMessage: tripped ? `This backdates the change by ${days} day${days === 1 ? "" : "s"}` : "",
+    };
+  }
+}
+</script>
+</body>
+</html>

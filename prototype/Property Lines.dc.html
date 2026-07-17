@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Rina Alvarez" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px"><div style="font-weight:500">Rina Alvarez</div><div style="color:var(--text-3);font-size:11px">CSR · personal lines</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <h1 style="margin:0;font-size:17px;font-weight:500">Property lines</h1>
+      <span style="font-size:13px;color:var(--text-3)">Okonkwo &amp; Mensah household</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" hint-size="auto,34px">Cancel</x-import>
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="device-floppy" hint-size="auto,34px">Save changes</x-import>
+      </div>
+    </header>
+    <div style="padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Tabs" tabs="{{ tabs }}" value="{{ tab }}" on-change="{{ setTab }}" hint-size="100%,44px"></x-import>
+    </div>
+
+    <main style="flex:1;overflow-y:auto;padding:22px 24px">
+
+      <!-- DWELLING -->
+      <sc-if value="{{ isDwelling }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:14px;max-width:1080px;align-items:start">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Construction</div>
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Risk address" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="128 Chinguacousy Road, Brampton ON L6Y 5H1" hint-size="100%,40px"></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Year built" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="2009" hint-size="100%,40px"></x-import></x-import>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Construction" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Brick veneer</option><option>Frame</option><option>Solid brick</option><option>Stone</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Storeys" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>2</option><option>1</option><option>1.5</option><option>3</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Total living area" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="2,140 sq ft" hint-size="100%,40px"></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Roof — year replaced" help="Shingles over 20 years usually need underwriting" hint-size="100%,72px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="2021" hint-size="100%,40px"></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Roof material" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Asphalt shingle</option><option>Metal</option><option>Tile</option><option>Flat — membrane</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Primary heating" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Forced air gas</option><option>Electric baseboard</option><option>Heat pump</option><option>Oil</option><option>Wood stove</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Electrical" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Breakers · 200 amp</option><option>Breakers · 100 amp</option><option>Fuses</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Plumbing" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Copper / PEX</option><option>Kitec — flag</option><option>Galvanized</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Basement" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Finished</option><option>Partially finished</option><option>Unfinished</option><option>None / slab</option></x-import></x-import>
+              </div>
+            </div>
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Protection</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Distance to hydrant" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Within 300 m</option><option>300 m – 1 km</option><option>Over 1 km</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Distance to firehall" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Within 5 km</option><option>5 – 8 km</option><option>Over 8 km</option></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Monitored alarm" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Fire + burglary</option><option>Fire only</option><option>Local only</option><option>None</option></x-import></x-import>
+              </div>
+              <div style="display:flex;gap:32px;flex-wrap:wrap;border-top:1px solid var(--border-1);padding-top:14px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Switch" label="Sump pump with backup power" default-checked="{{ true }}" hint-size="auto,22px"></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Switch" label="Backwater valve" default-checked="{{ true }}" hint-size="auto,22px"></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Switch" label="Wood-burning appliance" hint-size="auto,22px"></x-import>
+              </div>
+            </div>
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Mortgagee</div>
+              <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Mortgagee" help="Appears on proofs and the binder letter" hint-size="100%,72px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="First Dominion Bank, 100 Bay St, Toronto ON" hint-size="100%,40px"></x-import></x-import>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Loan reference" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="FD-88213307" hint-size="100%,40px"></x-import></x-import>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:sticky;top:0">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Rebuild evaluation</div>
+            <div style="font-size:28px;font-weight:500;font-variant-numeric:tabular-nums">$684,000</div>
+            <div style="font-size:13px;color:var(--text-2);line-height:1.55">From the evaluator, run Jul 15 with these construction details. Re-run after any construction change — the dwelling limit follows it.</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:7px 14px;font-size:13px;border-top:1px solid var(--border-1);padding-top:10px">
+              <span style="color:var(--text-2)">Dwelling limit</span><span style="font-weight:500">$684,000</span>
+              <span style="color:var(--text-2)">Detached structures</span><span>$68,400 (10%)</span>
+              <span style="color:var(--text-2)">Contents</span><span>$478,800 (70%)</span>
+              <span style="color:var(--text-2)">Additional living exp.</span><span>$136,800 (20%)</span>
+            </div>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="refresh" hint-size="auto,34px">Re-run evaluator</x-import>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- TENANT / CONDO -->
+      <sc-if value="{{ isTenant }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:820px">
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Unit — TENA · P21677148HAB</div>
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Rented address" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="42 Sunnybrae Crescent, Unit 4, Brampton ON" hint-size="100%,40px"></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Dwelling type" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Apartment unit</option><option>Rented house</option><option>Condo unit — owned</option><option>Basement apartment</option></x-import></x-import>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Contents limit" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$40,000" hint-size="100%,40px"></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Personal liability" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>$2,000,000</option><option>$1,000,000</option></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Deductible" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>$500</option><option>$1,000</option></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Storage locker" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Yes — same building</option><option>No</option></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Floor" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="2nd" hint-size="100%,40px"></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Monitored alarm" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Building — fire</option><option>Unit — fire + burglary</option><option>None</option></x-import></x-import>
+            </div>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Condo-specific coverage</div>
+            <div style="font-size:13px;color:var(--text-2);line-height:1.55">Only applies when the dwelling type is a condo unit — greyed for this tenants policy.</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;opacity:0.45;pointer-events:none">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Unit improvements" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$25,000" hint-size="100%,40px"></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Deductible assessment" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$50,000" hint-size="100%,40px"></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Contingent building" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$100,000" hint-size="100%,40px"></x-import></x-import>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ADDITIONAL INTERESTS -->
+      <sc-if value="{{ isInterests }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1080px">
+          <div style="display:flex;align-items:center"><span style="font-size:13px;color:var(--text-2)">3 additional interests across the household</span><span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="plus" hint-size="auto,34px">Add interest</x-import></span></div>
+          <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ intCols }}" rows="{{ intRows }}" hint-size="100%,200px"></x-import>
+          <div style="font-size:12.5px;color:var(--text-3)">Interests are notified automatically when coverage changes or lapses — notifications are logged for E&amp;O.</div>
+        </div>
+      </sc-if>
+
+      <!-- ENDORSEMENTS -->
+      <sc-if value="{{ isEndorse }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:820px">
+          <div style="font-size:13px;color:var(--text-2)">Coverage &amp; endorsements — HOME (draft) · offered items are documented even when declined.</div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:6px 20px">
+            <sc-for list="{{ endorsements }}" as="e" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border-1)">
+                <i class="{{ e.icon }}" style="font-size:19px;color:var(--tenant-primary);flex:none"></i>
+                <div style="flex:1"><div style="font-size:14px;font-weight:500">{{ e.name }}</div><div style="font-size:12.5px;color:var(--text-3);line-height:1.45">{{ e.sub }}</div></div>
+                <sc-if value="{{ e.limit }}" hint-placeholder-val="{{ false }}">
+                  <div style="width:120px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="120px,34px"><option>{{ e.limit }}</option><option>{{ e.limit2 }}</option></x-import></div>
+                </sc-if>
+                <span style="font-size:13px;color:var(--text-2);font-variant-numeric:tabular-nums;width:76px;text-align:right">{{ e.premium }}</span>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Switch" default-checked="{{ e.on }}" hint-size="36px,22px"></x-import>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- UMBRELLA -->
+      <sc-if value="{{ isUmbrella }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:1fr 320px;gap:14px;max-width:1000px;align-items:start">
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Umbrella / excess liability</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Limit" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>$1,000,000</option><option>$2,000,000</option><option>$5,000,000</option></x-import></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Carrier" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>True North P&amp;C</option><option>Laurier Insurance</option></x-import></x-import>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border-1);padding-top:14px">
+              <div style="font-size:13px;font-weight:500">Underlying policies attached</div>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="AUTO · A21677149PLA — $2M third-party liability" default-checked="{{ true }}" hint-size="auto,22px"></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="TENA · P21677148HAB — $2M personal liability" default-checked="{{ true }}" hint-size="auto,22px"></x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Checkbox" label="HOME · draft — $2M personal liability (attaches at bind)" hint-size="auto,22px"></x-import>
+            </div>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Estimated premium</div>
+            <div style="font-size:28px;font-weight:500">$246<span style="font-size:14px;color:var(--text-3);font-weight:400">/yr</span></div>
+            <div style="font-size:13px;color:var(--text-2);line-height:1.55">$1M umbrella over both in-force lines. Requires the underlying liability limits shown — the attach check runs at bind.</div>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="scale" hint-size="auto,34px">Quote umbrella</x-import>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- SEASONAL -->
+      <sc-if value="{{ isSeasonal }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1080px">
+          <div style="display:flex;align-items:center"><span style="font-size:13px;color:var(--text-2)">Additional locations on the household</span><span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="plus" hint-size="auto,34px">Add location</x-import></span></div>
+          <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ seaCols }}" rows="{{ seaRows }}" hint-size="100%,160px"></x-import>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="beach" title="No seasonal properties yet" body="Cottages, secondary residences, and rental properties added here attach to the household and can share the umbrella. Ask at the annual review — it's the most-missed coverage." hint-size="100%,200px"></x-import>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { tab: "dwelling" };
+  setTab = (v) => this.setState({ tab: v });
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const Badge = NS.Badge;
+    const s = this.state;
+    const sub = (a, b) => h("div", null, h("div", { style: { fontWeight: 500 } }, a), h("div", { style: { fontSize: 12, color: "var(--text-3)" } }, b));
+
+    const tabs = [
+      { value: "dwelling", label: "Dwelling" }, { value: "tenant", label: "Tenant / condo" },
+      { value: "interests", label: "Additional interests" }, { value: "endorse", label: "Coverage & endorsements" },
+      { value: "umbrella", label: "Umbrella" }, { value: "seasonal", label: "Seasonal & rental" },
+    ];
+
+    const intCols = [
+      { header: "Type", render: (r) => (Badge ? h(Badge, { tone: r.tone }, r.type) : r.type) },
+      { header: "Name", render: (r) => sub(r.name, r.addr) },
+      { header: "Reference", key: "ref" },
+      { header: "Applies to", key: "pol" },
+      { header: "Last notified", key: "notified" },
+      { header: "", align: "right", render: () => h("div", { style: { display: "flex", gap: 6, justifyContent: "flex-end" } },
+        NS.IconButton ? h(NS.IconButton, { icon: "pencil", label: "Edit", size: "sm", variant: "ghost" }) : null,
+        NS.IconButton ? h(NS.IconButton, { icon: "trash", label: "Remove", size: "sm", variant: "ghost" }) : null) },
+    ];
+    const intRows = [
+      { tone: "accent", type: "Mortgagee", name: "First Dominion Bank", addr: "100 Bay St, Toronto ON", ref: "FD-88213307", pol: "HOME (draft)", notified: "—" },
+      { tone: "info", type: "Lienholder", name: "True North Auto Finance", addr: "PO Box 4200, Mississauga ON", ref: "TNAF-119284", pol: "AUTO · 2022 RAV4", notified: "Dec 24, 2025" },
+      { tone: "neutral", type: "Landlord", name: "Sunnybrae Properties Inc.", addr: "18 Queen St E, Brampton ON", ref: "Unit 4", pol: "TENA", notified: "Dec 24, 2025" },
+    ];
+
+    const endorsements = [
+      { icon: "ti ti-droplet", name: "Sewer backup", sub: "Backup of sewers, drains, sump — most GTA lenders require it", premium: "+$96/yr", on: true, limit: "$25,000", limit2: "$50,000" },
+      { icon: "ti ti-ripple", name: "Overland water", sub: "River flood and heavy-rain surface water · risk address is in a low flood zone", premium: "+$148/yr", on: true, limit: "", limit2: "" },
+      { icon: "ti ti-building-broadcast-tower", name: "Earthquake", sub: "Offered and documented — rarely taken in Ontario", premium: "+$210/yr", on: false, limit: "", limit2: "" },
+      { icon: "ti ti-briefcase", name: "Home business", sub: "Amara's design studio — liability plus $10k equipment", premium: "+$74/yr", on: true, limit: "$10,000", limit2: "$25,000" },
+      { icon: "ti ti-key", name: "Short-term rental", sub: "Airbnb / Vrbo use — client confirmed not applicable", premium: "+$180/yr", on: false, limit: "", limit2: "" },
+      { icon: "ti ti-diamond", name: "Scheduled jewellery", sub: "Engagement ring appraised $9,200 (appraisal on file)", premium: "+$62/yr", on: true, limit: "$10,000", limit2: "$15,000" },
+    ];
+
+    const seaCols = [
+      { header: "Location", render: (r) => sub(r.name, r.addr) },
+      { header: "Use", key: "use" },
+      { header: "Line", key: "line" },
+      { header: "Status", render: (r) => (Badge ? h(Badge, { tone: r.tone, dot: true }, r.st) : r.st) },
+    ];
+    const seaRows = [
+      { name: "Primary residence", addr: "128 Chinguacousy Road, Brampton ON", use: "Owner-occupied", line: "HOME (draft)", tone: "neutral", st: "Pending bind" },
+      { name: "Current rental", addr: "42 Sunnybrae Crescent, Unit 4", use: "Tenant — until Jul 1", line: "TENA", tone: "warning", st: "Cancelling at close" },
+    ];
+
+    return {
+      tabs, tab: s.tab, setTab: this.setTab,
+      isDwelling: s.tab === "dwelling", isTenant: s.tab === "tenant", isInterests: s.tab === "interests",
+      isEndorse: s.tab === "endorse", isUmbrella: s.tab === "umbrella", isSeasonal: s.tab === "seasonal",
+      intCols, intRows, endorsements, seaCols, seaRows,
+    };
+  }
+}
+</script>
+</body>
+</html>

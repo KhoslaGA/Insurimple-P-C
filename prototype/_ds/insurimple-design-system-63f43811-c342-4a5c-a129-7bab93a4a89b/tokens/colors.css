@@ -1,0 +1,67 @@
+/* Insurimple color system — flat fills, no gradients. Source: design-and-brand-brief.md §4–5 */
+:root{
+/* base palette */
+--ink:#0C1B22;
+--pine:#12796A;
+--pine-tint:#E7F3F0;
+--coral:#FF7A59;
+--sand:#F7F4EF;
+--slate:#5B6B70;
+--white:#FFFFFF;
+/* derived (oklch-harmonious with base) */
+--pine-deep:#0D5F53;
+--pine-soft:#CFE7E1;
+--coral-deep:#E45F3C;
+--coral-tint:#FFE9E2;
+--sand-deep:#EFEAE1;
+--mist:#8A9599;
+/* text */
+--text-1:var(--ink);
+--text-2:var(--slate);
+--text-3:var(--mist);
+--text-on-accent:#FFFFFF;
+--text-link:var(--pine);
+/* surfaces (light) */
+--surface-page:var(--sand);
+--surface-app:#FAF9F6;
+--surface-card:#FFFFFF;
+--surface-panel:#FCFBF8;
+--surface-popover:#FFFFFF;
+--surface-sunken:var(--sand-deep);
+/* borders */
+--border-1:#E4E0D7;
+--border-2:#D4CFC3;
+--border-focus:var(--pine);
+/* semantic roles */
+--accent:var(--pine);
+--accent-tint:var(--pine-tint);
+--success:#1E7F4F;
+--success-tint:#E3F2E9;
+--warning:#A9731B;
+--warning-tint:#F8EEDC;
+--danger:#C0392B;
+--danger-tint:#F9E7E4;
+--info:#3B6E8F;
+--info-tint:#E6EFF4;
+/* Rate Family per-vertical accents */
+--vertical-top:#FF7A59;   /* TopRates.ca */
+--vertical-life:#12796A;  /* LifeRate.ca */
+--vertical-term:#33608C;  /* TermRates.ca */
+--vertical-health:#C4544B;/* HealthRate.ca */
+}
+/* dark surfaces (opt-in scope) */
+[data-mode="dark"]{
+--text-1:#F2F1ED;
+--text-2:#A9B4B8;
+--text-3:#77848A;
+--surface-page:#0C1B22;
+--surface-app:#0F2029;
+--surface-card:#14262F;
+--surface-panel:#122129;
+--surface-popover:#1A2E38;
+--surface-sunken:#0A161C;
+--border-1:#24363F;
+--border-2:#32454F;
+--accent-tint:#123B34;
+--pine-tint:#123B34;
+}

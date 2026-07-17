@@ -1,0 +1,5 @@
+/* Minimal global defaults so every card/kit inherits the brand baseline. */
+body{font-family:var(--font-sans);font-size:var(--text-body);font-weight:var(--weight-regular);line-height:var(--leading-body);color:var(--text-1);background:var(--surface-page);margin:0;-webkit-font-smoothing:antialiased}
+a{color:var(--text-link);text-decoration:none}
+a:hover{color:var(--pine-deep);text-decoration:underline}
+::selection{background:var(--pine-tint)}

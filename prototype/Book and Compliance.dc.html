@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Gautam Khosla" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px"><div style="font-weight:500">Gautam Khosla</div><div style="color:var(--text-3);font-size:11px">Principal broker</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <h1 style="margin:0;font-size:17px;font-weight:500">Book &amp; compliance</h1>
+      <span style="font-size:13px;color:var(--text-3)">principal broker view</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="download" label="Export" variant="outline" hint-size="36px,36px"></x-import>
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="bell" label="Notifications" hint-size="36px,36px"></x-import>
+      </div>
+    </header>
+    <div style="padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Tabs" tabs="{{ tabs }}" value="{{ tab }}" on-change="{{ setTab }}" hint-size="100%,44px"></x-import>
+    </div>
+
+    <main style="flex:1;overflow-y:auto;padding:22px 24px">
+
+      <!-- BOOK -->
+      <sc-if value="{{ isBook }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:1180px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Policies in force" value="3,214" icon="shield" delta="+38" delta-tone="up" hint="this month · target 5,000" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Written premium" value="$6.48M" icon="coin" delta="+2.1%" delta-tone="up" hint="trailing 12 months" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Avg commission" value="13.2%" icon="percentage" hint="blended NB + renewal" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Households" value="1,987" icon="users" hint="1.62 policies each" hint-size="100%,100px"></x-import>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Growth to 5,000</div>
+              <span style="font-size:12.5px;color:var(--text-3)">64% of target</span>
+            </div>
+            <div style="height:10px;border-radius:999px;background:var(--surface-sunken);overflow:hidden"><div style="width:64%;height:100%;background:var(--tenant-primary);border-radius:999px"></div></div>
+            <div style="font-size:12.5px;color:var(--text-3)">At +38/month net, the book reaches 5,000 in ~47 months — remarket wins and the Rate Family funnel are the levers.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">By line</div>
+              <sc-for list="{{ byLine }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:130px;flex:none;font-size:13.5px">{{ b.name }}</span>
+                  <div style="flex:1;height:8px;border-radius:999px;background:var(--surface-sunken);overflow:hidden"><div style="{{ b.barStyle }}"></div></div>
+                  <span style="width:88px;flex:none;text-align:right;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums">{{ b.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">By carrier</div>
+              <sc-for list="{{ byCarrier }}" as="b" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:130px;flex:none;font-size:13.5px">{{ b.name }}</span>
+                  <div style="flex:1;height:8px;border-radius:999px;background:var(--surface-sunken);overflow:hidden"><div style="{{ b.barStyle }}"></div></div>
+                  <span style="width:88px;flex:none;text-align:right;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums">{{ b.count }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Renewals by expiry month</div>
+            <div style="display:flex;align-items:flex-end;gap:10px;height:120px">
+              <sc-for list="{{ byMonth }}" as="m" hint-placeholder-count="12">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end">
+                  <span style="font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums">{{ m.count }}</span>
+                  <div style="{{ m.barStyle }}"></div>
+                  <span style="font-size:11px;color:var(--text-3)">{{ m.name }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- RETENTION -->
+      <sc-if value="{{ isRetention }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:1180px">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Retention · 12 mo" value="91.4%" icon="heart-handshake" delta="+0.8 pt" delta-tone="up" hint="vs prior year" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Saved at remarket" value="68%" icon="scale" hint="of flagged renewals kept" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Lost this quarter" value="41" icon="door-exit" delta="−6" delta-tone="up" hint="vs Q1" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Avg tenure" value="6.3 yrs" icon="calendar-heart" hint="households" hint-size="100%,100px"></x-import>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Monthly retention</div>
+              <sc-for list="{{ retMonths }}" as="m" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="width:44px;flex:none;font-size:13px;color:var(--text-2)">{{ m.name }}</span>
+                  <div style="flex:1;height:8px;border-radius:999px;background:var(--surface-sunken);overflow:hidden"><div style="{{ m.barStyle }}"></div></div>
+                  <span style="width:52px;flex:none;text-align:right;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums">{{ m.pct }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Why clients left — this quarter</div>
+              <div style="overflow-x:auto;min-width:0"><div style="min-width:520px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ lostCols }}" rows="{{ lostRows }}" hint-size="100%,220px"></x-import></div></div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- E&O AUDIT -->
+      <sc-if value="{{ isAudit }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1180px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <h2 style="margin:0;font-size:20px;font-weight:500">E&amp;O / open-items audit</h2>
+            <span style="font-size:13px;color:var(--text-3)">6 exposures · oldest 21 days</span>
+            <span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="download" hint-size="auto,34px">Export for E&amp;O carrier</x-import></span>
+          </div>
+          <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ auditCols }}" rows="{{ auditRows }}" hint-size="100%,300px"></x-import>
+        </div>
+      </sc-if>
+
+      <!-- PRINCIPAL REVIEW -->
+      <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1080px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <h2 style="margin:0;font-size:20px;font-weight:500">Principal broker review</h2>
+            <span style="font-size:13px;color:var(--text-3)">items needing Level 3 sign-off</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ reviews }}" as="r" hint-placeholder-count="4">
+              <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px">
+                <i class="{{ r.icon }}" style="font-size:20px;color:var(--tenant-primary);flex:none"></i>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:14px;font-weight:500">{{ r.what }}</div>
+                  <div style="font-size:12.5px;color:var(--text-3)">{{ r.detail }}</div>
+                </div>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="{{ r.tone }}" hint-size="auto,22px">{{ r.wait }}</x-import>
+                <div style="display:flex;gap:6px;flex:none">
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" hint-size="auto,34px">Review file</x-import>
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="check" hint-size="auto,34px">Approve</x-import>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { tab: "book" };
+  setTab = (v) => this.setState({ tab: v });
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const Badge = NS.Badge;
+    const s = this.state;
+    const badge = (tone, text) => (Badge ? h(Badge, { tone, dot: true }, text) : text);
+    const sub = (a, b) => h("div", null, h("div", { style: { fontWeight: 500 } }, a), h("div", { style: { fontSize: 12, color: "var(--text-3)" } }, b));
+    const bar = (pct, color) => `width:${pct}%;height:100%;background:${color || "var(--tenant-primary)"};border-radius:999px`;
+
+    const tabs = [
+      { value: "book", label: "Book of business" }, { value: "retention", label: "Retention" },
+      { value: "audit", label: "E&O audit" }, { value: "review", label: "Principal review" },
+    ];
+
+    const byLine = [
+      { name: "Auto", count: "1,642", barStyle: bar(100) },
+      { name: "Homeowners", count: "812", barStyle: bar(49) },
+      { name: "Tenants", count: "418", barStyle: bar(25) },
+      { name: "Condo", count: "289", barStyle: bar(18) },
+      { name: "Umbrella / other", count: "53", barStyle: bar(4) },
+    ];
+    const byCarrier = [
+      { name: "True North P&C", count: "1,388", barStyle: bar(100) },
+      { name: "Maple Mutual", count: "1,004", barStyle: bar(72) },
+      { name: "Laurier Insurance", count: "586", barStyle: bar(42) },
+      { name: "Prairie Shield", count: "162", barStyle: bar(12) },
+      { name: "Cascadia General", count: "74", barStyle: bar(5) },
+    ];
+    const monthData = [["Jan", 214], ["Feb", 196], ["Mar", 242], ["Apr", 260], ["May", 287], ["Jun", 301], ["Jul", 318], ["Aug", 296], ["Sep", 274], ["Oct", 255], ["Nov", 231], ["Dec", 340]];
+    const max = 340;
+    const byMonth = monthData.map(([name, count]) => ({
+      name, count: String(count),
+      barStyle: `width:100%;max-width:34px;height:${Math.round((count / max) * 78)}px;background:${count > 300 ? "var(--tenant-accent, var(--tenant-primary-deep))" : "var(--tenant-primary)"};border-radius:6px 6px 0 0`,
+    }));
+
+    const retMonths = [
+      { name: "Feb", pct: "90.8%", barStyle: bar(90.8) }, { name: "Mar", pct: "91.0%", barStyle: bar(91) },
+      { name: "Apr", pct: "90.4%", barStyle: bar(90.4) }, { name: "May", pct: "91.9%", barStyle: bar(91.9) },
+      { name: "Jun", pct: "92.1%", barStyle: bar(92.1) }, { name: "Jul", pct: "91.7%", barStyle: bar(91.7) },
+    ];
+    const lostCols = [
+      { header: "Reason", render: (r) => h("span", { style: { fontWeight: 500 } }, r.why) },
+      { header: "Count", align: "right", key: "n" },
+      { header: "Premium lost", align: "right", key: "prem" },
+      { header: "Recoverable?", render: (r) => badge(r.tone, r.rec) },
+    ];
+    const lostRows = [
+      { why: "Price — didn't remarket in time", n: "14", prem: "$38,200", tone: "warning", rec: "Yes — queue earlier" },
+      { why: "Moved out of province", n: "11", prem: "$26,900", tone: "neutral", rec: "No" },
+      { why: "Price — remarket lost anyway", n: "9", prem: "$24,100", tone: "info", rec: "Partly" },
+      { why: "Service complaint", n: "4", prem: "$11,300", tone: "danger", rec: "Review calls" },
+      { why: "Carrier non-renewed", n: "3", prem: "$9,800", tone: "neutral", rec: "Placed elsewhere" },
+    ];
+
+    const auditCols = [
+      { header: "Exposure", render: (r) => badge(r.tone, r.type) },
+      { header: "Household", render: (r) => sub(r.who, r.pol) },
+      { header: "Detail", key: "what" },
+      { header: "Age", render: (r) => h("span", { style: { fontWeight: 500, color: r.old ? "var(--danger)" : "var(--text-1)" } }, r.age) },
+      { header: "Assigned", key: "asg" },
+      { header: "", align: "right", render: () => (NS.Button ? h(NS.Button, { size: "sm", variant: "secondary" }, "Resolve") : null) },
+    ];
+    const auditRows = [
+      { tone: "danger", type: "Unsigned application", who: "Boychuk, Daryna", pol: "CONDO · C77120953HAB", what: "Bound Jul 8 — e-signature never completed", age: "7 days", old: false, asg: "Sam T." },
+      { tone: "danger", type: "Offer not documented", who: "Dubois, Camille", pol: "CONDO · C11029384HAB", what: "No record that overland water was offered", age: "21 days", old: true, asg: "Rina A." },
+      { tone: "warning", type: "Undelivered proof", who: "Castellanos, Maria", pol: "TENA · P90218836HAB", what: "Lender binder promised — not yet sent", age: "4 days", old: false, asg: "Sam T." },
+      { tone: "warning", type: "Expired follow-up", who: "Osei, Kwame", pol: "AUTO · A88320117PLA", what: "Remarket decision follow-up lapsed Jul 10", age: "5 days", old: false, asg: "Rina A." },
+      { tone: "info", type: "Consent gap", who: "Petrov, Nikolai", pol: "Household", what: "CASL consent expired with cancellation — suppress marketing", age: "15 days", old: false, asg: "—" },
+      { tone: "warning", type: "Backdated txn", who: "Okonkwo & Mensah", pol: "Cross-line · Jul 1", what: "14-day backdate acknowledged — needs principal sign-off", age: "0 days", old: false, asg: "You" },
+    ];
+
+    const reviews = [
+      { icon: "ti ti-calendar-x", what: "Backdated cross-line transaction — Okonkwo & Mensah", detail: "Effective Jul 1, entered Jul 15 · acknowledged by Rina A. · HOME NB + AUTO endorsement + TENA cancel", tone: "warning", wait: "Waiting 4 h" },
+      { icon: "ti ti-shield-off", what: "Coverage declined against advice — Aylward, Siobhan", detail: "Client refused sewer backup on HOME renewal · declination form signed, needs countersign", tone: "info", wait: "Waiting 1 d" },
+      { icon: "ti ti-scale", what: "Remarket outside binding authority — Kowalski, Piotr", detail: "Laurier quote exceeds Level 2 property authority ($2M dwelling) · needs Level 3 bind", tone: "warning", wait: "Waiting 2 d" },
+      { icon: "ti ti-git-merge", what: "Household merge with policy conflict — OKONKA01 / OKONKA02", detail: "Download duplicate carries a TENA policy also present locally · merge keeps both in audit log", tone: "neutral", wait: "Waiting 3 h" },
+    ];
+
+    return {
+      tabs, tab: s.tab, setTab: this.setTab,
+      isBook: s.tab === "book", isRetention: s.tab === "retention", isAudit: s.tab === "audit", isReview: s.tab === "review",
+      byLine, byCarrier, byMonth, retMonths, lostCols, lostRows, auditCols, auditRows, reviews,
+    };
+  }
+}
+</script>
+</body>
+</html>

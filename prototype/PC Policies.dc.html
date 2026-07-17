@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div data-theme="{{ themeAttr }}" data-mode="{{ modeAttr }}" style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em;color:var(--text-1)">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Rina Alvarez" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px">
+        <div style="font-weight:500;color:var(--text-1)">Rina Alvarez</div>
+        <div style="color:var(--text-3);font-size:11px">CSR · personal lines</div>
+      </div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <div style="width:320px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" icon="search" size="sm" placeholder="Search clients, policies, or a command…  ⌘K" hint-size="320px,34px"></x-import>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="phone-incoming" label="Simulate call" variant="outline" hint-size="36px,36px"></x-import>
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="bell" label="Notifications" hint-size="36px,36px"></x-import>
+      </div>
+    </header>
+
+    <main style="flex:1;overflow-y:auto">
+
+      <!-- ACCOUNT VIEW -->
+      <sc-if value="{{ isAccount }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="padding:18px 24px;background:var(--surface-card);border-bottom:1px solid var(--border-1);display:flex;align-items:center;gap:16px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Amara Okonkwo" size="lg" hint-size="48px,48px"></x-import>
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:10px">
+                <h1 style="margin:0;font-size:22px;font-weight:500;color:var(--text-1);white-space:nowrap">Amara Okonkwo &amp; Daniel Mensah</h1>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="neutral" hint-size="auto,22px">Household · OKONKA01</x-import>
+              </div>
+              <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--text-2)">
+                <span style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-user" style="font-size:15px;color:var(--text-3)"></i>Primary contact: Amara Okonkwo</span>
+                <span style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-mail" style="font-size:15px;color:var(--text-3)"></i>amara.okonkwo@email.ca</span>
+                <span style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-phone" style="font-size:15px;color:var(--text-3)"></i>(647) 555-0182</span>
+                <span style="display:inline-flex;align-items:center;gap:6px"><i class="ti ti-map-pin" style="font-size:15px;color:var(--text-3)"></i>42 Sunnybrae Crescent, Brampton, ON L6Z 1R6</span>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;flex:none">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="secondary" icon="file-download" hint-size="auto,40px">Proofs of insurance</x-import>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="primary" icon="plus" hint-size="auto,40px">New transaction</x-import>
+            </div>
+          </div>
+
+          <div style="padding:0 24px;background:var(--surface-card)">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Tabs" tabs="{{ accountTabs }}" value="{{ accountTab }}" on-change="{{ setTab }}" hint-size="100%,44px"></x-import>
+          </div>
+
+          <sc-if value="{{ isPolicies }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:22px 24px;display:flex;flex-direction:column;gap:16px;max-width:1180px">
+
+              <div style="display:flex;align-items:baseline;gap:10px">
+                <h2 style="margin:0;font-size:18px;font-weight:500;color:var(--text-1)">Policies — current &amp; renewed</h2>
+                <span style="font-size:13px;color:var(--text-3)">2 policies in force · {{ selLabel }}</span>
+                <div style="margin-left:auto;display:flex;gap:16px;font-size:13px">
+                  <a style="cursor:pointer">Filter defaults</a>
+                  <a style="cursor:pointer">Refresh</a>
+                  <a style="cursor:pointer">Columns</a>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="width:260px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" size="sm" icon="search" placeholder="Search this account…" hint-size="260px,34px"></x-import></div>
+                <div style="width:150px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="150px,34px"><option>All lines</option><option>Auto</option><option>Property</option></x-import></div>
+                <div style="width:150px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="150px,34px"><option>All statuses</option><option>New business</option><option>Renewal due</option><option>Lapsed</option></x-import></div>
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="search" hint-size="auto,34px">Find</x-import>
+                <span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="pencil" on-click="{{ openSelected }}" hint-size="auto,34px">Open selected line</x-import></span>
+              </div>
+
+              <div style="overflow-x:auto;min-width:0">
+                <div style="min-width:940px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ policyCols }}" rows="{{ policyRows }}" on-row-click="{{ selectRow }}" hint-size="100%,140px"></x-import></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;align-items:start">
+                <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Policy detail</div>
+                  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px">
+                    <span style="color:var(--text-2)">Type</span><span style="font-weight:500">{{ sel.code }} — {{ sel.desc }}</span>
+                    <span style="color:var(--text-2)">Effective</span><span style="font-weight:500">{{ sel.effRange }}</span>
+                    <span style="color:var(--text-2)">Policy number</span><span style="font-weight:500">{{ sel.number }}</span>
+                    <span style="color:var(--text-2)">Source</span><span>{{ sel.source }}</span>
+                    <span style="color:var(--text-2)">Agency balance</span><span style="font-weight:500">{{ sel.balance }}</span>
+                  </div>
+                  <div style="border-top:1px solid var(--border-1);padding-top:10px">
+                    <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="external-link" hint-size="auto,34px">Export to rating services</x-import>
+                  </div>
+                </div>
+                <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+                  <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Line detail</div>
+                  <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px">
+                    <span style="color:var(--text-2)">Status</span><span><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Badge" tone="{{ sel.tone }}" dot="{{ true }}" hint-size="auto,22px">{{ sel.status }}</x-import></span>
+                    <span style="color:var(--text-2)">Bill</span><span style="font-weight:500">{{ sel.bill }}</span>
+                    <span style="color:var(--text-2)">Carrier (ICO)</span><span style="font-weight:500">{{ sel.carrier }}</span>
+                    <span style="color:var(--text-2)">Invoice to</span><span>{{ sel.invoice }}</span>
+                    <span style="color:var(--text-2)">Estimated premium</span><span style="font-weight:500">{{ sel.est }}</span>
+                    <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+                      <span style="color:var(--text-2);display:inline-flex;align-items:center;gap:5px">Commission (est)<i class="ti ti-lock" style="font-size:13px;color:var(--text-3)" title="Visible to admins only"></i></span><span style="font-weight:500;color:var(--tenant-primary-deep)">{{ sel.commission }}</span>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--tenant-primary-tint);font-size:14px">
+                      <i class="ti ti-lock" style="font-size:16px;color:var(--tenant-primary-deep)"></i>
+                      <span style="color:var(--tenant-primary-deep)">Est. commission</span>
+                      <span style="margin-left:auto;font-weight:500;color:var(--tenant-primary-deep)">{{ sel.commission }}</span>
+                      <span style="font-size:11px;color:var(--tenant-primary-deep);opacity:0.75">Admins only</span>
+                    </div>
+                  </sc-if>
+                  <div style="border-top:1px solid var(--border-1);padding-top:10px;font-size:13px;color:var(--text-2);line-height:1.5">{{ sel.comment }}</div>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Service summary</div>
+                <div style="overflow-x:auto;min-width:0">
+                  <div style="min-width:780px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ svcCols }}" rows="{{ svcRows }}" hint-size="100%,160px"></x-import></div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ isPolicies }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px 24px;max-width:900px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="{{ otherTabIcon }}" title="{{ otherTabTitle }}" body="This tab isn't part of this prototype — it's here so the account record reads true. Head back to Policies to work the file." hint-size="100%,220px"></x-import>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- LINE EDITOR VIEW -->
+      <sc-if value="{{ isEditor }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+          <a on-click="{{ goAccount }}" style="font-size:13px;color:var(--text-3);cursor:pointer;display:inline-flex;align-items:center;gap:5px"><i class="ti ti-arrow-left"></i>Amara Okonkwo &amp; Daniel Mensah · Policies</a>
+
+          <div style="display:flex;gap:20px;align-items:start">
+
+            <div style="width:252px;flex:none;background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;overflow:hidden">
+              <div style="padding:11px 14px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-1)">Policy tree</div>
+
+              <div on-click="{{ selectAuto }}" style="{{ autoHeadStyle }}">
+                <i class="ti ti-car" style="font-size:17px"></i>
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:500">AUTO · personal automobile</div>
+                  <div style="font-size:11px;color:var(--text-3)">expires Dec 24, 2026</div>
+                </div>
+                <i class="{{ autoChevron }}"></i>
+              </div>
+              <sc-if value="{{ editorIsAuto }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:4px 8px 8px;display:flex;flex-direction:column;gap:1px">
+                  <sc-for list="{{ autoTree }}" as="item" hint-placeholder-count="9">
+                    <a on-click="{{ item.onClick }}" style="{{ item.style }}"><span style="{{ item.dot }}"></span>{{ item.label }}</a>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <div on-click="{{ selectTena }}" style="{{ tenaHeadStyle }}">
+                <i class="ti ti-home" style="font-size:17px"></i>
+                <div style="flex:1;min-width:0">
+                  <div style="font-weight:500">TENA · tenants package</div>
+                  <div style="font-size:11px;color:var(--text-3)">expires Dec 24, 2026</div>
+                </div>
+                <i class="{{ tenaChevron }}"></i>
+              </div>
+              <sc-if value="{{ editorIsTena }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:4px 8px 8px;display:flex;flex-direction:column;gap:1px">
+                  <sc-for list="{{ tenaTree }}" as="item" hint-placeholder-count="9">
+                    <a on-click="{{ item.onClick }}" style="{{ item.style }}"><span style="{{ item.dot }}"></span>{{ item.label }}</a>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;align-items:center;gap:14px">
+                <div>
+                  <div style="font-size:12px;color:var(--text-3)">{{ breadcrumb }}</div>
+                  <h1 style="margin:2px 0 0;font-size:22px;font-weight:500;color:var(--text-1)">{{ sectionTitle }}</h1>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:8px">
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="secondary" on-click="{{ goAccount }}" hint-size="auto,40px">Cancel</x-import>
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" variant="primary" icon="device-floppy" hint-size="auto,40px">Save changes</x-import>
+                </div>
+              </div>
+
+              <!-- Applicant -->
+              <sc-if value="{{ isApplicant }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                    <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Named insured</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="First named insured" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="Amara Okonkwo" hint-size="100%,40px"></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Co-applicant" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="Daniel Mensah" hint-size="100%,40px"></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Date of birth" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" icon="calendar" default-value="1989-03-14" hint-size="100%,40px"></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Preferred contact" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Phone</option><option>Email</option><option>Text message</option></x-import></x-import>
+                    </div>
+                  </div>
+
+                  <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                    <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Mailing address</div>
+                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px">
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Street address" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="42 Sunnybrae Crescent" hint-size="100%,40px"></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Unit / suite" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" placeholder="Optional" hint-size="100%,40px"></x-import></x-import>
+                    </div>
+                    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px">
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="City" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="Brampton" hint-size="100%,40px"></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Province" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>ON</option><option>BC</option><option>AB</option><option>QC</option><option>MB</option></x-import></x-import>
+                      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Postal code" help="Format like L6Z 1R6" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="L6Z 1R6" hint-size="100%,40px"></x-import></x-import>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <!-- Drivers -->
+              <sc-if value="{{ isDrivers }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;align-items:center"><span style="font-size:13px;color:var(--text-2)">2 drivers on this policy</span><span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="plus" hint-size="auto,34px">Add driver</x-import></span></div>
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ driverCols }}" rows="{{ driverRows }}" hint-size="100%,140px"></x-import>
+                </div>
+              </sc-if>
+
+              <!-- Vehicles -->
+              <sc-if value="{{ isVehicles }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;align-items:center"><span style="font-size:13px;color:var(--text-2)">2 vehicles on this policy</span><span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="plus" hint-size="auto,34px">Add vehicle</x-import></span></div>
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ vehicleCols }}" rows="{{ vehicleRows }}" hint-size="100%,140px"></x-import>
+                </div>
+              </sc-if>
+
+              <!-- Locations -->
+              <sc-if value="{{ isLocations }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                  <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Rented location</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                    <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Address" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="42 Sunnybrae Crescent, Unit 4" hint-size="100%,40px"></x-import></x-import>
+                    <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Dwelling type" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" hint-size="100%,40px"><option>Apartment unit</option><option>Rented house</option><option>Condo unit</option></x-import></x-import>
+                    <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Contents limit" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$40,000" hint-size="100%,40px"></x-import></x-import>
+                    <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Field" label="Personal liability" hint-size="100%,64px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" default-value="$2,000,000" hint-size="100%,40px"></x-import></x-import>
+                  </div>
+                </div>
+              </sc-if>
+
+              <!-- Generic -->
+              <sc-if value="{{ isGeneric }}" hint-placeholder-val="{{ false }}">
+                <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px">
+                  <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="cloud-download" title="{{ sectionTitle }}" body="This section syncs from the carrier download. There's nothing to edit here in the prototype — it's shown so the full policy tree stays navigable." hint-size="100%,240px"></x-import>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;admin&quot;,&quot;csr&quot;],&quot;default&quot;:&quot;admin&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Access&quot;},&quot;tenant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;klc&quot;,&quot;northpeak&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Branding&quot;},&quot;mode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Branding&quot;}}">
+class Component extends DCLogic {
+  state = { view: "account", selected: "AUTO", accountTab: "policies", editorPolicy: "AUTO", section: "applicant" };
+
+  selectRow = (r) => this.setState({ selected: r.line });
+  openSelected = () => this.setState({ view: "editor", editorPolicy: this.state.selected, section: "applicant" });
+  openEditor = (line) => this.setState({ view: "editor", editorPolicy: line, section: "applicant" });
+  goAccount = () => this.setState({ view: "account" });
+  setTab = (v) => this.setState({ accountTab: v });
+  setSection = (k) => this.setState({ section: k });
+  selectAuto = () => this.setState({ editorPolicy: "AUTO", section: "applicant" });
+  selectTena = () => this.setState({ editorPolicy: "TENA", section: "applicant" });
+
+  DETAIL = {
+    AUTO: { line: "AUTO", code: "AUTO", desc: "Personal automobile", number: "A21677149PLA", status: "New — new business", tone: "info",
+      effRange: "Dec 24, 2025 → Dec 24, 2026", bill: "Direct bill", source: "Broker download", carrier: "True North P&C (TNPC-1)",
+      premium: "$4,073.15", est: "$5,504.00", commission: "$489.00 / yr (12%)", invoice: "Client — 42 Sunnybrae Crescent, Brampton ON", balance: "$0.00",
+      comment: "Line note: moved from prospect file Dec 17, 2025. Two drivers, two vehicles rated." },
+    TENA: { line: "TENA", code: "TENA", desc: "Tenants package", number: "P21677148HAB", status: "New — new business", tone: "info",
+      effRange: "Dec 24, 2025 → Dec 24, 2026", bill: "Direct bill", source: "Broker download", carrier: "Maple Mutual (MM-2)",
+      premium: "$463.88", est: "$463.88", commission: "$92.78 / yr (20%)", invoice: "Client — 42 Sunnybrae Crescent, Brampton ON", balance: "$0.00",
+      comment: "Contents $40,000 · personal liability $2,000,000. Alarm credit applied." },
+  };
+
+  AUTO_SECTIONS = [["servicing", "Servicing / billing"], ["applicant", "Applicant"], ["policy", "Policy info"], ["drivers", "Drivers"], ["vehicles", "Vehicles"], ["interests", "Additional interests"], ["forms", "Forms & endorsements"], ["agent", "Agent / broker"], ["payment", "Payment authorization"]];
+  TENA_SECTIONS = [["servicing", "Servicing / billing"], ["applicant", "Applicant"], ["policy", "Policy info"], ["locations", "Locations"], ["loss", "Loss history"], ["interests", "Additional interests"], ["forms", "Forms & endorsements"], ["broker", "Broker questionnaire"], ["payment", "Payment authorization"]];
+
+  buildTree(pairs, policyKey) {
+    const active = this.state.section;
+    const isActivePolicy = this.state.editorPolicy === policyKey;
+    return pairs.map(([key, label]) => {
+      const on = isActivePolicy && key === active;
+      return {
+        key, label,
+        onClick: () => this.setState({ editorPolicy: policyKey, section: key }),
+        dot: `width:5px;height:5px;border-radius:50%;flex:none;background:${on ? "var(--tenant-primary)" : "var(--border-2)"}`,
+        style: `display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:8px;font-size:13.5px;cursor:pointer;text-decoration:none;` +
+          (on ? "background:var(--tenant-primary-tint);color:var(--tenant-primary-deep);font-weight:500" : "color:var(--text-2)"),
+      };
+    });
+  }
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const Badge = NS.Badge, IconButton = NS.IconButton;
+    const s = this.state;
+    const sel = this.DETAIL[s.selected];
+
+    const badge = (r) => (Badge ? h(Badge, { tone: r.tone, dot: true }, r.status || r.stage) : r.status || r.stage);
+
+    const selDot = (r) => h("span", { style: { width: 14, height: 14, borderRadius: "50%", display: "inline-block", boxSizing: "border-box",
+      border: "2px solid " + (r.selected ? "var(--tenant-primary)" : "var(--border-2)"),
+      background: r.selected ? "var(--tenant-primary)" : "transparent", boxShadow: r.selected ? "inset 0 0 0 2px #fff" : "none" } });
+
+    const policyCols = [
+      { header: "", render: selDot },
+      { header: "Line", render: (r) => h("span", { style: { display: "inline-flex", alignItems: "center", gap: 8, fontWeight: 500 } },
+          h("i", { className: "ti ti-" + r.icon, style: { fontSize: 16, color: "var(--tenant-primary)" } }), r.line) },
+      { header: "Policy", render: (r) => h("div", null,
+          h("div", { style: { fontWeight: 500 } }, r.desc),
+          h("div", { style: { fontSize: 12, color: "var(--text-3)" } }, "Personal lines")) },
+      { header: "Status", render: badge },
+      { header: "Policy number", key: "number" },
+      { header: "Term", key: "term" },
+      { header: "Carrier", key: "carrier" },
+      { header: "Bill", key: "bill" },
+      { header: "Annual premium", align: "right", render: (r) => h("span", { style: { fontWeight: 500 } }, r.premium) },
+      { header: "", align: "right", render: (r) => (IconButton ? h(IconButton, { icon: "pencil", label: "Open line", variant: "ghost", size: "sm",
+          onClick: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.openEditor(r.line); } }) : null) },
+    ];
+    const policyRows = [
+      { line: "AUTO", icon: "car", desc: "Personal automobile", status: "New business", tone: "info", number: "A21677149PLA", term: "Dec 24, 2025 – Dec 24, 2026", carrier: "True North P&C", bill: "Direct", premium: "$4,073.15", selected: s.selected === "AUTO" },
+      { line: "TENA", icon: "home", desc: "Tenants package", status: "New business", tone: "info", number: "P21677148HAB", term: "Dec 24, 2025 – Dec 24, 2026", carrier: "Maple Mutual", bill: "Direct", premium: "$463.88", selected: s.selected === "TENA" },
+    ];
+
+    const svcCols = [
+      { header: "#", key: "n" },
+      { header: "Entered", key: "entered" },
+      { header: "Action", render: (r) => h("span", { style: { fontWeight: 500 } }, r.action) },
+      { header: "Description", key: "desc" },
+      { header: "Stage", render: badge },
+      { header: "Effective", key: "eff" },
+      { header: "Changed by", key: "by" },
+    ];
+    const svcRows = [
+      { n: "12", entered: "Jul 7, 2026", action: "Endorsement", desc: "EFT payment method updated", stage: "Issued", tone: "success", eff: "Jun 29, 2026", by: "M. Lawson" },
+      { n: "11", entered: "Jun 2, 2026", action: "Renewal review", desc: "Renewal offer generated", stage: "Active", tone: "info", eff: "—", by: "System" },
+      { n: "10", entered: "Dec 24, 2025", action: "New business", desc: "Policy bound — moved from prospect", stage: "Issued", tone: "success", eff: "Dec 24, 2025", by: "You" },
+    ];
+
+    const driverCols = [
+      { header: "Driver", render: (r) => h("span", { style: { fontWeight: 500 } }, r.name) },
+      { header: "Licence number", key: "licence" },
+      { header: "Date of birth", key: "dob" },
+      { header: "Class", key: "cls" },
+      { header: "Role", render: (r) => (Badge ? h(Badge, { tone: r.tone }, r.role) : r.role) },
+    ];
+    const driverRows = [
+      { name: "Amara Okonkwo", licence: "O1234-56789-01234", dob: "Mar 14, 1989", cls: "G", role: "Principal", tone: "accent" },
+      { name: "Daniel Mensah", licence: "M9876-54321-09876", dob: "Nov 2, 1987", cls: "G", role: "Occasional", tone: "neutral" },
+    ];
+    const vehicleCols = [
+      { header: "Vehicle", render: (r) => h("span", { style: { fontWeight: 500 } }, r.v) },
+      { header: "VIN", key: "vin" },
+      { header: "Use", key: "use" },
+      { header: "Annual distance", key: "km" },
+      { header: "Coverage", key: "cov" },
+    ];
+    const vehicleRows = [
+      { v: "2022 Toyota RAV4 XLE", vin: "2T3P1RFV5NW123456", use: "Commute", km: "16,000 km/yr", cov: "Full — collision + comp" },
+      { v: "2018 Honda Civic LX", vin: "2HGFC2F59JH123456", use: "Pleasure", km: "8,000 km/yr", cov: "Liability only" },
+    ];
+
+    const editorIsAuto = s.editorPolicy === "AUTO";
+    const cur = this.DETAIL[s.editorPolicy];
+    const pairs = editorIsAuto ? this.AUTO_SECTIONS : this.TENA_SECTIONS;
+    const found = pairs.find((p) => p[0] === s.section);
+    const sectionTitle = found ? found[1] : "Section";
+
+    const headBase = "display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13.5px;border-bottom:1px solid var(--border-1);";
+    const autoHeadStyle = headBase + (editorIsAuto ? "background:var(--surface-panel);color:var(--tenant-primary-deep)" : "color:var(--text-2)");
+    const tenaHeadStyle = "display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;font-size:13.5px;border-top:1px solid var(--border-1);" + (!editorIsAuto ? "background:var(--surface-panel);color:var(--tenant-primary-deep)" : "color:var(--text-2)");
+
+    const tabs = [
+      { value: "detail", label: "Account detail" }, { value: "contacts", label: "Contacts" },
+      { value: "opportunities", label: "Opportunities" }, { value: "policies", label: "Policies" },
+      { value: "proofs", label: "Proofs of insurance" }, { value: "claims", label: "Claims" },
+      { value: "activities", label: "Activities" },
+    ];
+    const tabMeta = { detail: ["id-badge-2", "Account detail"], contacts: ["users", "Contacts"], opportunities: ["chart-arrows", "Opportunities"], proofs: ["certificate", "Proofs of insurance"], claims: ["flame", "Claims"], activities: ["activity", "Activities"] };
+    const meta = tabMeta[s.accountTab] || ["folder", "Section"];
+
+    return {
+      themeAttr: this.props.tenant ?? "",
+      modeAttr: this.props.mode ?? "light",
+      isAdmin: (this.props.role ?? "admin") === "admin",
+      isAdmin: (this.props.role ?? "admin") === "admin",
+      isAccount: s.view === "account",
+      isEditor: s.view === "editor",
+      isPolicies: s.accountTab === "policies",
+      accountTab: s.accountTab,
+      accountTabs: tabs,
+      setTab: this.setTab,
+      otherTabIcon: meta[0], otherTabTitle: meta[1],
+      sel, selLabel: sel.code + " selected",
+      policyCols, policyRows, svcCols, svcRows,
+      selectRow: this.selectRow, openSelected: this.openSelected, goAccount: this.goAccount,
+      editorIsAuto, editorIsTena: !editorIsAuto,
+      autoTree: this.buildTree(this.AUTO_SECTIONS, "AUTO"),
+      tenaTree: this.buildTree(this.TENA_SECTIONS, "TENA"),
+      selectAuto: this.selectAuto, selectTena: this.selectTena,
+      autoHeadStyle, tenaHeadStyle,
+      autoChevron: "ti ti-chevron-" + (editorIsAuto ? "down" : "right"),
+      tenaChevron: "ti ti-chevron-" + (!editorIsAuto ? "down" : "right"),
+      sectionTitle,
+      breadcrumb: cur.code + " — " + cur.desc + "  /  " + sectionTitle,
+      isApplicant: s.section === "applicant",
+      isDrivers: editorIsAuto && s.section === "drivers",
+      isVehicles: editorIsAuto && s.section === "vehicles",
+      isLocations: !editorIsAuto && s.section === "locations",
+      isGeneric: !["applicant"].includes(s.section) && !(editorIsAuto && (s.section === "drivers" || s.section === "vehicles")) && !(!editorIsAuto && s.section === "locations"),
+      driverCols, driverRows, vehicleCols, vehicleRows,
+    };
+  }
+}
+</script>
+</body>
+</html>

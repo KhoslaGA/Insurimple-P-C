@@ -1,0 +1,33 @@
+/* White-label tenant theme contract.
+   Components read ONLY --tenant-* for brand color. Default theme = Insurimple (neutral). */
+:root{
+--tenant-primary:var(--pine);
+--tenant-primary-deep:var(--pine-deep);
+--tenant-primary-tint:var(--pine-tint);
+--tenant-accent:var(--coral);
+--tenant-accent-deep:var(--coral-deep);
+--tenant-name:"Insurimple"; /* @kind other */
+}
+/* KLC Group — steady, expert, personal */
+[data-theme="klc"]{
+--tenant-primary:#1F3A5F;
+--tenant-primary-deep:#15293F;
+--tenant-primary-tint:#E7EDF4;
+--tenant-accent:#B0803B;
+--tenant-accent-deep:#8F6425;
+--tenant-name:"KLC Group"; /* @kind other */
+}
+/* Mock client brokerage — proves the contract with a third palette */
+[data-theme="northpeak"]{
+--tenant-primary:#5B3A8C;
+--tenant-primary-deep:#452A6E;
+--tenant-primary-tint:#EEE8F6;
+--tenant-accent:#2E9E7E;
+--tenant-accent-deep:#22775F;
+--tenant-name:"NorthPeak Insurance"; /* @kind other */
+}
+/* Rate Family sub-brand scopes: one system, per-vertical accent */
+[data-vertical="top"]{--tenant-primary:var(--vertical-top);--tenant-primary-deep:var(--coral-deep);--tenant-primary-tint:var(--coral-tint)}
+[data-vertical="life"]{--tenant-primary:var(--vertical-life);--tenant-primary-deep:var(--pine-deep);--tenant-primary-tint:var(--pine-tint)}
+[data-vertical="term"]{--tenant-primary:var(--vertical-term);--tenant-primary-deep:#264A6E;--tenant-primary-tint:#E7EEF5}
+[data-vertical="health"]{--tenant-primary:var(--vertical-health);--tenant-primary-deep:#9C3F38;--tenant-primary-tint:#F8E9E8}

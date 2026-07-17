@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+  </style>
+</helmet>
+<div style="min-height:100vh;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app);padding:40px 32px 64px">
+  <div style="max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:28px">
+    <header style="display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+      <h1 style="margin:0;font-size:34px;font-weight:500;letter-spacing:-0.02em">P&amp;C leg — all templates</h1>
+      <p style="margin:0;font-size:16px;line-height:1.55;color:var(--text-2);max-width:720px">Twelve interconnected screens covering the full CSR workflow — Ontario personal lines, household-centric, Epic-vocabulary accounting. Every page shares the same shell and data, so clicking through tells one coherent story. Start anywhere.</p>
+    </header>
+
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+      <section style="display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">{{ g.label }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px">
+          <sc-for list="{{ g.pages }}" as="p" hint-placeholder-count="3">
+            <a href="{{ p.file }}" style="display:flex;flex-direction:column;gap:10px;background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:18px;color:var(--text-1)" style-hover="border-color:var(--tenant-primary);color:var(--text-1)">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="width:36px;height:36px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--tenant-primary-tint);color:var(--tenant-primary-deep)"><i class="{{ p.iconClass }}" style="font-size:19px"></i></span>
+                <div style="font-size:16px;font-weight:500">{{ p.title }}</div>
+                <span style="margin-left:auto;font-size:11px;font-weight:500;letter-spacing:0.04em;color:var(--text-3)">{{ p.section }}</span>
+              </div>
+              <p style="margin:0;font-size:13px;line-height:1.55;color:var(--text-2)">{{ p.desc }}</p>
+              <div style="display:flex;flex-wrap:wrap;gap:6px">
+                <sc-for list="{{ p.screens }}" as="s" hint-placeholder-count="3">
+                  <span style="font-size:11.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--border-1);color:var(--text-2);background:var(--surface-app)">{{ s }}</span>
+                </sc-for>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+
+    <footer style="border-top:1px solid var(--border-1);padding-top:16px;font-size:13px;color:var(--text-3);display:flex;gap:24px;flex-wrap:wrap">
+      <span>Built on the Insurimple design system — tenant-themeable, flat surfaces, sentence case.</span>
+      <span>Source scope: uploads/pc-leg-page-list.md</span>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const pg = (title, file, icon, section, desc, screens) => ({ title, file, iconClass: 'ti ti-' + icon, section, desc, screens });
+    return {
+      groups: [
+        { label: 'Find & know the client', pages: [
+          pg('Locate', 'Locate.dc.html', 'search', '§0', 'Client search — the first screen of every call. Live-filtering results by name, phone, email, code, or policy number; contact preview and quicklinks into the record.', ['Search + filters', 'Results table', 'Selected-account preview', 'Empty state']),
+          pg('Household & client', 'Household and Client.dc.html', 'users', '§1', 'The household record beyond policies — service summary, billing view, documents, consent & communications, and merge/duplicate resolution.', ['Service summary', 'Billing view', 'Documents', 'Consent & CASL', 'Merge duplicates']),
+        ]},
+        { label: 'Policies & lines', pages: [
+          pg('Policies (prototype)', 'PC Policies.dc.html', 'car', 'proto', 'The hardened prototype — household policy tree with per-line detail panel and Epic-vocabulary accounting fields; transactions launch from here.', ['Policy tree', 'Line detail panel', 'Accounting fields']),
+          pg('Property lines', 'Property Lines.dc.html', 'home', '§2', 'The non-auto half — dwelling and tenant/condo editors, additional interests, coverage & endorsements, umbrella, seasonal/secondary locations.', ['Dwelling editor', 'Tenant / condo', 'Additional interests', 'Endorsements', 'Umbrella']),
+        ]},
+        { label: 'The CSR\u2019s day', pages: [
+          pg('Work queues', 'Work Queues.dc.html', 'list-check', '§3', 'Where CSRs live all day — My day, renewal triage, remarket, download reconciliation, suspense/abeyance, and lapse follow-up queues.', ['My day', 'Renewals', 'Remarket', 'Download recon', 'Suspense', 'Lapse follow-up']),
+          pg('Transactions', 'Transactions.dc.html', 'arrows-exchange', '§4', 'The P&C state machine — new-transaction launcher, property forms, cross-line view (the Jul 1 move scenario), and the in-flight work list.', ['Launcher', 'Property forms', 'Cross-line view', 'Work list']),
+        ]},
+        { label: 'Outputs & carriers', pages: [
+          pg('Proofs & documents', 'Proofs and Documents.dc.html', 'certificate', '§5', 'Highest-frequency client-facing output — pink cards, binder letters, lender certificates, letters of experience, batch document runs.', ['Proofs hub', 'Certificates', 'Loss history', 'Batch runs']),
+          pg('Rating & carrier', 'Rating and Carrier.dc.html', 'cloud-download', '§6', 'Export to rating services, per-transaction carrier submission tracker, appointment & contract records, and the download activity log.', ['Rater export', 'Submission tracker', 'Appointments', 'Download log']),
+        ]},
+        { label: 'Money & risk', pages: [
+          pg('Claims', 'Claims.dc.html', 'flame', '§7', 'Intake-only scope — FNOL capture attached to the policy, claim record feeding loss history, and claims lists per household and book.', ['FNOL intake', 'Claim record', 'Claims list']),
+          pg('Billing & receivables', 'Billing and Receivables.dc.html', 'receipt', '§8', 'Where agency balance comes from — agency-bill invoice/receipt flow, direct-bill commission reconciliation, NSF follow-up (the Jo\u00e3o Ferreira thread).', ['Agency bill', 'Direct-bill recon', 'NSF follow-up']),
+        ]},
+        { label: 'Oversight & system', pages: [
+          pg('Book & compliance', 'Book and Compliance.dc.html', 'chart-bar', '§9', 'Book of business by line/carrier/expiry, retention scorecard, E&O open-items audit, and the principal-broker review queue.', ['Book of business', 'Retention', 'E&O audit', 'Principal review']),
+          pg('States & patterns', 'States and Patterns.dc.html', 'components', '§10', 'The system layer — empty/loading/error patterns, download-conflict resolution modal, backdating guard, full policy-tree status set.', ['State patterns', 'Conflict modal', 'Backdating guard', 'Tree statuses']),
+        ]},
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

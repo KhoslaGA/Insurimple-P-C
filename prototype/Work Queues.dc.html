@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/fonts.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/spacing.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/themes.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/tokens/base.css">
+  <link rel="stylesheet" href="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/styles.css">
+  <script src="_ds/insurimple-design-system-63f43811-c342-4a5c-a129-7bab93a4a89b/_ds_bundle.js"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--surface-app)}
+    a{color:var(--text-link);text-decoration:none}
+    a:hover{color:var(--tenant-primary-deep)}
+    ::-webkit-scrollbar{width:10px;height:10px}
+    ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:8px;border:2px solid var(--surface-app)}
+  </style>
+</helmet>
+<div style="display:flex;height:100vh;overflow:hidden;font-family:var(--font-sans);color:var(--text-1);background:var(--surface-app)">
+  <aside style="width:216px;flex:none;background:var(--surface-card);border-right:1px solid var(--border-1);display:flex;flex-direction:column;overflow-y:auto">
+    <div style="padding:18px 16px 12px;font-size:19px;font-weight:500;letter-spacing:-0.03em">insurimple</div>
+    <div style="padding:2px 16px 6px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">P&amp;C leg</div>
+    <nav style="display:flex;flex-direction:column;gap:2px;padding:0 8px 12px">
+      <a href="Locate.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-search" style="font-size:17px"></i>Locate</a>
+      <a href="Household and Client.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-users" style="font-size:17px"></i>Household &amp; client</a>
+      <a href="PC Policies.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-car" style="font-size:17px"></i>Policies (prototype)</a>
+      <a href="Property Lines.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-home" style="font-size:17px"></i>Property lines</a>
+      <a href="Work Queues.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--tenant-primary-deep);background:var(--tenant-primary-tint)"><i class="ti ti-list-check" style="font-size:17px"></i>Work queues</a>
+      <a href="Transactions.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-arrows-exchange" style="font-size:17px"></i>Transactions</a>
+      <a href="Proofs and Documents.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-certificate" style="font-size:17px"></i>Proofs &amp; documents</a>
+      <a href="Rating and Carrier.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-cloud-download" style="font-size:17px"></i>Rating &amp; carrier</a>
+      <a href="Claims.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-flame" style="font-size:17px"></i>Claims</a>
+      <a href="Billing and Receivables.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-receipt" style="font-size:17px"></i>Billing &amp; receivables</a>
+      <a href="Book and Compliance.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-chart-bar" style="font-size:17px"></i>Book &amp; compliance</a>
+      <a href="States and Patterns.dc.html" style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:8px;font-size:13.5px;color:var(--text-2)"><i class="ti ti-components" style="font-size:17px"></i>States &amp; patterns</a>
+    </nav>
+    <div style="margin-top:auto;padding:12px;border-top:1px solid var(--border-1);display:flex;align-items:center;gap:10px">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Avatar" name="Rina Alvarez" size="sm" hint-size="32px,32px"></x-import>
+      <div style="font-size:13px"><div style="font-weight:500">Rina Alvarez</div><div style="color:var(--text-3);font-size:11px">CSR · personal lines</div></div>
+    </div>
+  </aside>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+    <header style="height:56px;flex:none;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <h1 style="margin:0;font-size:17px;font-weight:500">Work queues</h1>
+      <div style="width:300px;margin-left:8px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Input" icon="search" size="sm" placeholder="Search clients, policies…  ⌘K" hint-size="300px,34px"></x-import></div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="phone-incoming" label="Calls" variant="outline" hint-size="36px,36px"></x-import>
+        <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.IconButton" icon="bell" label="Notifications" hint-size="36px,36px"></x-import>
+      </div>
+    </header>
+    <div style="padding:0 20px;background:var(--surface-card);border-bottom:1px solid var(--border-1)">
+      <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Tabs" tabs="{{ tabs }}" value="{{ tab }}" on-change="{{ setTab }}" hint-size="100%,44px"></x-import>
+    </div>
+
+    <main style="flex:1;overflow-y:auto;padding:22px 24px">
+
+      <sc-if value="{{ isMyday }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px">
+          <div>
+            <h2 style="margin:0;font-size:22px;font-weight:500">Good morning, Rina</h2>
+            <div style="font-size:13px;color:var(--text-3);margin-top:3px">Wednesday, July 15, 2026 · here's your day</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Due today" value="8" icon="calendar-due" hint="activities" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Overdue" value="3" icon="alert-circle" delta="+1" delta-tone="down" hint="since yesterday" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Renewals · 30 days" value="24" icon="refresh" hint="6 flagged for remarket" hint-size="100%,100px"></x-import>
+            <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.MetricCard" label="Downloads to review" value="5" icon="cloud-download" hint="from last night's run" hint-size="100%,100px"></x-import>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+              <div style="font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3)">Assigned activities</div>
+              <div style="overflow-x:auto;min-width:0"><div style="min-width:620px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ actCols }}" rows="{{ actRows }}" hint-size="100%,280px"></x-import></div></div>
+            </div>
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;overflow:hidden;min-width:0">
+              <div style="padding:11px 14px;font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-1)">Callbacks promised</div>
+              <sc-for list="{{ callbacks }}" as="cb" hint-placeholder-count="3">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.ListRow" title="{{ cb.name }}" subtitle="{{ cb.re }}" meta="{{ cb.time }}" hint-size="100%,56px"></x-import>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isQueue }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:1180px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <h2 style="margin:0;font-size:20px;font-weight:500">{{ queueTitle }}</h2>
+            <span style="font-size:13px;color:var(--text-3)">{{ queueCount }}</span>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+              <span style="font-size:12px;color:var(--text-3)">View state</span>
+              <sc-for list="{{ stateChips }}" as="c" hint-placeholder-count="4">
+                <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Chip" selected="{{ c.sel }}" on-click="{{ c.onClick }}" hint-size="auto,30px">{{ c.label }}</x-import>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{ showFilters }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="width:170px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="170px,34px"><option>{{ filterA1 }}</option><option>{{ filterA2 }}</option></x-import></div>
+              <div style="width:170px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="170px,34px"><option>All carriers</option><option>True North P&amp;C</option><option>Maple Mutual</option><option>Laurier Insurance</option></x-import></div>
+              <div style="width:170px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Select" size="sm" hint-size="170px,34px"><option>Assigned to anyone</option><option>Assigned to me</option><option>Unassigned</option></x-import></div>
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="filter" hint-size="auto,34px">Apply</x-import>
+              <span style="margin-left:auto"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="primary" icon="{{ queueActionIcon }}" hint-size="auto,34px">{{ queueAction }}</x-import></span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ stateData }}" hint-placeholder-val="{{ true }}">
+            <div style="overflow-x:auto;min-width:0"><div style="min-width:800px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Table" columns="{{ qCols }}" rows="{{ qRows }}" hint-size="100%,300px"></x-import></div></div>
+          </sc-if>
+          <sc-if value="{{ stateLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:80px 0;display:flex;flex-direction:column;align-items:center;gap:12px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Spinner" size="{{ 28 }}" hint-size="28px,28px"></x-import>
+              <div style="font-size:13px;color:var(--text-3)">Loading the queue…</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ stateEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px">
+              <x-import component-from-global-scope="InsurimpleDesignSystem_63f438.EmptyState" icon="{{ emptyIcon }}" title="{{ emptyTitle }}" body="{{ emptyBody }}" hint-size="100%,220px"></x-import>
+            </div>
+          </sc-if>
+          <sc-if value="{{ stateError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--surface-card);border:1px solid var(--border-1);border-radius:12px;padding:60px 0;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+              <i class="ti ti-alert-triangle" style="font-size:32px;color:var(--warning)"></i>
+              <div style="font-size:16px;font-weight:500">We couldn't load this queue</div>
+              <div style="font-size:13.5px;color:var(--text-2);max-width:380px;line-height:1.55">The connection to the download service timed out. Your items are safe — try again in a moment.</div>
+              <div style="margin-top:6px"><x-import component-from-global-scope="InsurimpleDesignSystem_63f438.Button" size="sm" variant="secondary" icon="refresh" hint-size="auto,34px">Try again</x-import></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = { tab: "myday", qstate: "data" };
+  setTab = (v) => this.setState({ tab: v, qstate: "data" });
+
+  META = {
+    renewals: { title: "Renewal work queue", count: "24 renewals · next 30 days", action: "Run triage", icon: "sparkles", fA1: "Next 30 days", fA2: "Next 60 days",
+      empty: ["calendar-check", "No renewals in this window", "Every renewal in the next 30 days is triaged. Widen the window to look further out."] },
+    remarket: { title: "Remarket queue", count: "6 flagged renewals", action: "Open compare engine", icon: "scale", fA1: "All stages", fA2: "Quoting",
+      empty: ["scale", "Nothing to remarket", "No renewals are flagged for re-shopping right now. Triage flags land here automatically."] },
+    downloads: { title: "Download reconciliation", count: "5 items need review · last run 6:12 am", action: "Run downloads now", icon: "cloud-download", fA1: "All item types", fA2: "Unmatched only",
+      empty: ["cloud-check", "All downloads reconciled", "Last night's AL3 and eDocs run matched cleanly. The next carrier run lands around 6 am."] },
+    suspense: { title: "Suspense / abeyance", count: "9 open items", action: "New abeyance", icon: "plus", fA1: "Waiting on anyone", fA2: "Waiting on carrier",
+      empty: ["inbox", "Nothing in suspense", "No items are waiting on a carrier, client, or lender. New abeyances appear here with their due dates."] },
+    lapsed: { title: "Lapsed & cancellation follow-up", count: "4 policies in the save window", action: "Log save attempt", icon: "phone-outgoing", fA1: "In reinstatement window", fA2: "All lapsed",
+      empty: ["shield-check", "No lapses to chase", "Every cancellation is either saved or closed out. New lapse notices from downloads land here."] },
+  };
+
+  renderVals() {
+    const h = React.createElement;
+    const NS = window.InsurimpleDesignSystem_63f438 || {};
+    const Badge = NS.Badge;
+    const s = this.state;
+    const badge = (tone, text) => (Badge ? h(Badge, { tone, dot: true }, text) : text);
+    const bold = (t) => h("span", { style: { fontWeight: 500 } }, t);
+    const sub = (a, b) => h("div", null, h("div", { style: { fontWeight: 500 } }, a), h("div", { style: { fontSize: 12, color: "var(--text-3)" } }, b));
+
+    const tabs = [
+      { value: "myday", label: "My day" }, { value: "renewals", label: "Renewals" },
+      { value: "remarket", label: "Remarket" }, { value: "downloads", label: "Downloads" },
+      { value: "suspense", label: "Suspense" }, { value: "lapsed", label: "Lapsed" },
+    ];
+
+    const actCols = [
+      { header: "Due", render: (r) => sub(r.due, r.time) },
+      { header: "Type", render: (r) => badge(r.tone, r.type) },
+      { header: "Household", render: (r) => bold(r.who) },
+      { header: "Activity", key: "what" },
+      { header: "Policy", key: "pol" },
+    ];
+    const actRows = [
+      { due: "Overdue", time: "yesterday", tone: "danger", type: "Callback", who: "Okonkwo & Mensah", what: "Confirm EFT change took effect", pol: "AUTO · A21677149PLA" },
+      { due: "Today", time: "10:00 am", tone: "warning", type: "Abeyance", who: "Tremblay, Luc", what: "Carrier response on water endorsement", pol: "HOME · H33210987PRO" },
+      { due: "Today", time: "11:30 am", tone: "info", type: "Renewal", who: "Nguyen, An & Bao", what: "Present renewal — premium up 14%", pol: "AUTO · A55832101PLA" },
+      { due: "Today", time: "2:00 pm", tone: "warning", type: "Proof", who: "Castellanos, Maria", what: "Lender needs binder letter by Friday", pol: "TENA · P90218836HAB" },
+      { due: "Today", time: "4:30 pm", tone: "info", type: "Follow-up", who: "Ferreira, João", what: "NSF retry — confirm card on file", pol: "AUTO · A11229044PLA" },
+      { due: "Tomorrow", time: "9:00 am", tone: "neutral", type: "Review", who: "Boychuk, Daryna", what: "New-business download needs applicant DOB", pol: "CONDO · C77120953HAB" },
+    ];
+    const callbacks = [
+      { name: "An Nguyen", re: "re: renewal premium increase", time: "11:30 am" },
+      { name: "Luc Tremblay", re: "re: sewer backup limit options", time: "1:15 pm" },
+      { name: "Maria Castellanos", re: "re: proof for new landlord", time: "3:45 pm" },
+    ];
+
+    const QUEUES = {
+      renewals: {
+        cols: [
+          { header: "Expiry", key: "exp" },
+          { header: "Household", render: (r) => sub(r.who, r.pol) },
+          { header: "Carrier", key: "car" },
+          { header: "Current", align: "right", key: "cur" },
+          { header: "Renewal", align: "right", key: "ren" },
+          { header: "Change", align: "right", render: (r) => h("span", { style: { fontWeight: 500, color: r.up ? "var(--danger)" : "var(--success)" } }, r.chg) },
+          { header: "Triage", render: (r) => badge(r.tone, r.triage) },
+          { header: "Assigned", key: "asg" },
+        ],
+        rows: [
+          { exp: "Jul 28", who: "Nguyen, An & Bao", pol: "AUTO · A55832101PLA", car: "True North P&C", cur: "$3,412", ren: "$3,890", chg: "+14.0%", up: true, tone: "warning", triage: "Review", asg: "Rina A." },
+          { exp: "Aug 2", who: "Tremblay, Luc", pol: "HOME · H33210987PRO", car: "Laurier Insurance", cur: "$1,948", ren: "$2,412", chg: "+23.8%", up: true, tone: "danger", triage: "Remarket", asg: "Rina A." },
+          { exp: "Aug 5", who: "Boychuk, Daryna", pol: "CONDO · C77120953HAB", car: "Maple Mutual", cur: "$612", ren: "$629", chg: "+2.8%", up: true, tone: "success", triage: "Auto-renew", asg: "—" },
+          { exp: "Aug 9", who: "Ferreira, João", pol: "AUTO · A11229044PLA", car: "True North P&C", cur: "$2,204", ren: "$2,145", chg: "−2.7%", up: false, tone: "success", triage: "Auto-renew", asg: "—" },
+          { exp: "Aug 11", who: "Castellanos, Maria", pol: "TENA · P90218836HAB", car: "Maple Mutual", cur: "$438", ren: "$521", chg: "+18.9%", up: true, tone: "danger", triage: "Remarket", asg: "Sam T." },
+          { exp: "Aug 14", who: "Okonkwo & Mensah", pol: "AUTO · A21677149PLA", car: "True North P&C", cur: "$4,073", ren: "$4,190", chg: "+2.9%", up: true, tone: "success", triage: "Auto-renew", asg: "—" },
+        ],
+      },
+      remarket: {
+        cols: [
+          { header: "Household", render: (r) => sub(r.who, r.pol) },
+          { header: "Expiring", render: (r) => sub(r.car, r.exp) },
+          { header: "Renewal offer", align: "right", key: "ren" },
+          { header: "Reason", key: "why" },
+          { header: "Stage", render: (r) => badge(r.tone, r.stage) },
+          { header: "Best quote", align: "right", render: (r) => (r.best === "—" ? h("span", { style: { color: "var(--text-3)" } }, "—") : h("span", { style: { fontWeight: 500, color: "var(--success)" } }, r.best)) },
+          { header: "", align: "right", render: (r) => (NS.Button ? h(NS.Button, { size: "sm", variant: "secondary", icon: "scale" }, "Compare") : null) },
+        ],
+        rows: [
+          { who: "Tremblay, Luc", pol: "HOME · H33210987PRO", car: "Laurier Insurance", exp: "Aug 2", ren: "$2,412", why: "+23.8% at renewal", tone: "info", stage: "Quoting", best: "$2,090" },
+          { who: "Castellanos, Maria", pol: "TENA · P90218836HAB", car: "Maple Mutual", exp: "Aug 11", ren: "$521", why: "+18.9% at renewal", tone: "neutral", stage: "To shop", best: "—" },
+          { who: "Osei, Kwame", pol: "AUTO · A88320117PLA", car: "True North P&C", exp: "Aug 20", ren: "$5,102", why: "Client asked to shop", tone: "accent", stage: "Presented", best: "$4,410" },
+          { who: "Dubois, Camille", pol: "CONDO · C11029384HAB", car: "Laurier Insurance", exp: "Sep 1", ren: "$744", why: "Coverage gap — no overland water", tone: "info", stage: "Quoting", best: "$698" },
+          { who: "Singh, Harpreet", pol: "AUTO · A67012234PLA", car: "Maple Mutual", exp: "Sep 4", ren: "$3,318", why: "+31% after at-fault claim", tone: "success", stage: "Won", best: "$2,876" },
+          { who: "Kowalski, Piotr", pol: "HOME · H90312208PRO", car: "True North P&C", exp: "Sep 9", ren: "$2,006", why: "+17% at renewal", tone: "danger", stage: "Lost", best: "$1,988" },
+        ],
+      },
+      downloads: {
+        cols: [
+          { header: "Received", key: "when" },
+          { header: "Carrier", key: "car" },
+          { header: "Item", render: (r) => badge(r.tone, r.type) },
+          { header: "Policy", key: "pol" },
+          { header: "What happened", key: "what" },
+          { header: "Suggested action", key: "sug" },
+          { header: "", align: "right", render: (r) => h("div", { style: { display: "flex", gap: 6, justifyContent: "flex-end" } },
+            NS.Button ? h(NS.Button, { size: "sm", variant: "secondary" }, r.a1) : null,
+            NS.Button ? h(NS.Button, { size: "sm", variant: "ghost" }, "Review") : null) },
+        ],
+        rows: [
+          { when: "6:12 am", car: "True North P&C", tone: "warning", type: "Premium discrepancy", pol: "A55832101PLA", what: "Download premium $3,912 vs local $3,890", sug: "Accept carrier version", a1: "Accept" },
+          { when: "6:12 am", car: "Maple Mutual", tone: "danger", type: "Unmatched policy", pol: "P44098127HAB", what: "No household matches the named insured", sug: "Match to Dubois, Camille (92%)", a1: "Match" },
+          { when: "6:11 am", car: "Maple Mutual", tone: "info", type: "New business", pol: "C88571209HAB", what: "New condo policy — broker of record change", sug: "Create household + policy", a1: "Create" },
+          { when: "6:10 am", car: "Laurier Insurance", tone: "warning", type: "Premium discrepancy", pol: "H33210987PRO", what: "Renewal premium differs by $18 (taxes)", sug: "Accept carrier version", a1: "Accept" },
+          { when: "6:08 am", car: "True North P&C", tone: "neutral", type: "eDoc", pol: "A21677149PLA", what: "Declarations page for EFT endorsement", sug: "File to household documents", a1: "File" },
+        ],
+      },
+      suspense: {
+        cols: [
+          { header: "Due", render: (r) => h("span", { style: { fontWeight: 500, color: r.late ? "var(--danger)" : "var(--text-1)" } }, r.due) },
+          { header: "Waiting on", render: (r) => badge(r.tone, r.on) },
+          { header: "Household", render: (r) => sub(r.who, r.pol) },
+          { header: "Item", key: "what" },
+          { header: "Age", key: "age" },
+          { header: "Assigned", key: "asg" },
+        ],
+        rows: [
+          { due: "Jul 12", late: true, tone: "warning", on: "Carrier", who: "Tremblay, Luc", pol: "HOME · H33210987PRO", what: "Water endorsement quote from underwriting", age: "9 days", asg: "Rina A." },
+          { due: "Jul 16", late: false, tone: "info", on: "Client", who: "Boychuk, Daryna", pol: "CONDO · C77120953HAB", what: "Signed application — sent for e-signature Jul 8", age: "7 days", asg: "Rina A." },
+          { due: "Jul 17", late: false, tone: "accent", on: "Lender", who: "Castellanos, Maria", pol: "TENA · P90218836HAB", what: "Confirmation binder letter received", age: "4 days", asg: "Sam T." },
+          { due: "Jul 21", late: false, tone: "info", on: "Client", who: "Osei, Kwame", pol: "AUTO · A88320117PLA", what: "Decision on presented remarket quotes", age: "2 days", asg: "Rina A." },
+          { due: "Jul 24", late: false, tone: "warning", on: "Carrier", who: "Ferreira, João", pol: "AUTO · A11229044PLA", what: "Reinstatement confirmation after NSF cure", age: "1 day", asg: "—" },
+        ],
+      },
+      lapsed: {
+        cols: [
+          { header: "Lapsed", key: "when" },
+          { header: "Household", render: (r) => sub(r.who, r.pol) },
+          { header: "Reason", key: "why" },
+          { header: "Reinstatement window", render: (r) => h("span", { style: { fontWeight: 500, color: r.days <= 5 ? "var(--danger)" : "var(--text-1)" } }, r.win) },
+          { header: "Save attempts", key: "tries" },
+          { header: "Status", render: (r) => badge(r.tone, r.st) },
+          { header: "", align: "right", render: () => (NS.Button ? h(NS.Button, { size: "sm", variant: "secondary", icon: "phone" }, "Call") : null) },
+        ],
+        rows: [
+          { when: "Jul 2", who: "Ferreira, João", pol: "AUTO · A11229044PLA", why: "NSF — two failed withdrawals", win: "3 days left", days: 3, tries: "2 calls, 1 email", tone: "warning", st: "Cure promised" },
+          { when: "Jul 6", who: "Mbeki, Thandiwe", pol: "TENA · P66104428HAB", why: "Non-payment at renewal", win: "9 days left", days: 9, tries: "1 call", tone: "info", st: "In progress" },
+          { when: "Jun 30", who: "Petrov, Nikolai", pol: "AUTO · A90557311PLA", why: "Client requested cancellation", win: "Closed", days: 99, tries: "1 call — moved out of province", tone: "neutral", st: "Closed — no save" },
+          { when: "Jul 10", who: "Aylward, Siobhan", pol: "HOME · H12208463PRO", why: "Underwriting — roof condition", win: "14 days left", days: 14, tries: "None yet", tone: "danger", st: "Not started" },
+        ],
+      },
+    };
+
+    const isQueue = s.tab !== "myday";
+    const meta = this.META[s.tab] || {};
+    const q = QUEUES[s.tab] || { cols: [], rows: [] };
+    const states = ["data", "empty", "loading", "error"];
+    const stateChips = states.map((k) => ({
+      label: k.charAt(0).toUpperCase() + k.slice(1), sel: s.qstate === k,
+      onClick: () => this.setState({ qstate: k }),
+    }));
+
+    return {
+      tabs, tab: s.tab, setTab: this.setTab,
+      isMyday: s.tab === "myday", isQueue,
+      actCols, actRows, callbacks,
+      queueTitle: meta.title, queueCount: meta.count,
+      queueAction: meta.action, queueActionIcon: meta.icon,
+      filterA1: meta.fA1, filterA2: meta.fA2,
+      showFilters: isQueue,
+      stateChips,
+      stateData: s.qstate === "data", stateEmpty: s.qstate === "empty",
+      stateLoading: s.qstate === "loading", stateError: s.qstate === "error",
+      emptyIcon: meta.empty ? meta.empty[0] : "inbox", emptyTitle: meta.empty ? meta.empty[1] : "", emptyBody: meta.empty ? meta.empty[2] : "",
+      qCols: q.cols, qRows: q.rows,
+    };
+  }
+}
+</script>
+</body>
+</html>

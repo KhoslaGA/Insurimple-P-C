@@ -1,0 +1,11 @@
+/* Radius + elevation. Flat tiles; at most two floating layers. */
+:root{
+--radius-control:8px;
+--radius-card:12px;
+--radius-pill:999px;
+--shadow-float:0 4px 16px rgba(12,27,34,0.10);      /* layer 1: popover, dropdown, toast */
+--shadow-overlay:0 12px 40px rgba(12,27,34,0.18);   /* layer 2: modal, drawer */
+--ease-quiet:cubic-bezier(0.25,0.1,0.25,1); /* @kind other */
+--duration-quick:120ms; /* @kind other */
+--duration-base:180ms; /* @kind other */
+}
