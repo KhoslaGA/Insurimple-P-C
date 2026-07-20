@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo build lint typecheck
+
+  schema:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: insurimple
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - name: enable pg_trgm
+        run: PGPASSWORD=dev psql -h localhost -p 5433 -U postgres -d insurimple -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+      - name: schema assertions (virgin Postgres 16)
+        run: DATABASE_URL=postgres://postgres:dev@localhost:5433/insurimple pnpm --filter @insurimple/db test

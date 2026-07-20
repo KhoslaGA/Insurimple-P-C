@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/config" },
+    { "path": "packages/contracts" },
+    { "path": "packages/design-system" },
+    { "path": "apps/bms" },
+    { "path": "apps/api" }
+  ]
+}

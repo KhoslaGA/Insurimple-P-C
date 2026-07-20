@@ -6,13 +6,15 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 
 ## Repo shape (do not deviate)
 - pnpm workspaces + Turborepo.
-- `apps/bms` — the product (Next.js 15, React 19, App Router, Tailwind v4).
+- `apps/bms` — the product (Next.js 16, React 19, App Router, Tailwind v4).
 - `apps/marketing` — insurimple.com (thin; P3; do not build unless a ticket says so).
 - `packages/design-system` — tokens + typed components. THE ONLY source of UI primitives.
 - `packages/contracts` — shared types/zod schemas + API client. New shared types land here FIRST.
 - `packages/config` — eslint, tsconfig, tailwind preset, adherence lint.
-- Backend is the existing NestJS + PostgreSQL 16 BMS (33 tables, 7 migrations). Do not
-  reinvent it. Domain-critical writes (transactions, trust ledger) go through the NestJS API.
+- Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (33 tables,
+  7 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
+  ledger) go through the NestJS API. Run the schema locally with
+  `pnpm --filter @insurimple/db migrate` (+ `seed` for dev fixtures, `test` for the CI gate).
 
 ## Non-negotiable invariants
 1. COMPLIANCE IS STRUCTURAL. Regulatory constraints live at the DB/API layer and are
@@ -40,13 +42,13 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 ## Design system source of truth
 `Insurimple-P_C/_ds/insurimple-design-system-*/` — seven token files + `_ds_manifest.json`
 (~20 components). Port tokens into Tailwind v4 `@theme` in `packages/design-system`.
-Recreate manifest components as typed shadcn-style (copy-in) components. The 13 `.dc.html`
+Recreate manifest components as typed shadcn-style (copy-in) components. The prototype lives in `prototype/`. The 13 `.dc.html`
 screens are the visual spec for Phase 1 — match them, but never port `ui_kits/rate-family`.
 
 ## Working style
 - Plan → execute per ticket; do not start a phase before the prior phase's acceptance is green.
 - RSC-first reads; TanStack Query only for live-interactive state; `"use client"` at the leaves.
-- Next.js 15: `fetch` is uncached by default; `params`/`searchParams` are Promises.
+- Next.js 16: `fetch` is uncached by default; `params`/`searchParams` are Promises.
 - Prefer full-file rewrites over cumulative small edits past ~20–30% change.
 - When a real file/contract exists, read it before building. Never build against inferred shapes.
 - Surface blocked external dependencies (RIBO, carriers, CSIO, banks) — never work around them.

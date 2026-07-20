@@ -1,0 +1,82 @@
+/* ============================================================
+   @insurimple/design-system — Tailwind v4 theme bridge
+   Maps the token CSS variables (tokens.css) to Tailwind utilities so
+   `bg-surface-card`, `text-ink`, `text-accent`, `rounded-card`, etc. work.
+   Import order in an app's globals.css:
+     @import "tailwindcss";
+     @import "@insurimple/design-system/tokens.css";
+     @import "@insurimple/design-system/theme.css";
+   ============================================================ */
+
+@theme inline {
+  /* brand + palette */
+  --color-ink: var(--ink);
+  --color-pine: var(--pine);
+  --color-pine-deep: var(--pine-deep);
+  --color-pine-tint: var(--pine-tint);
+  --color-coral: var(--coral);
+  --color-coral-deep: var(--coral-deep);
+  --color-coral-tint: var(--coral-tint);
+  --color-sand: var(--sand);
+  --color-slate: var(--slate);
+  --color-mist: var(--mist);
+
+  /* text roles */
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-on-accent: var(--text-on-accent);
+  --color-text-link: var(--text-link);
+
+  /* surfaces */
+  --color-surface-page: var(--surface-page);
+  --color-surface-app: var(--surface-app);
+  --color-surface-card: var(--surface-card);
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-popover: var(--surface-popover);
+  --color-surface-sunken: var(--surface-sunken);
+
+  /* borders */
+  --color-border-1: var(--border-1);
+  --color-border-2: var(--border-2);
+  --color-border-focus: var(--border-focus);
+
+  /* semantic */
+  --color-accent: var(--tenant-primary);
+  --color-accent-deep: var(--tenant-primary-deep);
+  --color-accent-tint: var(--tenant-primary-tint);
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+
+  /* type */
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --text-hero: var(--text-hero);
+  --text-h1: var(--text-h1);
+  --text-h2: var(--text-h2);
+  --text-body: var(--text-body);
+  --text-small: var(--text-small);
+  --text-caption: var(--text-caption);
+
+  /* spacing scale (4/8/12/16/24/32/48) */
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-7: var(--space-7);
+
+  /* radius + elevation */
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+  --shadow-float: var(--shadow-float);
+  --shadow-overlay: var(--shadow-overlay);
+}

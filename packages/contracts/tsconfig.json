@@ -1,0 +1,11 @@
+{
+  "extends": "@insurimple/config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "src"
+  ]
+}

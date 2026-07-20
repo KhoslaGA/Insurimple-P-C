@@ -1,0 +1,15 @@
+{
+  "name": "@insurimple/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "migrate": "node scripts/migrate.mjs",
+    "seed": "node scripts/migrate.mjs --seed",
+    "test": "node scripts/migrate.mjs --test"
+  },
+  "dependencies": {
+    "pg": "^8.22.0"
+  }
+}

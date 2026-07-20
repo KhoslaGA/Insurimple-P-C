@@ -3,11 +3,11 @@
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "test": "turbo test"
+    "build": "node scripts/run.mjs build",
+    "dev": "node scripts/run.mjs dev",
+    "lint": "node scripts/run.mjs lint",
+    "typecheck": "node scripts/run.mjs typecheck",
+    "test": "node scripts/run.mjs test"
   },
   "devDependencies": {
     "turbo": "^2.3.3"

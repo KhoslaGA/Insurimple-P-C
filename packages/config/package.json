@@ -1,0 +1,11 @@
+{
+  "name": "@insurimple/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": ["tsconfig.base.json", "tailwind-preset.js"],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./tailwind-preset": "./tailwind-preset.js"
+  }
+}
