@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@insurimple/design-system/tokens.css";
 @import "@insurimple/design-system/theme.css";
+/* Tabler outline icons — the single icon set (design-and-brand-brief: iconography). */
+@import url("https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.1/dist/tabler-icons.min.css");
 
 body {
   background: var(--surface-page);
