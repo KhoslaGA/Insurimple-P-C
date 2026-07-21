@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "node dist/main.js",
-    "dev": "tsc -p tsconfig.json && node dist/main.js",
+    "start": "node --env-file-if-exists=.env dist/main.js",
+    "dev": "tsc -p tsconfig.json && node --env-file-if-exists=.env dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo 'lint: configured in packages/config (T0.1)'"
   },
   "dependencies": {
+    "@clerk/backend": "^3.11.7",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",

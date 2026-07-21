@@ -10,11 +10,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clerk/nextjs": "^7.5.20",
+    "@insurimple/contracts": "workspace:*",
+    "@insurimple/design-system": "workspace:*",
     "next": "16.2.10",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "@insurimple/design-system": "workspace:*",
-    "@insurimple/contracts": "workspace:*"
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

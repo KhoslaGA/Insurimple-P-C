@@ -51,6 +51,15 @@ export class DbService implements OnModuleDestroy {
     }
   }
 
+  /**
+   * Pre-tenant-context query, used ONLY by the auth guard to resolve
+   * tenant by clerk_org_id before any RLS scope exists. The tenant table
+   * itself is not tenant-scoped; everything else must go through withTenant.
+   */
+  async adminQuery(sql: string, params?: unknown[]): Promise<QueryResult> {
+    return this.pool.query(sql, params);
+  }
+
   async ping(): Promise<boolean> {
     const r = await this.pool.query('SELECT 1 AS ok');
     return r.rows[0]?.ok === 1;

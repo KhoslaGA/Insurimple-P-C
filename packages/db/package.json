@@ -7,7 +7,8 @@
   "scripts": {
     "migrate": "node scripts/migrate.mjs",
     "seed": "node scripts/migrate.mjs --seed",
-    "test": "node scripts/migrate.mjs --test"
+    "test": "node scripts/migrate.mjs --test",
+    "link-org": "node scripts/link-clerk-org.mjs"
   },
   "dependencies": {
     "pg": "^8.22.0"

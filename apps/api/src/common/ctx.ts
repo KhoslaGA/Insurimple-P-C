@@ -6,23 +6,16 @@ export interface Ctx {
   actor: string;
 }
 
-const UUID_RE =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /**
- * Dev-slice auth: tenant + actor arrive as headers.
- * Production replaces this with Clerk JWT verification, mapping
- * Clerk org -> tenant_id and Clerk user -> staff.id. The rest of the
- * codebase is unchanged because everything downstream consumes Ctx.
+ * The AuthGuard (common/auth.guard.ts) resolves auth — Clerk JWT in
+ * production, x-tenant-id/x-actor-id headers only in development with
+ * CLERK_SECRET_KEY unset — and attaches the result as req.ctx.
+ * Everything downstream keeps consuming Ctx unchanged.
  */
 export function getCtx(req: Request): Ctx {
-  const tenantId = String(req.headers['x-tenant-id'] ?? '');
-  const actor = String(req.headers['x-actor-id'] ?? '');
-  if (!UUID_RE.test(tenantId)) {
-    throw new UnauthorizedException('missing or invalid x-tenant-id');
+  const ctx = (req as Request & { ctx?: Ctx }).ctx;
+  if (!ctx) {
+    throw new UnauthorizedException('request context missing — auth guard did not run');
   }
-  if (!actor) {
-    throw new UnauthorizedException('missing x-actor-id');
-  }
-  return { tenantId, actor };
+  return ctx;
 }

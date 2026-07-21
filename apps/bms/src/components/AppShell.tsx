@@ -3,12 +3,13 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 import { Avatar, IconButton, Input } from '@insurimple/design-system';
 
 /** Routes live now; the rest of the P&C leg lands in Phase 1 (pc-leg-page-list.md). */
 const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'search', label: 'Locate', href: '/locate' },
-  { icon: 'users', label: 'Household & client' },
+  { icon: 'users', label: 'Households', href: '/households' },
   { icon: 'car', label: 'Policies' },
   { icon: 'list-check', label: 'Work queues' },
   { icon: 'arrows-exchange', label: 'Transactions', href: '/' },
@@ -78,9 +79,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               className="cursor-pointer"
             />
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-3">
+            <OrganizationSwitcher
+              afterSelectOrganizationUrl="/households"
+              appearance={{ elements: { rootBox: 'flex items-center' } }}
+            />
             <IconButton icon="phone-incoming" label="Calls" variant="outline" />
             <IconButton icon="bell" label="Notifications" />
+            <UserButton />
           </div>
         </header>
         <main className="flex-1 overflow-y-auto">{children}</main>
