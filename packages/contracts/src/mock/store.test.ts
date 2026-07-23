@@ -103,6 +103,34 @@ describe("applyPreferenceUpdate — atomic consent + evidence + suppression", ()
     expect(checkSendability("klc", "p1", "email", ASOF).allowed).toBe(true);
   });
 
+  it("resubscribe does not lift a broker-owned complaint suppression", () => {
+    // p2 (marcus) carries a 'complaint' suppression — broker/system owned.
+    expect(checkSendability("klc", "p2", "email", ASOF)).toEqual({
+      allowed: false,
+      reason: "suppressed",
+    });
+
+    const res = applyPreferenceUpdate({
+      tenantId: "klc",
+      partyId: "p2",
+      channel: "email",
+      intent: "subscribe",
+      source: "preference_center",
+      capturedAt: ASOF,
+    });
+
+    // consent opts back in, but the complaint suppression must remain
+    expect(res.consent.class).toBe("express");
+    expect(res.suppressionRemoved).toBe(false);
+    expect(
+      listSuppressions("klc").some(
+        (s) => s.address === "marcus.boivin@example.ca" && s.reason === "complaint",
+      ),
+    ).toBe(true);
+    // still blocked by the complaint the contact can't override
+    expect(checkSendability("klc", "p2", "email", ASOF).reason).toBe("suppressed");
+  });
+
   it("is tenant-isolated: a party cannot be reached under the wrong tenant", () => {
     expect(() =>
       applyPreferenceUpdate({

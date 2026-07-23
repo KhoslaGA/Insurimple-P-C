@@ -128,6 +128,65 @@ CREATE TRIGGER trg_enforce_marketing_send
   BEFORE INSERT ON sends
   FOR EACH ROW EXECUTE FUNCTION enforce_marketing_send();
 
+-- ---- atomic preference-center update (criterion C) -------------------------
+-- One function body == one transaction: consent UPSERT + evidence INSERT +
+-- suppression add/remove commit together, or the whole update rolls back.
+-- Mirrors applyPreferenceUpdate() in ../mock/store.ts. A self-service
+-- resubscribe lifts ONLY 'unsubscribe' rows — never complaint/bounce/manual.
+CREATE OR REPLACE FUNCTION apply_preference_update(
+  p_party      uuid,
+  p_channel    consent_channel,
+  p_intent     text,               -- 'subscribe' | 'unsubscribe'
+  p_source     text,
+  p_ip         inet DEFAULT NULL,
+  p_user_agent text DEFAULT NULL
+) RETURNS void AS $$
+DECLARE
+  v_tenant uuid := current_setting('app.current_tenant')::uuid;
+  v_from   consent_class;
+  v_to     consent_class;
+  v_addr   citext;
+  v_action text;
+BEGIN
+  SELECT class INTO v_from FROM consent_records
+    WHERE tenant_id = v_tenant AND party_id = p_party AND channel = p_channel;
+
+  SELECT (CASE WHEN p_channel = 'email' THEN email ELSE phone END)::citext
+    INTO v_addr FROM parties WHERE id = p_party AND tenant_id = v_tenant;
+  IF v_addr IS NULL THEN
+    RAISE EXCEPTION 'party % has no % address', p_party, p_channel
+      USING ERRCODE = 'check_violation';
+  END IF;
+
+  v_to := CASE WHEN p_intent = 'unsubscribe' THEN 'none' ELSE 'express' END;
+  v_action := CASE
+    WHEN p_intent = 'unsubscribe' THEN 'unsubscribed'
+    WHEN v_from IS NULL           THEN 'granted'
+    WHEN v_from = 'none'          THEN 'resubscribed'
+    ELSE 'updated' END;
+
+  INSERT INTO consent_records (tenant_id, party_id, channel, class, source, captured_at)
+    VALUES (v_tenant, p_party, p_channel, v_to, p_source, current_date)
+    ON CONFLICT (tenant_id, party_id, channel)
+    DO UPDATE SET class = EXCLUDED.class, source = EXCLUDED.source,
+                  captured_at = EXCLUDED.captured_at;
+
+  INSERT INTO consent_evidence
+      (tenant_id, party_id, channel, action, from_class, to_class, source, ip, user_agent)
+    VALUES (v_tenant, p_party, p_channel, v_action, v_from, v_to, p_source, p_ip, p_user_agent);
+
+  IF p_intent = 'unsubscribe' THEN
+    INSERT INTO suppression_list (tenant_id, address, channel, reason)
+      VALUES (v_tenant, v_addr, p_channel, 'unsubscribe')
+      ON CONFLICT (tenant_id, address, channel) DO NOTHING;
+  ELSE
+    DELETE FROM suppression_list
+      WHERE tenant_id = v_tenant AND address = v_addr
+        AND channel = p_channel AND reason = 'unsubscribe';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
+
 -- ---- RLS: tenant isolation on every table (invariant #2) -------------------
 DO $$
 DECLARE t text;

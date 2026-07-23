@@ -15,11 +15,27 @@ export type PreferenceTokenPayload = {
   /** expiry, unix seconds */ exp: number;
 };
 
-// Dev fallback only. Production MUST set PREFERENCE_CENTER_SECRET.
+// Dev fallback only. The signed link IS the entire auth boundary for the
+// login-less preference center, so secret resolution FAILS CLOSED: production
+// must supply a real secret, and the source-visible dev fallback is refused
+// there (invariant #1 — the guard is structural, not a comment).
 const DEV_SECRET = "insurimple-dev-preference-secret-do-not-use-in-prod";
 
 export function getPreferenceSecret(): string {
-  return process.env.PREFERENCE_CENTER_SECRET || DEV_SECRET;
+  const secret = process.env.PREFERENCE_CENTER_SECRET;
+  const isProd = process.env.NODE_ENV === "production";
+  if (secret && secret.length > 0) {
+    if (isProd && secret === DEV_SECRET) {
+      throw new Error(
+        "PREFERENCE_CENTER_SECRET must not be the dev fallback in production",
+      );
+    }
+    return secret;
+  }
+  if (isProd) {
+    throw new Error("PREFERENCE_CENTER_SECRET must be set in production");
+  }
+  return DEV_SECRET;
 }
 
 function b64url(buf: Buffer): string {

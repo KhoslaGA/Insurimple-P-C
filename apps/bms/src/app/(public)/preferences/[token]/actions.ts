@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import {
   applyPreferenceUpdate,
+  ConsentUpdateError,
   verifyPreferenceToken,
 } from "@insurimple/contracts/server";
 
@@ -21,16 +22,24 @@ export async function updatePreferences(formData: FormData): Promise<void> {
   if (intent !== "subscribe" && intent !== "unsubscribe") return;
 
   const h = await headers();
-  applyPreferenceUpdate({
-    tenantId: verified.payload.t,
-    partyId: verified.payload.p,
-    channel: verified.payload.c,
-    intent,
-    source: "preference_center",
-    capturedAt: new Date().toISOString(),
-    ip: h.get("x-forwarded-for") ?? h.get("x-real-ip"),
-    userAgent: h.get("user-agent"),
-  });
+  try {
+    applyPreferenceUpdate({
+      tenantId: verified.payload.t,
+      partyId: verified.payload.p,
+      channel: verified.payload.c,
+      intent,
+      source: "preference_center",
+      capturedAt: new Date().toISOString(),
+      ip: h.get("x-forwarded-for") ?? h.get("x-real-ip"),
+      userAgent: h.get("user-agent"),
+    });
+  } catch (err) {
+    // A known validation failure (e.g. the party has no address on this
+    // channel) leaves state untouched — re-render the unchanged page rather
+    // than surfacing a raw error to a login-less visitor. Anything unexpected
+    // bubbles to the route's error boundary.
+    if (!(err instanceof ConsentUpdateError)) throw err;
+  }
 
   revalidatePath(`/preferences/${token}`);
 }

@@ -47,6 +47,7 @@ export type SendabilityReason =
   | "no_record"
   | "no_consent"
   | "consent_expired"
+  | "channel_mismatch"
   | "not_marketing_class";
 
 export type SendabilityDecision = {
@@ -92,6 +93,13 @@ export function resolveMarketingSendability(input: {
     return { allowed: false, reason: "suppressed" };
   }
   if (!consent) return { allowed: false, reason: "no_record" };
+  // Consent is per-channel: a record for another channel cannot authorize this
+  // send. (Tenant/party scoping is the caller's job — getConsent() resolves by
+  // tenant+party+channel — but the gate self-guards the channel to mirror the
+  // SQL trigger's `c.channel = NEW.channel` join.)
+  if (consent.channel !== channel) {
+    return { allowed: false, reason: "channel_mismatch" };
+  }
   if (consent.class === "none") return { allowed: false, reason: "no_consent" };
   if (!isMarketingConsentValid(consent, asOf)) {
     return { allowed: false, reason: "consent_expired" };

@@ -256,6 +256,9 @@ const suppressions: Suppression[] = [
   { id: "sup3", tenantId: KLC, address: "unsub2@example.ca", channel: "email", reason: "unsubscribe", capturedAt: "2026-07-11" },
   { id: "sup4", tenantId: KLC, address: "complaint1@example.ca", channel: "email", reason: "complaint", capturedAt: "2026-07-13" },
   { id: "sup5", tenantId: KLC, address: "stop1@example.ca", channel: "sms", reason: "sms_stop", capturedAt: "2026-07-18" },
+  // Broker/system-owned suppression on a real party's address (a spam complaint)
+  // — must survive a self-service resubscribe.
+  { id: "sup6", tenantId: KLC, address: "marcus.boivin@example.ca", channel: "email", reason: "complaint", capturedAt: "2026-05-01" },
 ];
 
 const weeklyEngagement = [

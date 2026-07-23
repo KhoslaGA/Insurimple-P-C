@@ -132,29 +132,36 @@ export default async function PreferenceCenter({
             )}
           </p>
 
-          <form
-            action={updatePreferences}
-            className="border-t border-border pt-5"
-          >
-            <input type="hidden" name="token" value={token} />
-            <input
-              type="hidden"
-              name="intent"
-              value={subscribed ? "unsubscribe" : "subscribe"}
-            />
-            {subscribed ? (
-              <Button variant="secondary" size="lg" type="submit" className="w-full">
-                Unsubscribe from all marketing
-              </Button>
-            ) : (
-              <Button variant="primary" size="lg" type="submit" className="w-full">
-                Resubscribe to marketing emails
-              </Button>
-            )}
-            <p className="mt-3 text-caption text-fg-subtle">
-              Changes take effect immediately and are recorded for compliance.
+          {address ? (
+            <form
+              action={updatePreferences}
+              className="border-t border-border pt-5"
+            >
+              <input type="hidden" name="token" value={token} />
+              <input
+                type="hidden"
+                name="intent"
+                value={subscribed ? "unsubscribe" : "subscribe"}
+              />
+              {subscribed ? (
+                <Button variant="secondary" size="lg" type="submit" className="w-full">
+                  Unsubscribe from all marketing
+                </Button>
+              ) : (
+                <Button variant="primary" size="lg" type="submit" className="w-full">
+                  Resubscribe to marketing emails
+                </Button>
+              )}
+              <p className="mt-3 text-caption text-fg-subtle">
+                Changes take effect immediately and are recorded for compliance.
+              </p>
+            </form>
+          ) : (
+            <p className="border-t border-border pt-5 text-small text-fg-muted">
+              We don&rsquo;t have an email address on file for this contact, so
+              there&rsquo;s nothing to manage here. Please contact your broker.
             </p>
-          </form>
+          )}
         </div>
       </Card>
 

@@ -142,6 +142,9 @@ export function getPreferenceState(
 
 /* -------------------------------- writes --------------------------------- */
 
+/** Suppression reasons a contact's own preference-center action may remove. */
+const SELF_SERVICE_LIFTABLE: SuppressionReason[] = ["unsubscribe"];
+
 export class ConsentUpdateError extends Error {
   constructor(
     message: string,
@@ -242,26 +245,31 @@ export function applyPreferenceUpdate(
   };
 
   const needle = address.trim().toLowerCase();
-  const suppressionExists = state.suppressions.some(
-    (s) =>
-      s.tenantId === tenantId &&
-      s.channel === channel &&
-      s.address.trim().toLowerCase() === needle,
+  const matchesAddr = (s: Suppression) =>
+    s.tenantId === tenantId &&
+    s.channel === channel &&
+    s.address.trim().toLowerCase() === needle;
+
+  // A self-service resubscribe may only lift suppressions it could itself have
+  // created. Broker/system suppressions (complaint, bounce, manual, sms_stop)
+  // are NOT removable by a contact clicking "resubscribe".
+  const anySuppression = state.suppressions.some(matchesAddr);
+  const hasLiftable = state.suppressions.some(
+    (s) => matchesAddr(s) && SELF_SERVICE_LIFTABLE.includes(s.reason),
   );
 
-  const reason: SuppressionReason = "unsubscribe";
   const newSuppression: Suppression | null =
-    intent === "unsubscribe" && !suppressionExists
+    intent === "unsubscribe" && !anySuppression
       ? {
           id: `sup-${state.seq + 1}`,
           tenantId,
           address,
           channel,
-          reason,
+          reason: "unsubscribe",
           capturedAt,
         }
       : null;
-  const removeSuppression = intent === "subscribe" && suppressionExists;
+  const removeSuppression = intent === "subscribe" && hasLiftable;
 
   // ---- commit atomically ----
   state.seq += 1;
@@ -277,12 +285,7 @@ export function applyPreferenceUpdate(
   if (newSuppression) state.suppressions.push(newSuppression);
   if (removeSuppression) {
     state.suppressions = state.suppressions.filter(
-      (s) =>
-        !(
-          s.tenantId === tenantId &&
-          s.channel === channel &&
-          s.address.trim().toLowerCase() === needle
-        ),
+      (s) => !(matchesAddr(s) && SELF_SERVICE_LIFTABLE.includes(s.reason)),
     );
   }
   state.evidence.push(evidence);

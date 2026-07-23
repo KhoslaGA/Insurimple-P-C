@@ -131,6 +131,17 @@ describe("resolveMarketingSendability — the structural gate", () => {
     ).toBe("no_consent");
   });
 
+  it("rejects a consent record for a different channel", () => {
+    expect(
+      resolveMarketingSendability({
+        ...base,
+        channel: "sms",
+        messageClass: "marketing",
+        consent: rec({ class: "express", channel: "email" }),
+      }).reason,
+    ).toBe("channel_mismatch");
+  });
+
   it("rejects expired implied consent", () => {
     expect(
       resolveMarketingSendability({
