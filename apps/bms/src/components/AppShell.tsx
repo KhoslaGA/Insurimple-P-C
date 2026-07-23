@@ -30,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           insurimple
         </div>
         <div className="px-4 pb-1.5 text-caption font-medium uppercase tracking-caps text-text-3">
-          P&amp;C leg
+          Personal lines
         </div>
         <nav className="flex flex-col gap-0.5 px-2 pb-3">
           {NAV.map((n) =>
@@ -50,11 +50,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             ) : (
               <span
                 key={n.label}
-                title="Phase 1"
-                className="flex cursor-default items-center gap-2.5 rounded-control px-2.5 py-[7px] text-[13.5px] text-text-3 opacity-60"
+                aria-disabled="true"
+                title="Coming in a later phase"
+                className="flex cursor-default select-none items-center gap-2.5 rounded-control px-2.5 py-[7px] text-[13.5px] text-text-3"
               >
-                <i className={`ti ti-${n.icon} text-[17px]`} />
-                {n.label}
+                <i className={`ti ti-${n.icon} text-[17px] opacity-70`} />
+                <span className="opacity-70">{n.label}</span>
+                <span className="ml-auto rounded-pill bg-surface-sunken px-1.5 py-px text-[10px] font-medium uppercase tracking-caps text-text-3">
+                  Soon
+                </span>
               </span>
             ),
           )}
@@ -70,12 +74,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-14 flex-none items-center gap-3 border-b border-border-1 bg-surface-card px-5">
-          <div className="w-80" onClick={() => router.push('/locate')}>
+          <div className="w-full max-w-sm" onClick={() => router.push('/locate')}>
             <Input
               icon="search"
               size="sm"
               readOnly
-              placeholder="Locate a client, policy, or txn…  ⌘K"
+              placeholder="Search everything (⌘K)"
               className="cursor-pointer"
             />
           </div>

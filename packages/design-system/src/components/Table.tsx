@@ -11,19 +11,23 @@ export interface Column<T> {
 
 /**
  * The primary surface of the app (design-and-brand-brief §6). Dense, scannable,
- * keyboard-friendly. Rows are clickable when onRowClick is provided.
+ * keyboard-friendly. Rows are clickable when onRowClick is provided; pass
+ * `selectedId` to render a keyboard-navigation highlight on the active row.
+ * Rows are single-line and uniform height — cells never wrap.
  */
 export function Table<T>({
   columns,
   rows,
   getRowId,
   onRowClick,
+  selectedId,
   empty,
 }: {
   columns: Column<T>[];
   rows: T[];
   getRowId: (row: T) => string;
   onRowClick?: (row: T) => void;
+  selectedId?: string;
   empty?: ReactNode;
 }) {
   if (rows.length === 0 && empty) {
@@ -31,7 +35,7 @@ export function Table<T>({
   }
   return (
     <div className="overflow-x-auto rounded-card border border-border-1 bg-surface-card">
-      <table className="w-full border-collapse text-body">
+      <table className="w-full table-fixed border-collapse text-body">
         <thead>
           <tr className="border-b border-border-1 text-left text-small text-text-2">
             {columns.map((c) => (
@@ -46,24 +50,30 @@ export function Table<T>({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr
-              key={getRowId(row)}
-              onClick={onRowClick ? () => onRowClick(row) : undefined}
-              className={`border-b border-border-1 last:border-0 ${
-                onRowClick ? 'cursor-pointer hover:bg-accent-tint/40' : ''
-              }`}
-            >
-              {columns.map((c) => (
-                <td
-                  key={c.key}
-                  className={`px-4 py-2.5 text-text-1 ${c.align === 'right' ? 'text-right tabular-nums' : ''}`}
-                >
-                  {c.cell(row)}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {rows.map((row) => {
+            const id = getRowId(row);
+            const selected = selectedId != null && id === selectedId;
+            return (
+              <tr
+                key={id}
+                data-row-id={id}
+                aria-selected={onRowClick ? selected : undefined}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={`border-b border-border-1 last:border-0 ${
+                  onRowClick ? 'cursor-pointer hover:bg-accent-tint/40' : ''
+                } ${selected ? 'bg-accent-tint' : ''}`}
+              >
+                {columns.map((c) => (
+                  <td
+                    key={c.key}
+                    className={`truncate whitespace-nowrap px-4 py-2.5 text-text-1 ${c.align === 'right' ? 'text-right tabular-nums' : ''}`}
+                  >
+                    {c.cell(row)}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

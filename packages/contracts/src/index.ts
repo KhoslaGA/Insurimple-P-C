@@ -96,14 +96,182 @@ export const txnEvent = z.object({
 });
 export type TxnEvent = z.infer<typeof txnEvent>;
 
+export const accountKind = z.enum(['personal', 'commercial', 'benefits']);
+export type AccountKind = z.infer<typeof accountKind>;
+
+export const accountStatus = z.enum([
+  'prospect', 'active', 'review', 'cancelling', 'lapsed', 'closed',
+]);
+export type AccountStatus = z.infer<typeof accountStatus>;
+
 export const accountSummary = z.object({
   id: z.string().uuid(),
   lookup_code: z.string().nullable(),
   display_name: z.string(),
-  kind: z.enum(['personal', 'commercial', 'benefits']),
-  status: z.enum(['prospect', 'active', 'review', 'cancelling', 'lapsed', 'closed']),
+  kind: accountKind,
+  status: accountStatus,
   source: z.string().nullable(),
   policy_count: z.union([z.number(), z.string()]),
   annual_premium: z.union([z.number(), z.string()]),
 });
 export type AccountSummary = z.infer<typeof accountSummary>;
+
+/* ============================================================
+   Household detail (T1.2) — the anchor screen's shape. Mirrors
+   the RLS-scoped GET /accounts/:id response. Numeric columns come
+   back from pg as strings, so money/counts are string | number.
+   ============================================================ */
+
+/** Postgres numeric → string over the wire; keep both for the UI's Number(). */
+const money = z.union([z.number(), z.string()]).nullable();
+
+export const consentChannel = z.enum(['email', 'phone', 'sms', 'mail']);
+export type ConsentChannel = z.infer<typeof consentChannel>;
+
+export const consentBasis = z.enum(['express', 'implied', 'did_not_obtain', 'withdrawn']);
+export type ConsentBasis = z.infer<typeof consentBasis>;
+
+/** CASL consent as a typed row (never a free-text comment blob — the Epic fix). */
+export const consentRow = z.object({
+  channel: consentChannel,
+  basis: consentBasis,
+  captured_at: z.string().nullable(),
+  expires_at: z.string().nullable(),
+  source: z.string().nullable(),
+});
+export type ConsentRow = z.infer<typeof consentRow>;
+
+export const partyRow = z.object({
+  id: z.string().uuid(),
+  role: z.string(),
+  is_primary: z.boolean(),
+  party_type: z.enum(['person', 'organization']),
+  name: z.string(),
+  email: z.string().nullable(),
+  phone: z.string().nullable(),
+  address: z.record(z.string(), z.unknown()).nullable(),
+});
+export type PartyRow = z.infer<typeof partyRow>;
+
+export const driverRow = z.object({
+  party_id: z.string().uuid(),
+  name: z.string(),
+  licence_number: z.string().nullable(),
+  licence_class: z.string().nullable(),
+  at_fault_count: z.union([z.number(), z.string()]),
+});
+export type DriverRow = z.infer<typeof driverRow>;
+
+export const vehicleRow = z.object({
+  id: z.string().uuid(),
+  year: z.number().nullable(),
+  make: z.string().nullable(),
+  model: z.string().nullable(),
+  vin: z.string().nullable(),
+  primary_use: z.string().nullable(),
+  annual_km: z.number().nullable(),
+  ownership: z.string().nullable(),
+});
+export type VehicleRow = z.infer<typeof vehicleRow>;
+
+export const locationRow = z.object({
+  id: z.string().uuid(),
+  address: z.record(z.string(), z.unknown()).nullable(),
+  occupancy: z.string().nullable(),
+  year_built: z.number().nullable(),
+  construction: z.string().nullable(),
+});
+export type LocationRow = z.infer<typeof locationRow>;
+
+export const lossRow = z.object({
+  loss_date: z.string().nullable(),
+  loss_type: z.string().nullable(),
+  at_fault: z.boolean().nullable(),
+  amount: money,
+  insured_from: z.string().nullable(),
+  insured_to: z.string().nullable(),
+});
+export type LossRow = z.infer<typeof lossRow>;
+
+export const interestRow = z.object({
+  kind: z.string(),          // 'Lienholder' | 'Mortgagee'
+  name: z.string(),
+  on: z.string(),            // the risk it attaches to
+});
+export type InterestRow = z.infer<typeof interestRow>;
+
+export const endorsementRow = z.object({
+  form_code: z.string(),
+  description: z.string().nullable(),
+  premium: money,
+  effective_date: z.string().nullable(),
+});
+export type EndorsementRow = z.infer<typeof endorsementRow>;
+
+export const coverageRow = z.object({
+  csio_code: z.string().nullable(),
+  description: z.string(),
+  limit_amount: money,
+  deductible: money,
+  premium: money,
+});
+export type CoverageRow = z.infer<typeof coverageRow>;
+
+/** One policy line, with the Epic tree branches hung off it. */
+export const policyLineDetail = z.object({
+  id: z.string().uuid(),
+  policy_number: z.string().nullable(),
+  line,
+  status: z.enum(['quoted', 'bound', 'in_force', 'cancelled', 'lapsed', 'expired']),
+  carrier_name: z.string().nullable(),
+  effective_date: z.string().nullable(),
+  expiry_date: z.string().nullable(),
+  annual_premium: money,
+  billing_type: z.string().nullable(),
+  payment_plan: z.string().nullable(),
+  coverages: z.array(coverageRow),
+  drivers: z.array(driverRow),
+  vehicles: z.array(vehicleRow),
+  locations: z.array(locationRow),
+  loss_history: z.array(lossRow),
+  additional_interests: z.array(interestRow),
+  forms_endorsements: z.array(endorsementRow),
+});
+export type PolicyLineDetail = z.infer<typeof policyLineDetail>;
+
+/** The transaction chain (Epic "Service Summary"), each with its state history. */
+export const serviceSummaryItem = z.object({
+  id: z.string().uuid(),
+  reference: z.string().nullable(),
+  txn_type: txnType,
+  state: txnState,
+  reason: z.string().nullable(),
+  effective_date: z.string().nullable(),
+  opened_at: z.string(),
+  closed_at: z.string().nullable(),
+  carrier_name: z.string().nullable(),
+  events: z.array(txnEvent),
+});
+export type ServiceSummaryItem = z.infer<typeof serviceSummaryItem>;
+
+export const householdHeader = z.object({
+  id: z.string().uuid(),
+  lookup_code: z.string().nullable(),
+  display_name: z.string(),
+  kind: accountKind,
+  status: accountStatus,
+  source: z.string().nullable(),
+  city: z.string().nullable(),
+  servicing_broker: z.string().nullable(),
+  servicing_csr: z.string().nullable(),
+});
+export type HouseholdHeader = z.infer<typeof householdHeader>;
+
+export const householdDetail = z.object({
+  header: householdHeader,
+  applicants: z.array(partyRow),
+  policies: z.array(policyLineDetail),
+  service_summary: z.array(serviceSummaryItem),
+  consent: z.array(consentRow),
+});
+export type HouseholdDetail = z.infer<typeof householdDetail>;

@@ -121,8 +121,11 @@
 
 /* ---- tokens/fonts.css ---- */
 /* Webfonts — Google Fonts placeholders (brief names Inter / Söhne / General Sans; Inter used).
-   Lora stands in for the "warm serif" until brand serif files are provided. */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+   Lora stands in for the "warm serif" until brand serif files are provided.
+   Fonts are loaded by the app layer via next/font (apps/bms/src/app/layout.tsx),
+   which sets --font-sans / --font-serif. A mid-file @import here is invalid CSS
+   (imports must precede all rules) and breaks Turbopack dev — so it lives in the
+   app, not the token layer. */
 
 /* ---- tokens/themes.css ---- */
 /* White-label tenant theme contract.

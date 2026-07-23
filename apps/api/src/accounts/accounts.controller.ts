@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import { getCtx } from '../common/ctx';
 import { AccountsService } from './accounts.service';
@@ -10,5 +10,10 @@ export class AccountsController {
   @Get()
   list(@Req() req: Request) {
     return this.accounts.list(getCtx(req));
+  }
+
+  @Get(':id')
+  detail(@Req() req: Request, @Param('id') id: string) {
+    return this.accounts.detail(getCtx(req), id);
   }
 }
