@@ -1,0 +1,24 @@
+{
+  "name": "@insurimple/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Single source of shared types + zod schemas for the Insurimple platform. TR.1 lands the canonical risk model here (CLAUDE.md invariant #6).",
+  "exports": {
+    ".": "./src/index.ts",
+    "./risk": "./src/risk/index.ts",
+    "./mappers": "./src/mappers/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}
