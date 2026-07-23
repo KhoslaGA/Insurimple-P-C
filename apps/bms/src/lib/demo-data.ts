@@ -1,12 +1,11 @@
-import type { AccountSummary, HouseholdDetail } from "@insurimple/contracts";
+import type { AccountSummary, HouseholdDetail, WorkQueues } from "@insurimple/contracts";
 
 /**
  * Preview data — deterministic seed snapshot captured from the RLS-scoped API
- * (GET /accounts, GET /accounts/:id) for tenant 1111…. Used ONLY when no API is
- * configured (a keyless Vercel/preview deploy) so the whole app is viewable
- * without a backend. Never live carrier data (invariant 7); the household
- * screens badge it "Preview data". When API_URL is set, the real path is used
- * and this module is never read.
+ * (GET /accounts, /accounts/:id, /queues) for tenant 1111…. Used ONLY when no
+ * API is configured (a keyless preview deploy) so the whole app is viewable
+ * without a backend. Never live carrier data (invariant 7); screens badge it
+ * "Preview data". When API_URL is set, the real path is used and this is unread.
  */
 export const DEMO_ACCOUNTS = ([
   {
@@ -127,7 +126,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2026-01-04 15:35:40.425018+00",
+        "captured_at": "2026-01-04 18:33:30.269792+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -222,7 +221,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-09-26 15:35:40.425018+00",
+        "captured_at": "2025-09-26 18:33:30.269792+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -283,7 +282,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "phone",
         "basis": "express",
-        "captured_at": "2026-07-13 15:35:40.425018+00",
+        "captured_at": "2026-07-13 18:33:30.269792+00",
         "expires_at": null,
         "source": "quote intake call"
       }
@@ -416,7 +415,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "implied",
-        "captured_at": "2026-04-24 15:35:40.425018+00",
+        "captured_at": "2026-04-24 18:33:30.269792+00",
         "expires_at": null,
         "source": "existing client"
       }
@@ -556,7 +555,7 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "submitted",
         "reason": "Client sold the vehicle — cancel auto, flat rate",
         "effective_date": "2026-07-15",
-        "opened_at": "2026-07-14 15:35:40.425018+00",
+        "opened_at": "2026-07-14 18:33:30.269792+00",
         "closed_at": null,
         "carrier_name": "Pembridge",
         "events": [
@@ -564,31 +563,31 @@ export const DEMO_HOUSEHOLDS = ({
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-07-14 15:35:40.425018+00"
+            "at": "2026-07-14 18:33:30.269792+00"
           },
           {
             "from_state": "draft",
             "to_state": "doc_generated",
             "actor": "Gautam Khosla",
-            "at": "2026-07-14 15:55:40.425018+00"
+            "at": "2026-07-14 18:53:30.269792+00"
           },
           {
             "from_state": "doc_generated",
             "to_state": "sig_pending",
             "actor": "Gautam Khosla",
-            "at": "2026-07-15 15:35:40.425018+00"
+            "at": "2026-07-15 18:33:30.269792+00"
           },
           {
             "from_state": "sig_pending",
             "to_state": "signed",
             "actor": "Gautam Khosla",
-            "at": "2026-07-17 15:35:40.425018+00"
+            "at": "2026-07-17 18:33:30.269792+00"
           },
           {
             "from_state": "signed",
             "to_state": "submitted",
             "actor": "Gautam Khosla",
-            "at": "2026-07-18 15:35:40.425018+00"
+            "at": "2026-07-18 18:33:30.269792+00"
           }
         ]
       }
@@ -597,7 +596,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-06-18 15:35:40.425018+00",
+        "captured_at": "2025-06-18 18:33:30.269792+00",
         "expires_at": null,
         "source": "signed application"
       },
@@ -618,3 +617,119 @@ export const DEMO_HOUSEHOLDS = ({
     ]
   }
 }) as unknown as Record<string, HouseholdDetail>;
+
+export const DEMO_QUEUES = ({
+  "activities": [
+    {
+      "id": "8e53efb7-2dd7-4e09-88e1-489adbbbf8d8",
+      "title": "Prospect follow-up — Gurpreet Sandhu quote",
+      "body": "Quoted auto at $2,010. Follow up on bind decision.",
+      "activity_type": "follow_up",
+      "priority": "high",
+      "due_at": "2026-07-21 18:33:30.269792+00",
+      "overdue": true,
+      "account_id": "a0000000-0000-0000-0000-000000000005",
+      "account_name": "Gurpreet Sandhu",
+      "lookup_code": "SANDHUGU01"
+    },
+    {
+      "id": "f9f2ac46-b556-4408-a42b-8e33d902495c",
+      "title": "eDoc received — tenant policy confirmation",
+      "body": "Auto-filed from CSIOnet. Review and close.",
+      "activity_type": "edoc_received",
+      "priority": "low",
+      "due_at": "2026-07-24 18:33:30.269792+00",
+      "overdue": false,
+      "account_id": "a0000000-0000-0000-0000-000000000003",
+      "account_name": "Rahul Mehta",
+      "lookup_code": "MEHTARA01"
+    },
+    {
+      "id": "2b4464b5-2653-40de-89ab-4cb93d965d2b",
+      "title": "Chase Pembridge — cancellation acknowledgement",
+      "body": "Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.",
+      "activity_type": "follow_up",
+      "priority": "high",
+      "due_at": "2026-07-25 18:33:30.269792+00",
+      "overdue": false,
+      "account_id": "a0000000-0000-0000-0000-000000000001",
+      "account_name": "Seyed Moein Abtahi",
+      "lookup_code": "ABTAHISE01"
+    },
+    {
+      "id": "17079c0f-6894-4664-8af0-57be48c3f4e2",
+      "title": "Verify OPCF 47R on file — Kapoor auto",
+      "body": "SABS optionality: confirm signed 47R before the reform effective date.",
+      "activity_type": "compliance_note",
+      "priority": "high",
+      "due_at": "2026-07-26 18:33:30.269792+00",
+      "overdue": false,
+      "account_id": "a0000000-0000-0000-0000-000000000004",
+      "account_name": "Gautam & Tanvi Kapoor",
+      "lookup_code": "KAPOORGA01"
+    },
+    {
+      "id": "44a9901e-5fd2-4822-8f63-ec56f0591e54",
+      "title": "Renewal review — Amrit Gill (expires Sep 1)",
+      "body": "Auto renewal at Gore Mutual. Check for premium increase before offer goes out.",
+      "activity_type": "renew",
+      "priority": "medium",
+      "due_at": "2026-08-01 18:33:30.269792+00",
+      "overdue": false,
+      "account_id": "a0000000-0000-0000-0000-000000000002",
+      "account_name": "Amrit Gill",
+      "lookup_code": "GILLAM01"
+    }
+  ],
+  "renewals": [
+    {
+      "policy_id": "90000000-0000-0000-0000-000000000002",
+      "account_id": "a0000000-0000-0000-0000-000000000002",
+      "account_name": "Amrit Gill",
+      "lookup_code": "GILLAM01",
+      "line": "auto",
+      "carrier_name": "Gore Mutual",
+      "policy_number": "GM-771204",
+      "expiry_date": "2026-09-01",
+      "days_to_expiry": 40,
+      "annual_premium": "1720.00"
+    },
+    {
+      "policy_id": "90000000-0000-0000-0000-000000000003",
+      "account_id": "a0000000-0000-0000-0000-000000000003",
+      "account_name": "Rahul Mehta",
+      "lookup_code": "MEHTARA01",
+      "line": "auto",
+      "carrier_name": "Pembridge",
+      "policy_number": "PB-330871",
+      "expiry_date": "2026-11-15",
+      "days_to_expiry": 115,
+      "annual_premium": "1980.00"
+    },
+    {
+      "policy_id": "90000000-0000-0000-0000-000000000013",
+      "account_id": "a0000000-0000-0000-0000-000000000003",
+      "account_name": "Rahul Mehta",
+      "lookup_code": "MEHTARA01",
+      "line": "tenant",
+      "carrier_name": "Gore Mutual",
+      "policy_number": "GM-880132",
+      "expiry_date": "2026-11-15",
+      "days_to_expiry": 115,
+      "annual_premium": "320.00"
+    }
+  ],
+  "suspense": [
+    {
+      "txn_id": "d0000000-0000-0000-0000-000000000001",
+      "reference": "TXN-3041",
+      "txn_type": "cancellation",
+      "state": "submitted",
+      "account_id": "a0000000-0000-0000-0000-000000000001",
+      "account_name": "Seyed Moein Abtahi",
+      "carrier_name": "Pembridge",
+      "reason": "Client sold the vehicle — cancel auto, flat rate",
+      "opened_at": "2026-07-14 18:33:30.269792+00"
+    }
+  ]
+}) as unknown as WorkQueues;

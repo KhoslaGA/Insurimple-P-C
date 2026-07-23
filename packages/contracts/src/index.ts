@@ -307,3 +307,62 @@ export const bookMetrics = z.object({
   pipeline: z.array(pipelineItem),
 });
 export type BookMetrics = z.infer<typeof bookMetrics>;
+
+/* ============================================================
+   Work queues — the CSR's day (P&C leg §3). Tenant-scoped lists
+   from GET /queues; the same shape the preview screen uses.
+   ============================================================ */
+
+export const activityPriority = z.enum(['low', 'medium', 'high']);
+export type ActivityPriority = z.infer<typeof activityPriority>;
+
+/** A diary item / abeyance — "My day". */
+export const queueActivity = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  body: z.string().nullable(),
+  activity_type: z.string(),
+  priority: activityPriority,
+  due_at: z.string().nullable(),
+  overdue: z.boolean(),
+  account_id: z.string().uuid().nullable(),
+  account_name: z.string().nullable(),
+  lookup_code: z.string().nullable(),
+});
+export type QueueActivity = z.infer<typeof queueActivity>;
+
+/** A policy approaching renewal. */
+export const queueRenewal = z.object({
+  policy_id: z.string().uuid(),
+  account_id: z.string().uuid(),
+  account_name: z.string(),
+  lookup_code: z.string().nullable(),
+  line,
+  carrier_name: z.string().nullable(),
+  policy_number: z.string().nullable(),
+  expiry_date: z.string().nullable(),
+  days_to_expiry: z.number(),
+  annual_premium: z.union([z.number(), z.string()]).nullable(),
+});
+export type QueueRenewal = z.infer<typeof queueRenewal>;
+
+/** A transaction waiting on the carrier (submitted / acknowledged). */
+export const queueSuspenseItem = z.object({
+  txn_id: z.string().uuid(),
+  reference: z.string().nullable(),
+  txn_type: txnType,
+  state: txnState,
+  account_id: z.string().uuid(),
+  account_name: z.string(),
+  carrier_name: z.string().nullable(),
+  reason: z.string().nullable(),
+  opened_at: z.string(),
+});
+export type QueueSuspenseItem = z.infer<typeof queueSuspenseItem>;
+
+export const workQueues = z.object({
+  activities: z.array(queueActivity),
+  renewals: z.array(queueRenewal),
+  suspense: z.array(queueSuspenseItem),
+});
+export type WorkQueues = z.infer<typeof workQueues>;

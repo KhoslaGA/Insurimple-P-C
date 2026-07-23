@@ -176,4 +176,15 @@ INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, 
  ('90000000-0000-0000-0000-000000000006','11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000006','c0000000-0000-0000-0000-000000000002','GM-220417','auto','cancelled','2024-05-01','2025-05-01','direct','monthly',1540.00)
 ON CONFLICT DO NOTHING;
 
+-- ----------------------------------------------------------------------------
+-- Diary / abeyances so the CSR "My day" queue has real content. Owner = Gautam.
+-- ----------------------------------------------------------------------------
+INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, title, body, owner_id, priority, status, due_at, sla_breached) VALUES
+ ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','d0000000-0000-0000-0000-000000000001','follow_up','Chase Pembridge — cancellation acknowledgement','Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '2 days', false),
+ ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000002','90000000-0000-0000-0000-000000000002',NULL,'renew','Renewal review — Amrit Gill (expires Sep 1)','Auto renewal at Gore Mutual. Check for premium increase before offer goes out.','50000000-0000-0000-0000-000000000001','medium','open', now() + interval '9 days', false),
+ ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000013',NULL,'edoc_received','eDoc received — tenant policy confirmation','Auto-filed from CSIOnet. Review and close.','50000000-0000-0000-0000-000000000001','low','open', now() + interval '1 day', false),
+ ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','90000000-0000-0000-0000-000000000004',NULL,'compliance_note','Verify OPCF 47R on file — Kapoor auto','SABS optionality: confirm signed 47R before the reform effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '3 days', false),
+ ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005',NULL,NULL,'follow_up','Prospect follow-up — Gurpreet Sandhu quote','Quoted auto at $2,010. Follow up on bind decision.','50000000-0000-0000-0000-000000000001','high','open', now() - interval '2 days', true)
+ON CONFLICT DO NOTHING;
+
 SELECT 'seed complete' AS result;
