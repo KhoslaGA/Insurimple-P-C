@@ -275,3 +275,35 @@ export const householdDetail = z.object({
   consent: z.array(consentRow),
 });
 export type HouseholdDetail = z.infer<typeof householdDetail>;
+
+/* ============================================================
+   Book metrics (admin/power-user dashboard). Tenant-scoped
+   aggregates from GET /metrics; the same shape the preview
+   dashboard computes from seed data.
+   ============================================================ */
+
+export const breakdownItem = z.object({
+  label: z.string(),
+  value: z.number(),
+});
+export type BreakdownItem = z.infer<typeof breakdownItem>;
+
+export const pipelineItem = z.object({
+  state: txnState,
+  value: z.number(),
+});
+export type PipelineItem = z.infer<typeof pipelineItem>;
+
+export const bookMetrics = z.object({
+  book_size: z.number(),
+  prospects: z.number(),
+  policies_in_force: z.number(),
+  premium_in_force: z.number(),
+  active_transactions: z.number(),
+  renewals_90d: z.number(),
+  by_status: z.array(breakdownItem),
+  by_source: z.array(breakdownItem),
+  premium_by_carrier: z.array(breakdownItem),
+  pipeline: z.array(pipelineItem),
+});
+export type BookMetrics = z.infer<typeof bookMetrics>;

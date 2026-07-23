@@ -9,6 +9,8 @@ export type { AvatarSize } from './Avatar';
 export { Chip } from './Chip';
 export { ListRow } from './ListRow';
 export { MetricCard } from './MetricCard';
+export { BarList } from './BarList';
+export type { BarItem, BarTone } from './BarList';
 export { Spinner } from './Spinner';
 export { Field } from './Field';
 export { IconButton } from './IconButton';

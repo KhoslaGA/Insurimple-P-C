@@ -12,6 +12,7 @@ const clerkReady = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 /** Routes live now; the rest of the P&C leg lands in Phase 1 (pc-leg-page-list.md). */
 const NAV: Array<{ icon: string; label: string; href?: string }> = [
+  { icon: 'layout-dashboard', label: 'Overview', href: '/dashboard' },
   { icon: 'search', label: 'Locate', href: '/locate' },
   { icon: 'users', label: 'Households', href: '/households' },
   { icon: 'car', label: 'Policies' },
