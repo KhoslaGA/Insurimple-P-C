@@ -1,0 +1,205 @@
+/* ============================================================================
+ * Insurimple design tokens — ported from the prototype _ds token CSS (T0.2).
+ * Raw variables live in :root and are overridden at runtime by
+ *   [data-mode="dark"]      -> light/dark
+ *   [data-theme="..."]      -> white-label tenant brand
+ * The @theme inline block at the bottom exposes them to Tailwind v4 as
+ * utilities (bg-surface-card, text-fg-muted, rounded-card, ...) WITHOUT
+ * freezing their values, so a theme swap restyles every utility with zero
+ * component changes. This file is the single source of brand color/shape.
+ * ==========================================================================*/
+
+:root {
+  /* base palette */
+  --ink: #0c1b22;
+  --pine: #12796a;
+  --pine-tint: #e7f3f0;
+  --coral: #ff7a59;
+  --sand: #f7f4ef;
+  --slate: #5b6b70;
+  --white: #ffffff;
+  /* derived */
+  --pine-deep: #0d5f53;
+  --pine-soft: #cfe7e1;
+  --coral-deep: #e45f3c;
+  --coral-tint: #ffe9e2;
+  --sand-deep: #efeae1;
+  --mist: #8a9599;
+  /* text */
+  --text-1: var(--ink);
+  --text-2: var(--slate);
+  --text-3: var(--mist);
+  --text-on-accent: #ffffff;
+  --text-link: var(--pine);
+  /* surfaces (light) */
+  --surface-page: var(--sand);
+  --surface-app: #faf9f6;
+  --surface-card: #ffffff;
+  --surface-panel: #fcfbf8;
+  --surface-popover: #ffffff;
+  --surface-sunken: var(--sand-deep);
+  /* borders */
+  --border-1: #e4e0d7;
+  --border-2: #d4cfc3;
+  --border-focus: var(--pine);
+  /* semantic roles */
+  --accent: var(--pine);
+  --accent-tint: var(--pine-tint);
+  --success: #1e7f4f;
+  --success-tint: #e3f2e9;
+  --warning: #a9731b;
+  --warning-tint: #f8eedc;
+  --danger: #c0392b;
+  --danger-tint: #f9e7e4;
+  --info: #3b6e8f;
+  --info-tint: #e6eff4;
+
+  /* typography */
+  --font-sans: "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Lora", Georgia, serif;
+  --text-hero: 34px;
+  --text-h1: 22px;
+  --text-h2: 18px;
+  --text-body: 16px;
+  --text-small: 13px;
+  --text-caption: 11px;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --leading-tight: 1.25;
+  --leading-body: 1.55;
+  --tracking-tight: -0.01em;
+  --tracking-caps: 0.06em;
+
+  /* spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* shape + elevation */
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+  --shadow-float: 0 4px 16px rgba(12, 27, 34, 0.1);
+  --shadow-overlay: 0 12px 40px rgba(12, 27, 34, 0.18);
+  --ease-quiet: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --duration-quick: 120ms;
+  --duration-base: 180ms;
+
+  /* white-label tenant contract — components read ONLY --tenant-* for brand */
+  --tenant-primary: var(--pine);
+  --tenant-primary-deep: var(--pine-deep);
+  --tenant-primary-tint: var(--pine-tint);
+  --tenant-accent: var(--coral);
+  --tenant-accent-deep: var(--coral-deep);
+  --tenant-name: "Insurimple";
+}
+
+/* dark surfaces (opt-in scope) */
+[data-mode="dark"] {
+  --text-1: #f2f1ed;
+  --text-2: #a9b4b8;
+  --text-3: #77848a;
+  --surface-page: #0c1b22;
+  --surface-app: #0f2029;
+  --surface-card: #14262f;
+  --surface-panel: #122129;
+  --surface-popover: #1a2e38;
+  --surface-sunken: #0a161c;
+  --border-1: #24363f;
+  --border-2: #32454f;
+  --accent-tint: #123b34;
+  --pine-tint: #123b34;
+}
+
+/* KLC Group — steady, expert, personal (anchor tenant) */
+[data-theme="klc"] {
+  --tenant-primary: #1f3a5f;
+  --tenant-primary-deep: #15293f;
+  --tenant-primary-tint: #e7edf4;
+  --tenant-accent: #b0803b;
+  --tenant-accent-deep: #8f6425;
+  --tenant-name: "KLC Group";
+}
+
+/* NorthPeak — proves the white-label contract with a third palette */
+[data-theme="northpeak"] {
+  --tenant-primary: #5b3a8c;
+  --tenant-primary-deep: #452a6e;
+  --tenant-primary-tint: #eee8f6;
+  --tenant-accent: #2e9e7e;
+  --tenant-accent-deep: #22775f;
+  --tenant-name: "NorthPeak Insurance";
+}
+
+/* ---- Tailwind v4 utility mapping (inline => utilities reference the vars) --- */
+@theme inline {
+  --color-ink: var(--ink);
+  --color-fg: var(--text-1);
+  --color-fg-muted: var(--text-2);
+  --color-fg-subtle: var(--text-3);
+  --color-fg-on-accent: var(--text-on-accent);
+  --color-link: var(--text-link);
+
+  --color-surface-page: var(--surface-page);
+  --color-surface-app: var(--surface-app);
+  --color-surface-card: var(--surface-card);
+  --color-surface-panel: var(--surface-panel);
+  --color-surface-popover: var(--surface-popover);
+  --color-surface-sunken: var(--surface-sunken);
+
+  --color-border: var(--border-1);
+  --color-border-strong: var(--border-2);
+  --color-border-focus: var(--border-focus);
+
+  --color-accent: var(--accent);
+  --color-accent-tint: var(--accent-tint);
+  --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
+
+  --color-brand: var(--tenant-primary);
+  --color-brand-deep: var(--tenant-primary-deep);
+  --color-brand-tint: var(--tenant-primary-tint);
+  --color-brand-accent: var(--tenant-accent);
+  --color-brand-accent-deep: var(--tenant-accent-deep);
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+
+  --shadow-float: var(--shadow-float);
+  --shadow-overlay: var(--shadow-overlay);
+
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+
+  --text-hero: var(--text-hero);
+  --text-h1: var(--text-h1);
+  --text-h2: var(--text-h2);
+  --text-body: var(--text-body);
+  --text-small: var(--text-small);
+  --text-caption: var(--text-caption);
+}
+
+/* minimal global defaults so the brand baseline is inherited everywhere */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
+  color: var(--text-1);
+  background: var(--surface-page);
+  -webkit-font-smoothing: antialiased;
+}
+::selection {
+  background: var(--pine-tint);
+}

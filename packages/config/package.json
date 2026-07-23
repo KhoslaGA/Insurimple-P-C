@@ -1,0 +1,13 @@
+{
+  "name": "@insurimple/config",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "tsconfig.base.json",
+    "adherence.oxlintrc.json"
+  ],
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./adherence": "./adherence.oxlintrc.json"
+  }
+}
