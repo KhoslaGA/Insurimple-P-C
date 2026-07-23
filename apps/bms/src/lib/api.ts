@@ -4,6 +4,14 @@ const API_URL = process.env.API_URL ?? "http://localhost:3001";
 const clerkConfigured = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 /**
+ * Whether a backend API is configured. When false (a keyless preview/Vercel
+ * deploy with no API_URL), screens fall back to the deterministic preview
+ * snapshot in lib/demo-data.ts instead of fetching. Set API_URL to use the
+ * real RLS-scoped API.
+ */
+export const API_CONFIGURED = !!process.env.API_URL;
+
+/**
  * Server-side API client. With Clerk configured, every call carries the
  * session token (Authorization: Bearer) — the API maps org -> tenant and
  * sub -> staff itself; the app never sends tenant identifiers.

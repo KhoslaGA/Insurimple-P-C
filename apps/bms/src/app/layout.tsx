@@ -43,20 +43,23 @@ const clerkAppearance = {
   },
 };
 
-// Well-formed placeholder key so `next build` succeeds before real keys land;
-// apps/bms/.env.local (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) overrides at runtime.
-const publishableKey =
-  process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ??
-  "pk_test_Y2xlcmsucGxhY2Vob2xkZXIuaW5zdXJpbXBsZS5kZXYk";
+// Clerk mounts only when a real publishable key is present. A keyless
+// preview/first deploy renders without Clerk (no invalid-key init errors);
+// set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (+ CLERK_SECRET_KEY) to turn on auth.
+const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const html = (
+    <html lang="en" className={`${inter.variable} ${lora.variable} h-full antialiased`}>
+      <body className="min-h-full">{children}</body>
+    </html>
+  );
+  if (!publishableKey) return html;
   return (
     <ClerkProvider publishableKey={publishableKey} appearance={clerkAppearance}>
-      <html lang="en" className={`${inter.variable} ${lora.variable} h-full antialiased`}>
-        <body className="min-h-full">{children}</body>
-      </html>
+      {html}
     </ClerkProvider>
   );
 }

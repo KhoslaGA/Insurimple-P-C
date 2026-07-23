@@ -250,7 +250,13 @@ function LinePanel({
   );
 }
 
-export function HouseholdDetailView({ detail }: { detail: HouseholdDetail }) {
+export function HouseholdDetailView({
+  detail,
+  preview = false,
+}: {
+  detail: HouseholdDetail;
+  preview?: boolean;
+}) {
   const { header, applicants, policies, service_summary, consent } = detail;
   const [sel, setSel] = useState(0);
   const active = policies[sel];
@@ -265,6 +271,7 @@ export function HouseholdDetailView({ detail }: { detail: HouseholdDetail }) {
           <span className="text-small font-medium tabular-nums text-text-3">{header.lookup_code ?? '—'}</span>
           <h1 className="text-h1 text-text-1">{header.display_name}</h1>
           <Badge tone={STATUS_TONE[header.status]}>{titleCase(header.status)}</Badge>
+          {preview ? <Badge tone="warning">Preview data</Badge> : null}
         </div>
         <p className="mt-1 text-small text-text-2">
           {[

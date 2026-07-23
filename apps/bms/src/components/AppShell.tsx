@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
-import { Avatar, IconButton, Input } from '@insurimple/design-system';
+import { Avatar, Badge, IconButton, Input } from '@insurimple/design-system';
 
 /** Clerk widgets only mount when a real publishable key is present — a keyless
  *  preview deploy renders the app without broken/empty Clerk controls. */
@@ -24,7 +24,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'chart-bar', label: 'Book & compliance' },
 ];
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, preview = false }: { children: ReactNode; preview?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   return (
@@ -88,6 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
           </div>
           <div className="ml-auto flex items-center gap-3">
+            {preview ? <Badge tone="warning">Preview data</Badge> : null}
             {clerkReady ? (
               <OrganizationSwitcher
                 afterSelectOrganizationUrl="/households"
