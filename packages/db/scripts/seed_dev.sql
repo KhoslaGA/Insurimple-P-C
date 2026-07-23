@@ -177,6 +177,37 @@ INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, 
 ON CONFLICT DO NOTHING;
 
 -- ----------------------------------------------------------------------------
+-- Two more transactions for a richer pipeline: a completed new-business (full
+-- lifecycle history) and a fresh draft endorsement. Inserted at their live
+-- state with the event log written explicitly.
+-- ----------------------------------------------------------------------------
+INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id, carrier_id, state, reason, effective_date, owner_id, opened_at, closed_at) VALUES
+ ('d0000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','TXN-3055','new_business',
+  'a0000000-0000-0000-0000-000000000002','90000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002',
+  'completed','New auto policy — bound at Gore Mutual','2025-09-01',
+  '50000000-0000-0000-0000-000000000001', now() - interval '35 days', now() - interval '28 days'),
+ ('d0000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','TXN-3062','endorsement',
+  'a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000003','c0000000-0000-0000-0000-000000000001',
+  'draft','Add winter tire discount','2026-07-25',
+  '50000000-0000-0000-0000-000000000001', now() - interval '1 day', NULL)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, at) VALUES
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002',NULL,'draft','Gautam Khosla', now() - interval '35 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','draft','doc_generated','Gautam Khosla', now() - interval '34 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','doc_generated','sig_pending','Gautam Khosla', now() - interval '33 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','sig_pending','signed','Gautam Khosla', now() - interval '32 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','signed','submitted','Gautam Khosla', now() - interval '31 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','submitted','carrier_ack','Gautam Khosla', now() - interval '29 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','carrier_ack','completed','Gautam Khosla', now() - interval '28 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000003',NULL,'draft','Gautam Khosla', now() - interval '1 day')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, channel, status, submitted_at, acknowledged_at, carrier_ref) VALUES
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002','portal','acknowledged', now() - interval '31 days', now() - interval '29 days','GM-771204')
+ON CONFLICT DO NOTHING;
+
+-- ----------------------------------------------------------------------------
 -- Diary / abeyances so the CSR "My day" queue has real content. Owner = Gautam.
 -- ----------------------------------------------------------------------------
 INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, title, body, owner_id, priority, status, due_at, sla_breached) VALUES

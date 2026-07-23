@@ -145,6 +145,14 @@ export class TxnsService {
   get(ctx: Ctx, txnId: string) {
     return this.db.withTenant(ctx.tenantId, ctx.actor, async (q) => {
       const t = await this.mustGet(q, txnId);
+      const names = await q(
+        `SELECT a.display_name AS account_name, c.name AS carrier_name
+           FROM txn t
+           JOIN account a ON a.id = t.account_id
+           LEFT JOIN carrier c ON c.id = t.carrier_id
+          WHERE t.id = $1`,
+        [txnId],
+      );
       const events = await q(
         `SELECT from_state, to_state, actor, at
            FROM txn_event WHERE txn_id=$1 ORDER BY at`,
@@ -160,7 +168,17 @@ export class TxnsService {
            FROM document WHERE txn_id=$1`,
         [txnId],
       );
-      return { ...t, events: events.rows, submissions: subs.rows, documents: docs.rows };
+      return {
+        ...t,
+        account_name: names.rows[0]?.account_name ?? null,
+        carrier_name: names.rows[0]?.carrier_name ?? null,
+        effective_date: t.effective_date ? String(t.effective_date).slice(0, 10) : null,
+        opened_at: t.opened_at ? new Date(t.opened_at).toISOString() : t.opened_at,
+        closed_at: t.closed_at ? new Date(t.closed_at).toISOString() : null,
+        events: events.rows,
+        submissions: subs.rows,
+        documents: docs.rows,
+      };
     });
   }
 

@@ -11,6 +11,8 @@ export { ListRow } from './ListRow';
 export { MetricCard } from './MetricCard';
 export { BarList } from './BarList';
 export type { BarItem, BarTone } from './BarList';
+export { Stepper } from './Stepper';
+export type { Step, StepState } from './Stepper';
 export { Spinner } from './Spinner';
 export { Field } from './Field';
 export { IconButton } from './IconButton';

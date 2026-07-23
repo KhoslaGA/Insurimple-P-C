@@ -17,7 +17,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'users', label: 'Households', href: '/households' },
   { icon: 'car', label: 'Policies' },
   { icon: 'list-check', label: 'Work queues', href: '/queues' },
-  { icon: 'arrows-exchange', label: 'Transactions', href: '/' },
+  { icon: 'arrows-exchange', label: 'Transactions', href: '/transactions' },
   { icon: 'certificate', label: 'Proofs & documents' },
   { icon: 'cloud-download', label: 'Rating & carrier' },
   { icon: 'flame', label: 'Claims' },

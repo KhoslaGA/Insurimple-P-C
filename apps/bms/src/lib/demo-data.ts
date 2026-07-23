@@ -1,11 +1,13 @@
-import type { AccountSummary, HouseholdDetail, WorkQueues } from "@insurimple/contracts";
+import type {
+  AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail,
+} from "@insurimple/contracts";
 
 /**
  * Preview data — deterministic seed snapshot captured from the RLS-scoped API
- * (GET /accounts, /accounts/:id, /queues) for tenant 1111…. Used ONLY when no
- * API is configured (a keyless preview deploy) so the whole app is viewable
- * without a backend. Never live carrier data (invariant 7); screens badge it
- * "Preview data". When API_URL is set, the real path is used and this is unread.
+ * (GET /accounts, /accounts/:id, /queues, /txns, /txns/:id) for tenant 1111….
+ * Used ONLY when no API is configured (a keyless preview deploy) so the whole
+ * app is viewable without a backend. Never live carrier data (invariant 7);
+ * screens badge it "Preview data". When API_URL is set, the real path is used.
  */
 export const DEMO_ACCOUNTS = ([
   {
@@ -121,12 +123,68 @@ export const DEMO_HOUSEHOLDS = ({
         "forms_endorsements": []
       }
     ],
-    "service_summary": [],
+    "service_summary": [
+      {
+        "id": "d0000000-0000-0000-0000-000000000002",
+        "reference": "TXN-3055",
+        "txn_type": "new_business",
+        "state": "completed",
+        "reason": "New auto policy — bound at Gore Mutual",
+        "effective_date": "2025-09-01",
+        "opened_at": "2026-06-18 18:54:56.609694+00",
+        "closed_at": "2026-06-25 18:54:56.609694+00",
+        "carrier_name": "Gore Mutual",
+        "events": [
+          {
+            "from_state": null,
+            "to_state": "draft",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-18 18:54:56.609694+00"
+          },
+          {
+            "from_state": "draft",
+            "to_state": "doc_generated",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-19 18:54:56.609694+00"
+          },
+          {
+            "from_state": "doc_generated",
+            "to_state": "sig_pending",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-20 18:54:56.609694+00"
+          },
+          {
+            "from_state": "sig_pending",
+            "to_state": "signed",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-21 18:54:56.609694+00"
+          },
+          {
+            "from_state": "signed",
+            "to_state": "submitted",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-22 18:54:56.609694+00"
+          },
+          {
+            "from_state": "submitted",
+            "to_state": "carrier_ack",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-24 18:54:56.609694+00"
+          },
+          {
+            "from_state": "carrier_ack",
+            "to_state": "completed",
+            "actor": "Gautam Khosla",
+            "at": "2026-06-25 18:54:56.609694+00"
+          }
+        ]
+      }
+    ],
     "consent": [
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2026-01-04 18:33:30.269792+00",
+        "captured_at": "2026-01-04 18:54:56.609694+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -221,7 +279,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-09-26 18:33:30.269792+00",
+        "captured_at": "2025-09-26 18:54:56.609694+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -282,7 +340,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "phone",
         "basis": "express",
-        "captured_at": "2026-07-13 18:33:30.269792+00",
+        "captured_at": "2026-07-13 18:54:56.609694+00",
         "expires_at": null,
         "source": "quote intake call"
       }
@@ -410,12 +468,32 @@ export const DEMO_HOUSEHOLDS = ({
         "forms_endorsements": []
       }
     ],
-    "service_summary": [],
+    "service_summary": [
+      {
+        "id": "d0000000-0000-0000-0000-000000000003",
+        "reference": "TXN-3062",
+        "txn_type": "endorsement",
+        "state": "draft",
+        "reason": "Add winter tire discount",
+        "effective_date": "2026-07-25",
+        "opened_at": "2026-07-22 18:54:56.609694+00",
+        "closed_at": null,
+        "carrier_name": "Pembridge",
+        "events": [
+          {
+            "from_state": null,
+            "to_state": "draft",
+            "actor": "Gautam Khosla",
+            "at": "2026-07-22 18:54:56.609694+00"
+          }
+        ]
+      }
+    ],
     "consent": [
       {
         "channel": "email",
         "basis": "implied",
-        "captured_at": "2026-04-24 18:33:30.269792+00",
+        "captured_at": "2026-04-24 18:54:56.609694+00",
         "expires_at": null,
         "source": "existing client"
       }
@@ -555,7 +633,7 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "submitted",
         "reason": "Client sold the vehicle — cancel auto, flat rate",
         "effective_date": "2026-07-15",
-        "opened_at": "2026-07-14 18:33:30.269792+00",
+        "opened_at": "2026-07-14 18:54:56.609694+00",
         "closed_at": null,
         "carrier_name": "Pembridge",
         "events": [
@@ -563,31 +641,31 @@ export const DEMO_HOUSEHOLDS = ({
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-07-14 18:33:30.269792+00"
+            "at": "2026-07-14 18:54:56.609694+00"
           },
           {
             "from_state": "draft",
             "to_state": "doc_generated",
             "actor": "Gautam Khosla",
-            "at": "2026-07-14 18:53:30.269792+00"
+            "at": "2026-07-14 19:14:56.609694+00"
           },
           {
             "from_state": "doc_generated",
             "to_state": "sig_pending",
             "actor": "Gautam Khosla",
-            "at": "2026-07-15 18:33:30.269792+00"
+            "at": "2026-07-15 18:54:56.609694+00"
           },
           {
             "from_state": "sig_pending",
             "to_state": "signed",
             "actor": "Gautam Khosla",
-            "at": "2026-07-17 18:33:30.269792+00"
+            "at": "2026-07-17 18:54:56.609694+00"
           },
           {
             "from_state": "signed",
             "to_state": "submitted",
             "actor": "Gautam Khosla",
-            "at": "2026-07-18 18:33:30.269792+00"
+            "at": "2026-07-18 18:54:56.609694+00"
           }
         ]
       }
@@ -596,7 +674,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-06-18 18:33:30.269792+00",
+        "captured_at": "2025-06-18 18:54:56.609694+00",
         "expires_at": null,
         "source": "signed application"
       },
@@ -621,60 +699,60 @@ export const DEMO_HOUSEHOLDS = ({
 export const DEMO_QUEUES = ({
   "activities": [
     {
-      "id": "8e53efb7-2dd7-4e09-88e1-489adbbbf8d8",
+      "id": "4dfc2e06-a6d4-4457-8283-c755882cf0b7",
       "title": "Prospect follow-up — Gurpreet Sandhu quote",
       "body": "Quoted auto at $2,010. Follow up on bind decision.",
       "activity_type": "follow_up",
       "priority": "high",
-      "due_at": "2026-07-21 18:33:30.269792+00",
+      "due_at": "2026-07-21 18:54:56.609694+00",
       "overdue": true,
       "account_id": "a0000000-0000-0000-0000-000000000005",
       "account_name": "Gurpreet Sandhu",
       "lookup_code": "SANDHUGU01"
     },
     {
-      "id": "f9f2ac46-b556-4408-a42b-8e33d902495c",
+      "id": "d2e6abd1-87d3-4a7a-b6cf-caabdefd4feb",
       "title": "eDoc received — tenant policy confirmation",
       "body": "Auto-filed from CSIOnet. Review and close.",
       "activity_type": "edoc_received",
       "priority": "low",
-      "due_at": "2026-07-24 18:33:30.269792+00",
+      "due_at": "2026-07-24 18:54:56.609694+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000003",
       "account_name": "Rahul Mehta",
       "lookup_code": "MEHTARA01"
     },
     {
-      "id": "2b4464b5-2653-40de-89ab-4cb93d965d2b",
+      "id": "76a44891-b6cc-41ca-8fc9-99212c2ac089",
       "title": "Chase Pembridge — cancellation acknowledgement",
       "body": "Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.",
       "activity_type": "follow_up",
       "priority": "high",
-      "due_at": "2026-07-25 18:33:30.269792+00",
+      "due_at": "2026-07-25 18:54:56.609694+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000001",
       "account_name": "Seyed Moein Abtahi",
       "lookup_code": "ABTAHISE01"
     },
     {
-      "id": "17079c0f-6894-4664-8af0-57be48c3f4e2",
+      "id": "028746eb-f571-4a01-810a-63441ce89bbe",
       "title": "Verify OPCF 47R on file — Kapoor auto",
       "body": "SABS optionality: confirm signed 47R before the reform effective date.",
       "activity_type": "compliance_note",
       "priority": "high",
-      "due_at": "2026-07-26 18:33:30.269792+00",
+      "due_at": "2026-07-26 18:54:56.609694+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000004",
       "account_name": "Gautam & Tanvi Kapoor",
       "lookup_code": "KAPOORGA01"
     },
     {
-      "id": "44a9901e-5fd2-4822-8f63-ec56f0591e54",
+      "id": "9e7b0e5b-9c11-45be-acb8-74ccaa85ca28",
       "title": "Renewal review — Amrit Gill (expires Sep 1)",
       "body": "Auto renewal at Gore Mutual. Check for premium increase before offer goes out.",
       "activity_type": "renew",
       "priority": "medium",
-      "due_at": "2026-08-01 18:33:30.269792+00",
+      "due_at": "2026-08-01 18:54:56.609694+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000002",
       "account_name": "Amrit Gill",
@@ -729,7 +807,221 @@ export const DEMO_QUEUES = ({
       "account_name": "Seyed Moein Abtahi",
       "carrier_name": "Pembridge",
       "reason": "Client sold the vehicle — cancel auto, flat rate",
-      "opened_at": "2026-07-14 18:33:30.269792+00"
+      "opened_at": "2026-07-14 18:54:56.609694+00"
     }
   ]
 }) as unknown as WorkQueues;
+
+export const DEMO_TXNS = ([
+  {
+    "id": "d0000000-0000-0000-0000-000000000003",
+    "reference": "TXN-3062",
+    "txn_type": "endorsement",
+    "state": "draft",
+    "reason": "Add winter tire discount",
+    "effective_date": "2026-07-25T00:00:00.000Z",
+    "opened_at": "2026-07-22T18:54:56.609Z",
+    "closed_at": null,
+    "account_name": "Rahul Mehta",
+    "carrier_name": "Pembridge"
+  },
+  {
+    "id": "d0000000-0000-0000-0000-000000000001",
+    "reference": "TXN-3041",
+    "txn_type": "cancellation",
+    "state": "submitted",
+    "reason": "Client sold the vehicle — cancel auto, flat rate",
+    "effective_date": "2026-07-15T00:00:00.000Z",
+    "opened_at": "2026-07-14T18:54:56.609Z",
+    "closed_at": null,
+    "account_name": "Seyed Moein Abtahi",
+    "carrier_name": "Pembridge"
+  },
+  {
+    "id": "d0000000-0000-0000-0000-000000000002",
+    "reference": "TXN-3055",
+    "txn_type": "new_business",
+    "state": "completed",
+    "reason": "New auto policy — bound at Gore Mutual",
+    "effective_date": "2025-09-01T00:00:00.000Z",
+    "opened_at": "2026-06-18T18:54:56.609Z",
+    "closed_at": "2026-06-25T18:54:56.609Z",
+    "account_name": "Amrit Gill",
+    "carrier_name": "Gore Mutual"
+  }
+]) as unknown as TxnSummary[];
+
+export const DEMO_TXN_DETAIL = ({
+  "d0000000-0000-0000-0000-000000000003": {
+    "id": "d0000000-0000-0000-0000-000000000003",
+    "tenant_id": "11111111-1111-1111-1111-111111111111",
+    "branch_id": null,
+    "reference": "TXN-3062",
+    "txn_type": "endorsement",
+    "account_id": "a0000000-0000-0000-0000-000000000003",
+    "policy_id": "90000000-0000-0000-0000-000000000003",
+    "carrier_id": "c0000000-0000-0000-0000-000000000001",
+    "state": "draft",
+    "reason": "Add winter tire discount",
+    "effective_date": "Sat Jul 25",
+    "owner_id": "50000000-0000-0000-0000-000000000001",
+    "premium_delta": null,
+    "metadata": {},
+    "opened_at": "2026-07-22T18:54:56.609Z",
+    "closed_at": null,
+    "created_at": "2026-07-23T18:54:56.609Z",
+    "updated_at": "2026-07-23T18:54:56.609Z",
+    "account_name": "Rahul Mehta",
+    "carrier_name": "Pembridge",
+    "events": [
+      {
+        "from_state": null,
+        "to_state": "draft",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-22T18:54:56.609Z"
+      }
+    ],
+    "submissions": [],
+    "documents": []
+  },
+  "d0000000-0000-0000-0000-000000000001": {
+    "id": "d0000000-0000-0000-0000-000000000001",
+    "tenant_id": "11111111-1111-1111-1111-111111111111",
+    "branch_id": null,
+    "reference": "TXN-3041",
+    "txn_type": "cancellation",
+    "account_id": "a0000000-0000-0000-0000-000000000001",
+    "policy_id": "90000000-0000-0000-0000-000000000001",
+    "carrier_id": "c0000000-0000-0000-0000-000000000001",
+    "state": "submitted",
+    "reason": "Client sold the vehicle — cancel auto, flat rate",
+    "effective_date": "Wed Jul 15",
+    "owner_id": "50000000-0000-0000-0000-000000000001",
+    "premium_delta": null,
+    "metadata": {},
+    "opened_at": "2026-07-14T18:54:56.609Z",
+    "closed_at": null,
+    "created_at": "2026-07-23T18:54:56.609Z",
+    "updated_at": "2026-07-23T18:54:56.609Z",
+    "account_name": "Seyed Moein Abtahi",
+    "carrier_name": "Pembridge",
+    "events": [
+      {
+        "from_state": null,
+        "to_state": "draft",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-14T18:54:56.609Z"
+      },
+      {
+        "from_state": "draft",
+        "to_state": "doc_generated",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-14T19:14:56.609Z"
+      },
+      {
+        "from_state": "doc_generated",
+        "to_state": "sig_pending",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-15T18:54:56.609Z"
+      },
+      {
+        "from_state": "sig_pending",
+        "to_state": "signed",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-17T18:54:56.609Z"
+      },
+      {
+        "from_state": "signed",
+        "to_state": "submitted",
+        "actor": "Gautam Khosla",
+        "at": "2026-07-18T18:54:56.609Z"
+      }
+    ],
+    "submissions": [
+      {
+        "channel": "portal",
+        "status": "sent",
+        "carrier_ref": null,
+        "submitted_at": "2026-07-18T18:54:56.609Z",
+        "acknowledged_at": null
+      }
+    ],
+    "documents": []
+  },
+  "d0000000-0000-0000-0000-000000000002": {
+    "id": "d0000000-0000-0000-0000-000000000002",
+    "tenant_id": "11111111-1111-1111-1111-111111111111",
+    "branch_id": null,
+    "reference": "TXN-3055",
+    "txn_type": "new_business",
+    "account_id": "a0000000-0000-0000-0000-000000000002",
+    "policy_id": "90000000-0000-0000-0000-000000000002",
+    "carrier_id": "c0000000-0000-0000-0000-000000000002",
+    "state": "completed",
+    "reason": "New auto policy — bound at Gore Mutual",
+    "effective_date": "Mon Sep 01",
+    "owner_id": "50000000-0000-0000-0000-000000000001",
+    "premium_delta": null,
+    "metadata": {},
+    "opened_at": "2026-06-18T18:54:56.609Z",
+    "closed_at": "2026-06-25T18:54:56.609Z",
+    "created_at": "2026-07-23T18:54:56.609Z",
+    "updated_at": "2026-07-23T18:54:56.609Z",
+    "account_name": "Amrit Gill",
+    "carrier_name": "Gore Mutual",
+    "events": [
+      {
+        "from_state": null,
+        "to_state": "draft",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-18T18:54:56.609Z"
+      },
+      {
+        "from_state": "draft",
+        "to_state": "doc_generated",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-19T18:54:56.609Z"
+      },
+      {
+        "from_state": "doc_generated",
+        "to_state": "sig_pending",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-20T18:54:56.609Z"
+      },
+      {
+        "from_state": "sig_pending",
+        "to_state": "signed",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-21T18:54:56.609Z"
+      },
+      {
+        "from_state": "signed",
+        "to_state": "submitted",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-22T18:54:56.609Z"
+      },
+      {
+        "from_state": "submitted",
+        "to_state": "carrier_ack",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-24T18:54:56.609Z"
+      },
+      {
+        "from_state": "carrier_ack",
+        "to_state": "completed",
+        "actor": "Gautam Khosla",
+        "at": "2026-06-25T18:54:56.609Z"
+      }
+    ],
+    "submissions": [
+      {
+        "channel": "portal",
+        "status": "acknowledged",
+        "carrier_ref": "GM-771204",
+        "submitted_at": "2026-06-22T18:54:56.609Z",
+        "acknowledged_at": "2026-06-24T18:54:56.609Z"
+      }
+    ],
+    "documents": []
+  }
+}) as unknown as Record<string, TxnDetail>;

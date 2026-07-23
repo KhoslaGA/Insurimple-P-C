@@ -96,6 +96,44 @@ export const txnEvent = z.object({
 });
 export type TxnEvent = z.infer<typeof txnEvent>;
 
+/** GET /txns/:id — the transaction with its lifecycle history and hangers-on. */
+export const txnDocument = z.object({
+  id: z.string().uuid(),
+  doc_type: z.string(),
+  filename: z.string(),
+  retention_until: z.string().nullable(),
+});
+export type TxnDocument = z.infer<typeof txnDocument>;
+
+export const txnSubmission = z.object({
+  channel: z.string(),
+  status: z.string(),
+  carrier_ref: z.string().nullable(),
+  submitted_at: z.string().nullable(),
+  acknowledged_at: z.string().nullable(),
+});
+export type TxnSubmission = z.infer<typeof txnSubmission>;
+
+export const txnDetail = z.object({
+  id: z.string().uuid(),
+  reference: z.string().nullable(),
+  txn_type: txnType,
+  state: txnState,
+  reason: z.string().nullable(),
+  effective_date: z.string().nullable(),
+  opened_at: z.string(),
+  closed_at: z.string().nullable(),
+  account_id: z.string().uuid(),
+  policy_id: z.string().uuid().nullable(),
+  carrier_id: z.string().uuid().nullable(),
+  account_name: z.string().nullable().optional(),
+  carrier_name: z.string().nullable().optional(),
+  events: z.array(txnEvent),
+  submissions: z.array(txnSubmission),
+  documents: z.array(txnDocument),
+});
+export type TxnDetail = z.infer<typeof txnDetail>;
+
 export const accountKind = z.enum(['personal', 'commercial', 'benefits']);
 export type AccountKind = z.infer<typeof accountKind>;
 
