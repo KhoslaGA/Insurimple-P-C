@@ -5,6 +5,7 @@ import {
 } from "../spine";
 import type { MarketingDashboard } from "../marketing";
 import { DATASET, REFERENCE_DATE } from "./seed";
+import { listConsent, listSuppressions } from "./store";
 
 /* ============================================================================
  * Mock data-access seam. Every reader is tenant-scoped and entitlement-aware,
@@ -29,12 +30,12 @@ export function getMarketingDashboard(
   if (!tenant) return null;
 
   const parties = DATASET.parties.filter((p) => p.tenantId === tenantId);
-  const consent = DATASET.consent.filter((c) => c.tenantId === tenantId);
+  // Consent + suppression come from the live store, so the dashboard reflects
+  // preference-center changes (unsubscribes, opt-ins) immediately.
+  const consent = listConsent(tenantId);
   const campaigns = DATASET.campaigns.filter((c) => c.tenantId === tenantId);
   const sequences = DATASET.sequences.filter((s) => s.tenantId === tenantId);
-  const suppressions = DATASET.suppressions.filter(
-    (s) => s.tenantId === tenantId,
-  );
+  const suppressions = listSuppressions(tenantId);
 
   // Consent coverage: marketable parties with a valid email consent today.
   const emailConsentByParty = new Map(

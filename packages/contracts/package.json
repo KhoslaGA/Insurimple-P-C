@@ -7,16 +7,23 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "default": "./src/server/index.ts"
     }
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@insurimple/config": "workspace:*",
-    "typescript": "^5"
+    "@types/node": "^22",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }

@@ -125,10 +125,19 @@ export const ConsentRecord = z.object({
 export type ConsentRecord = z.infer<typeof ConsentRecord>;
 
 function shiftIsoDate(iso: string, years = 0, months = 0): string {
-  const d = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-  d.setUTCFullYear(d.getUTCFullYear() + years);
-  d.setUTCMonth(d.getUTCMonth() + months);
-  return d.toISOString().slice(0, 10);
+  const [y, m, dd] = iso.slice(0, 10).split("-").map(Number) as [
+    number,
+    number,
+    number,
+  ];
+  // Component math with end-of-month clamping, matching Postgres interval
+  // addition (e.g. 2024-02-29 + 2 years => 2026-02-28, not 2026-03-01).
+  const totalMonth = y * 12 + (m - 1) + years * 12 + months;
+  const ny = Math.floor(totalMonth / 12);
+  const nm = totalMonth - ny * 12; // 0-based month
+  const lastDay = new Date(Date.UTC(ny, nm + 1, 0)).getUTCDate();
+  const nd = Math.min(dd, lastDay);
+  return `${ny}-${String(nm + 1).padStart(2, "0")}-${String(nd).padStart(2, "0")}`;
 }
 
 /**
