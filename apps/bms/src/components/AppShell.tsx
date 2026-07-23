@@ -6,6 +6,10 @@ import type { ReactNode } from 'react';
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs';
 import { Avatar, IconButton, Input } from '@insurimple/design-system';
 
+/** Clerk widgets only mount when a real publishable key is present — a keyless
+ *  preview deploy renders the app without broken/empty Clerk controls. */
+const clerkReady = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 /** Routes live now; the rest of the P&C leg lands in Phase 1 (pc-leg-page-list.md). */
 const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'search', label: 'Locate', href: '/locate' },
@@ -84,13 +88,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <OrganizationSwitcher
-              afterSelectOrganizationUrl="/households"
-              appearance={{ elements: { rootBox: 'flex items-center' } }}
-            />
+            {clerkReady ? (
+              <OrganizationSwitcher
+                afterSelectOrganizationUrl="/households"
+                appearance={{ elements: { rootBox: 'flex items-center' } }}
+              />
+            ) : null}
             <IconButton icon="phone-incoming" label="Calls" variant="outline" />
             <IconButton icon="bell" label="Notifications" />
-            <UserButton />
+            {clerkReady ? <UserButton /> : <Avatar name="Gautam Khosla" size="sm" />}
           </div>
         </header>
         <main className="flex-1 overflow-y-auto">{children}</main>
