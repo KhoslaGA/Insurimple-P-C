@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { AutoRisk, CoverageLimit } from '@insurimple/contracts';
 import { Badge, Button, Card, Field, Input, Select, Tabs } from '@insurimple/design-system';
 import type { Household, PriorPolicy } from '@/lib/mock/household';
@@ -35,6 +36,7 @@ function limitCents(limit: CoverageLimit): number | null {
 }
 
 export function QuoteWorkspace({ household, prior }: { household: Household; prior: PriorPolicy }) {
+  const router = useRouter();
   const [risk, setRisk] = useState<AutoRisk | null>(null);
   const [tab, setTab] = useState('applicant');
   const [savedAt, setSavedAt] = useState<string | null>(null);
@@ -97,7 +99,7 @@ export function QuoteWorkspace({ household, prior }: { household: Household; pri
               <Button variant="secondary" size="sm" onClick={handleSave}>
                 Save draft
               </Button>
-              <Button variant="primary" size="sm" disabled title="Shopping arrives with the rating screen">
+              <Button variant="primary" size="sm" onClick={() => router.push('/compare')}>
                 Shop this risk
               </Button>
             </span>

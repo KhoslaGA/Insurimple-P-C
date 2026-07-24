@@ -3,3 +3,5 @@ export * from './shop';
 export * from './result';
 export * from './report';
 export * from './tenant';
+export * from './comparison';
+export * from './drafter';

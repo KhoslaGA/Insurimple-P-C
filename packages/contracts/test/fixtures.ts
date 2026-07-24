@@ -246,6 +246,24 @@ export function quoteResultsFixture(): QuoteResult[] {
   ];
 }
 
+/** An indicative (stub) result — deliberately the CHEAPEST, to prove it is still never "best". */
+export function indicativeResultFixture(): QuoteResult {
+  return QuoteResultSchema.parse({
+    id: 'res-stub',
+    shopId: SHOP_ID,
+    tenantId: TENANT_ID,
+    carrier: { id: 'ST', name: 'Stub Mutual' },
+    source: 'api',
+    outcome: 'quoted',
+    provenance: 'indicative',
+    premium: cad(2990),
+    coverageVariant: 'Simulated quote — stub adapter, not a live carrier',
+    respondedAt: '2026-06-15T11:38:30.000Z',
+    presentedToClient: false,
+    simulated: true,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // TR.4 — a normalized adapter request for the auto risk
 // ---------------------------------------------------------------------------
