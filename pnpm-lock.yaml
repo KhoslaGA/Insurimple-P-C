@@ -14,6 +14,12 @@ importers:
 
   apps/bms:
     dependencies:
+      '@insurimple/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@insurimple/design-system':
+        specifier: workspace:*
+        version: link:../../packages/design-system
       next:
         specifier: 16.2.10
         version: 16.2.10(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -48,6 +54,9 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9(@types/node@20.19.43)(lightningcss@1.32.0)
 
   packages/contracts:
     dependencies:
