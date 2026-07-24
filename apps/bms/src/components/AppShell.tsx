@@ -5,7 +5,7 @@ const NAV: { label: string; href: string; active?: boolean }[] = [
   { label: 'Household & client', href: '/', active: true },
   { label: 'Policies', href: '#' },
   { label: 'Property lines', href: '#' },
-  { label: 'Work queues', href: '#' },
+  { label: 'Renewals', href: '/renewals' },
   { label: 'Transactions', href: '#' },
   { label: 'Rating & carrier', href: '#' },
   { label: 'Book & compliance', href: '#' },
