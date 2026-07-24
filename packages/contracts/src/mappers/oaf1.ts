@@ -13,6 +13,8 @@ import {
   AutoPolicyCoveragesSchema,
   type AutoRisk,
   DriverSchema,
+  RiskRefSchema,
+  riskRefOf,
   type RiskVersion,
   VehicleSchema,
 } from '../risk';
@@ -20,7 +22,7 @@ import {
 export const Oaf1ApplicationSchema = z.object({
   formType: z.literal('OAF1'),
   province: z.literal('ON'),
-  riskRef: z.object({ riskId: z.string().min(1), version: z.number().int().positive() }),
+  riskRef: RiskRefSchema,
   effectiveDate: z.string().date(),
   applicant: z.object({
     firstName: z.string().min(1),
@@ -44,7 +46,7 @@ export function toOaf1Application(version: RiskVersion<AutoRisk>): Oaf1Applicati
   return {
     formType: 'OAF1',
     province: 'ON', // OAF 1 is the Ontario form; auto is Ontario-first per the module brief.
-    riskRef: { riskId: version.riskId, version: version.version },
+    riskRef: riskRefOf(version),
     effectiveDate: risk.effectiveDate,
     applicant: {
       firstName: risk.namedInsured.firstName,

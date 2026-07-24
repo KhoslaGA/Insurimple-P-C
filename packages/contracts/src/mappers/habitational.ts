@@ -17,6 +17,8 @@ import {
   type PropertyRisk,
   ProtectionSchema,
   ProvinceSchema,
+  RiskRefSchema,
+  riskRefOf,
   type RiskVersion,
   ValuationSchema,
 } from '../risk';
@@ -24,7 +26,7 @@ import {
 export const HabitationalApplicationSchema = z.object({
   formType: z.literal('HABITATIONAL'),
   province: ProvinceSchema,
-  riskRef: z.object({ riskId: z.string().min(1), version: z.number().int().positive() }),
+  riskRef: RiskRefSchema,
   effectiveDate: z.string().date(),
   applicant: z.object({
     firstName: z.string().min(1),
@@ -51,7 +53,7 @@ export function toHabitationalApplication(
   return {
     formType: 'HABITATIONAL',
     province: risk.province,
-    riskRef: { riskId: version.riskId, version: version.version },
+    riskRef: riskRefOf(version),
     effectiveDate: risk.effectiveDate,
     applicant: {
       firstName: risk.namedInsured.firstName,

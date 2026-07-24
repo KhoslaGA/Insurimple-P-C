@@ -136,6 +136,22 @@ export function riskVersionSchema<T extends z.ZodTypeAny>(payload: T) {
   });
 }
 
+/**
+ * A pointer to an exact captured risk version (riskId + version). Applications,
+ * quote shops, and quote results all reference the risk this way, never by
+ * copying its contents.
+ */
+export const RiskRefSchema = z.object({
+  riskId: z.string().min(1),
+  version: z.number().int().positive(),
+});
+export type RiskRef = z.infer<typeof RiskRefSchema>;
+
+/** Build a RiskRef from any risk version. */
+export function riskRefOf(version: RiskVersion<unknown>): RiskRef {
+  return { riskId: version.riskId, version: version.version };
+}
+
 /** Recursively freeze a value so a captured version can never be mutated in place. */
 export function deepFreeze<T>(value: T): T {
   if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {

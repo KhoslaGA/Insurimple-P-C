@@ -22,13 +22,15 @@ import {
   ProtectionSchema,
   ProvinceSchema,
   type Risk,
+  RiskRefSchema,
+  riskRefOf,
   type RiskVersion,
   ValuationSchema,
   VehicleSchema,
 } from '../risk';
 
 export const QuoteInputSchema = z.object({
-  riskRef: z.object({ riskId: z.string().min(1), version: z.number().int().positive() }),
+  riskRef: RiskRefSchema,
   line: z.enum(['auto', 'property']),
   effectiveDate: z.string().date(),
   province: ProvinceSchema,
@@ -61,7 +63,7 @@ export type QuoteInput = z.infer<typeof QuoteInputSchema>;
 export function toQuoteInput(version: RiskVersion<Risk>): QuoteInput {
   const risk = version.payload;
   const base = {
-    riskRef: { riskId: version.riskId, version: version.version },
+    riskRef: riskRefOf(version),
     line: risk.line,
     effectiveDate: risk.effectiveDate,
     province: risk.province,

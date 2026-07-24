@@ -6,7 +6,17 @@
  * Each fixture is returned already parsed (schema defaults applied), so tests
  * get a fully-formed canonical risk without restating every defaulted field.
  */
-import { AutoRiskSchema, PropertyRiskSchema, cad, type AutoRisk, type PropertyRisk } from '../src';
+import {
+  AutoRiskSchema,
+  PropertyRiskSchema,
+  QuoteResultSchema,
+  QuoteShopSchema,
+  cad,
+  type AutoRisk,
+  type PropertyRisk,
+  type QuoteResult,
+  type QuoteShop,
+} from '../src';
 
 export function autoRiskFixture(): AutoRisk {
   return AutoRiskSchema.parse({
@@ -165,4 +175,70 @@ export function propertyRiskFixture(): PropertyRisk {
       additionalLivingPct: 20,
     },
   });
+}
+
+// ---------------------------------------------------------------------------
+// TR.3 — quote shop + results (the Okonkwo & Mensah auto shop, three carriers)
+// ---------------------------------------------------------------------------
+
+export const SHOP_ID = 'shop-1';
+export const TENANT_ID = 'tenant-klc';
+
+export function quoteShopFixture(): QuoteShop {
+  return QuoteShopSchema.parse({
+    id: SHOP_ID,
+    tenantId: TENANT_ID,
+    riskRef: { riskId: 'risk-auto-1', version: 1 },
+    purpose: 'new_business',
+    requestedBy: 'user-rina',
+    createdAt: '2026-06-15T11:42:00.000Z',
+    selection: {
+      resultId: 'res-maple',
+      reason: 'Lowest firm premium with matching coverage; bundles with the home line.',
+      selectedAt: '2026-06-15T15:00:00.000Z',
+    },
+  });
+}
+
+export function quoteResultsFixture(): QuoteResult[] {
+  return [
+    QuoteResultSchema.parse({
+      id: 'res-maple',
+      shopId: SHOP_ID,
+      tenantId: TENANT_ID,
+      carrier: { id: 'MM', name: 'Maple Mutual' },
+      source: 'manual',
+      outcome: 'quoted',
+      provenance: 'firm',
+      premium: cad(3204),
+      coverageVariant: 'AUTO — $1M TPL, $1,000 collision/comprehensive',
+      respondedAt: '2026-06-15T11:40:00.000Z',
+      presentedToClient: true,
+    }),
+    QuoteResultSchema.parse({
+      id: 'res-truenorth',
+      shopId: SHOP_ID,
+      tenantId: TENANT_ID,
+      carrier: { id: 'TN', name: 'True North P&C' },
+      source: 'portal',
+      outcome: 'quoted',
+      provenance: 'firm',
+      premium: cad(3460),
+      coverageVariant: 'AUTO — $1M TPL, bundled with home',
+      respondedAt: '2026-06-15T11:41:00.000Z',
+      presentedToClient: true,
+    }),
+    QuoteResultSchema.parse({
+      id: 'res-cascadia',
+      shopId: SHOP_ID,
+      tenantId: TENANT_ID,
+      carrier: { id: 'CG', name: 'Cascadia General' },
+      source: 'api',
+      outcome: 'declined',
+      provenance: 'firm',
+      declineReason: 'Not writing this driver profile in the GTA this quarter.',
+      respondedAt: '2026-06-15T11:39:00.000Z',
+      presentedToClient: false,
+    }),
+  ];
 }
