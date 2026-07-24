@@ -47,6 +47,8 @@ export const QuoteResultSchema = z
     notes: z.string().optional(),
     respondedAt: z.string().datetime(),
     presentedToClient: z.boolean().default(false),
+    /** True when produced by a stub/mock adapter — mock data can never pass as live (invariant #7). */
+    simulated: z.boolean().default(false),
   })
   .superRefine((r, ctx) => {
     if (r.outcome === 'quoted' && !r.premium) {
@@ -70,6 +72,13 @@ export const QuoteResultSchema = z
         message: 'A declined or referral result must document a reason.',
       });
     }
+    if (r.simulated && r.provenance === 'firm') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['provenance'],
+        message: 'A simulated result can never be firm.',
+      });
+    }
   });
 export type QuoteResult = z.infer<typeof QuoteResultSchema>;
 
@@ -79,5 +88,5 @@ export type QuoteResult = z.infer<typeof QuoteResultSchema>;
  * PRESENTATION only — binding does not exist anywhere in the module.
  */
 export function isPresentableAsFirm(result: QuoteResult): boolean {
-  return result.provenance === 'firm' && result.outcome === 'quoted';
+  return result.provenance === 'firm' && result.outcome === 'quoted' && !result.simulated;
 }

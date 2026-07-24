@@ -12,8 +12,11 @@ import {
   QuoteResultSchema,
   QuoteShopSchema,
   cad,
+  createRiskVersion,
+  toQuoteInput,
   type AutoRisk,
   type PropertyRisk,
+  type QuoteRequest,
   type QuoteResult,
   type QuoteShop,
 } from '../src';
@@ -241,4 +244,18 @@ export function quoteResultsFixture(): QuoteResult[] {
       presentedToClient: false,
     }),
   ];
+}
+
+// ---------------------------------------------------------------------------
+// TR.4 — a normalized adapter request for the auto risk
+// ---------------------------------------------------------------------------
+
+export function autoQuoteRequestFixture(): QuoteRequest {
+  const version = createRiskVersion('risk-auto-1', autoRiskFixture(), '2026-06-15T11:38:00.000Z');
+  return {
+    shopId: SHOP_ID,
+    tenantId: TENANT_ID,
+    input: toQuoteInput(version),
+    requestedAt: '2026-06-15T11:38:00.000Z',
+  };
 }
