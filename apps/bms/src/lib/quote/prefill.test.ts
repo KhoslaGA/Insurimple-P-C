@@ -3,9 +3,9 @@
  * risk … no data re-keyed from the party record" + "partial quotes resume."
  */
 import { describe, it, expect } from 'vitest';
-import { AutoRiskSchema } from '@insurimple/contracts';
-import { mockHousehold, mockPriorAutoPolicy } from '../mock/household';
-import { prefillAutoFromPrior } from './prefill';
+import { AutoRiskSchema, PropertyRiskSchema } from '@insurimple/contracts';
+import { mockHousehold, mockPriorAutoPolicy, mockPriorHomePolicy } from '../mock/household';
+import { prefillAutoFromPrior, prefillPropertyFromPrior } from './prefill';
 import { deserializeDraft, serializeDraft, type QuoteDraft } from './draft';
 
 describe('prior-policy prefill', () => {
@@ -39,5 +39,28 @@ describe('draft resume (round-trip)', () => {
       risk: prefillAutoFromPrior(mockHousehold, mockPriorAutoPolicy, '2027-07-01'),
     };
     expect(deserializeDraft(serializeDraft(draft))).toEqual(draft);
+  });
+});
+
+describe('property prior-policy prefill', () => {
+  const draft = prefillPropertyFromPrior(mockHousehold, mockPriorHomePolicy, '2027-07-01');
+
+  it('produces a valid canonical property risk', () => {
+    expect(() => PropertyRiskSchema.parse(draft)).not.toThrow();
+  });
+
+  it('takes the named insured from the household, not re-keyed', () => {
+    expect(draft.namedInsured).toEqual(mockHousehold.primaryContact);
+    expect(draft.party.householdId).toBe(mockHousehold.id);
+  });
+
+  it('carries dwelling, construction, and coverages forward from the prior policy', () => {
+    expect(draft.construction).toEqual(mockPriorHomePolicy.risk.construction);
+    expect(draft.coverages).toEqual(mockPriorHomePolicy.risk.coverages);
+    expect(draft.riskAddress).toEqual(mockPriorHomePolicy.risk.riskAddress);
+  });
+
+  it('sets the new effective date', () => {
+    expect(draft.effectiveDate).toBe('2027-07-01');
   });
 });

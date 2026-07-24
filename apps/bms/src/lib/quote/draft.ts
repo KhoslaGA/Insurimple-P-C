@@ -3,12 +3,12 @@
  * duplicate is detectable (a saved draft already exists for the household).
  * Persistence here is localStorage — swapped for the NestJS API when it's wired.
  */
-import type { AutoRisk } from '@insurimple/contracts';
+import type { Risk } from '@insurimple/contracts';
 
 export interface QuoteDraft {
   householdId: string;
   updatedAt: string;
-  risk: AutoRisk;
+  risk: Risk;
 }
 
 const PREFIX = 'insurimple.quote.draft';

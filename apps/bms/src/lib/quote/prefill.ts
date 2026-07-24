@@ -3,8 +3,8 @@
  * party record (household) + the prior risk — nothing is re-keyed. The broker reviews
  * and adjusts from here.
  */
-import type { AutoRisk } from '@insurimple/contracts';
-import type { Household, PriorPolicy } from '../mock/household';
+import type { AutoRisk, PropertyRisk } from '@insurimple/contracts';
+import type { Household, PriorHomePolicy, PriorPolicy } from '../mock/household';
 
 export function prefillAutoFromPrior(
   household: Household,
@@ -67,5 +67,53 @@ export function blankAutoRisk(household: Household, effectiveDate: string): Auto
       endorsements: [],
     },
     history: { cancellations: [], atFaultClaims: [] },
+  };
+}
+
+export function prefillPropertyFromPrior(
+  household: Household,
+  prior: PriorHomePolicy,
+  effectiveDate: string,
+): PropertyRisk {
+  return {
+    ...prior.risk,
+    party: { householdId: household.id, clientId: prior.risk.party.clientId },
+    namedInsured: household.primaryContact,
+    effectiveDate,
+  };
+}
+
+export function blankPropertyRisk(household: Household, effectiveDate: string): PropertyRisk {
+  const zero = { kind: 'amount' as const, value: { currency: 'CAD' as const, amountCents: 0 } };
+  return {
+    line: 'property',
+    party: { householdId: household.id },
+    effectiveDate,
+    province: 'ON',
+    namedInsured: household.primaryContact,
+    riskAddress: household.primaryContact.mailingAddress,
+    dwellingType: 'detached',
+    occupancy: 'owner_occupied',
+    construction: {
+      yearBuilt: 2000,
+      wall: 'brick_veneer',
+      roof: 'asphalt_shingle',
+      heating: 'forced_air_gas',
+      electrical: 'breakers_200_amp',
+      plumbing: 'copper_pex',
+      basement: 'unfinished',
+    },
+    protection: { hydrantDistance: 'within_300m', fireHallDistance: 'within_5km', alarm: 'none', monitored: false },
+    coverages: {
+      dwellingA: zero,
+      detachedStructuresB: zero,
+      contentsC: zero,
+      additionalLivingD: zero,
+      personalLiabilityE: zero,
+      voluntaryMedicalF: zero,
+      deductible: zero,
+      endorsements: [],
+    },
+    interests: [],
   };
 }

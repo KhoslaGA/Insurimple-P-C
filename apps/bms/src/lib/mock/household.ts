@@ -3,7 +3,13 @@
  * for the NestJS + Postgres party/policy layer until that backend is wired. Shapes the
  * household + a prior auto policy the quote workspace prefills from.
  */
-import { AutoRiskSchema, type AutoRisk, type NamedInsured } from '@insurimple/contracts';
+import {
+  AutoRiskSchema,
+  PropertyRiskSchema,
+  type AutoRisk,
+  type NamedInsured,
+  type PropertyRisk,
+} from '@insurimple/contracts';
 
 export interface Household {
   id: string;
@@ -109,5 +115,62 @@ export const mockPriorAutoPolicy: PriorPolicy = {
       uninsuredAutomobile: { kind: 'included' },
     },
     history: { priorInsurer: 'Maple Mutual', priorPolicyNumber: 'MM-889-2201', continuousYearsInsured: 6 },
+  }),
+};
+
+export interface PriorHomePolicy {
+  policyNumber: string;
+  line: 'property';
+  carrier: string;
+  expiresOn: string;
+  risk: PropertyRisk;
+}
+
+export const mockPriorHomePolicy: PriorHomePolicy = {
+  policyNumber: 'H55231887HAB',
+  line: 'property',
+  carrier: 'Laurier Insurance',
+  expiresOn: '2026-12-24',
+  risk: PropertyRiskSchema.parse({
+    line: 'property',
+    party: { householdId: 'OKONKA01', clientId: 'CL-AMARA' },
+    effectiveDate: '2025-12-24',
+    province: 'ON',
+    namedInsured: {
+      firstName: 'Amara',
+      lastName: 'Okonkwo',
+      dateOfBirth: '1986-04-12',
+      mailingAddress: { line1: '42 Sunnybrae Crescent', city: 'Brampton', province: 'ON', postalCode: 'L6Z 1R6' },
+    },
+    riskAddress: { line1: '128 Chinguacousy Road', city: 'Brampton', province: 'ON', postalCode: 'L6Y 2R4' },
+    dwellingType: 'detached',
+    occupancy: 'owner_occupied',
+    construction: {
+      yearBuilt: 1998,
+      storeys: 2,
+      squareFeet: 2100,
+      wall: 'brick_veneer',
+      roof: 'asphalt_shingle',
+      heating: 'forced_air_gas',
+      electrical: 'breakers_200_amp',
+      plumbing: 'copper_pex',
+      basement: 'finished',
+    },
+    protection: { hydrantDistance: 'within_300m', fireHallDistance: 'within_5km', alarm: 'fire_and_burglary', monitored: true },
+    coverages: {
+      dwellingA: { kind: 'amount', value: { currency: 'CAD', amountCents: 68400000 } },
+      detachedStructuresB: { kind: 'amount', value: { currency: 'CAD', amountCents: 6840000 } },
+      contentsC: { kind: 'amount', value: { currency: 'CAD', amountCents: 47880000 } },
+      additionalLivingD: { kind: 'amount', value: { currency: 'CAD', amountCents: 13680000 } },
+      personalLiabilityE: { kind: 'amount', value: { currency: 'CAD', amountCents: 100000000 } },
+      voluntaryMedicalF: { kind: 'amount', value: { currency: 'CAD', amountCents: 500000 } },
+      deductible: { kind: 'amount', value: { currency: 'CAD', amountCents: 250000 } },
+      waterDeductible: { kind: 'amount', value: { currency: 'CAD', amountCents: 500000 } },
+      endorsements: [
+        { code: 'SEWER', name: 'Sewer backup', elected: true, limit: { kind: 'amount', value: { currency: 'CAD', amountCents: 2500000 } } },
+        { code: 'OVERLAND', name: 'Overland water', elected: false },
+      ],
+    },
+    interests: [{ id: 'int-1', type: 'mortgagee', name: 'First Dominion Bank', reference: 'FD-88213307' }],
   }),
 };

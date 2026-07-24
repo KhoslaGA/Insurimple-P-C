@@ -16,3 +16,5 @@ export * from './components/Badge';
 export * from './components/Chip';
 export * from './components/Card';
 export * from './components/Tabs';
+export * from './components/Table';
+export * from './components/Modal';

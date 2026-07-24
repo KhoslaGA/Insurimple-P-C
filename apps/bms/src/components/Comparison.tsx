@@ -10,7 +10,7 @@ import {
   type QuoteResult,
   type QuoteShop,
 } from '@insurimple/contracts';
-import { Badge, Button, Card } from '@insurimple/design-system';
+import { Badge, Button, Card, Table } from '@insurimple/design-system';
 
 function dollars(cents: number): string {
   return `$${(cents / 100).toLocaleString('en-CA')}`;
@@ -62,56 +62,54 @@ export function Comparison({
         </p>
       </div>
 
-      <Card className="overflow-hidden p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-small">
-            <thead>
-              <tr className="border-b border-border-1 text-left text-text-3">
-                <th className="px-4 py-2.5 font-medium">Carrier</th>
-                <th className="px-4 py-2.5 font-medium">Source</th>
-                <th className="px-4 py-2.5 text-right font-medium">Annual premium</th>
-                <th className="px-4 py-2.5 text-right font-medium">vs best</th>
-                <th className="px-4 py-2.5 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {view.rows.map((row) => (
-                <tr key={row.resultId} className="border-b border-border-1 last:border-0">
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-text-1">{row.carrier.name}</span>
-                      {row.isBest ? <Badge tone="success">Best</Badge> : null}
-                    </div>
-                    {row.coverageVariant ? (
-                      <div className="text-caption text-text-3">{row.coverageVariant}</div>
-                    ) : null}
-                    {row.declineReason ? (
-                      <div className="text-caption text-text-3">{row.declineReason}</div>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3 text-text-2">{row.source}</td>
-                  <td className="px-4 py-3 text-right">
-                    {row.premium ? (
-                      <span className="font-medium text-text-1">{dollars(row.premium.amountCents)}</span>
-                    ) : (
-                      <span className="text-text-3">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-right text-text-2">{deltaLabel(row.premiumDeltaVsBestCents)}</td>
-                  <td className="px-4 py-3">
-                    {row.outcome === 'declined' ? (
-                      <Badge tone="danger" dot>Declined</Badge>
-                    ) : row.provenance === 'indicative' ? (
-                      <Badge tone="warning" dot>Indicative</Badge>
-                    ) : (
-                      <Badge tone="success" dot>Firm quote</Badge>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <Card className="p-0">
+        <Table
+          minWidth={560}
+          rows={view.rows}
+          rowKey={(row) => row.resultId}
+          columns={[
+            {
+              header: 'Carrier',
+              render: (row) => (
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-text-1">{row.carrier.name}</span>
+                    {row.isBest ? <Badge tone="success">Best</Badge> : null}
+                  </div>
+                  {row.coverageVariant ? <div className="text-caption text-text-3">{row.coverageVariant}</div> : null}
+                  {row.declineReason ? <div className="text-caption text-text-3">{row.declineReason}</div> : null}
+                </div>
+              ),
+            },
+            { header: 'Source', render: (row) => <span className="text-text-2">{row.source}</span> },
+            {
+              header: 'Annual premium',
+              align: 'right',
+              render: (row) =>
+                row.premium ? (
+                  <span className="font-medium text-text-1">{dollars(row.premium.amountCents)}</span>
+                ) : (
+                  <span className="text-text-3">—</span>
+                ),
+            },
+            {
+              header: 'vs best',
+              align: 'right',
+              render: (row) => <span className="text-text-2">{deltaLabel(row.premiumDeltaVsBestCents)}</span>,
+            },
+            {
+              header: 'Status',
+              render: (row) =>
+                row.outcome === 'declined' ? (
+                  <Badge tone="danger" dot>Declined</Badge>
+                ) : row.provenance === 'indicative' ? (
+                  <Badge tone="warning" dot>Indicative</Badge>
+                ) : (
+                  <Badge tone="success" dot>Firm quote</Badge>
+                ),
+            },
+          ]}
+        />
       </Card>
       <p className="text-caption text-text-3">
         Declines and referral reasons are logged for the file. Indicative numbers are estimates until
