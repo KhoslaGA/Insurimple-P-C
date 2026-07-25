@@ -11,3 +11,4 @@ export * from './mappers';
 export * from './quote';
 export * from './adapters';
 export * from './renewal';
+export * from './api';
