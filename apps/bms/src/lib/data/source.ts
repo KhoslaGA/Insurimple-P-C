@@ -95,14 +95,13 @@ function apiDataSource(baseUrl: string, tenantId: string): DataSource {
       return { priorAuto, priorHome };
     },
     async getRenewalRows() {
-      const renewals = await client.getRenewals();
-      // The Phase-1 backend renewal doesn't yet carry the party display name or the
-      // incumbent carrier — a production read joins party + policy for those. Until that
-      // join lands, fall back to the household id and leave the incumbent blank.
-      return renewals.map((renewal) => ({
+      const items = await client.getRenewals();
+      // The API joins the party name + incumbent carrier onto each renewal. They can still
+      // be null (a related record outside this tenant), so fall back rather than guess.
+      return items.map(({ renewal, householdName, incumbentCarrier }) => ({
         renewal,
-        householdName: renewal.householdId,
-        incumbentCarrier: '—',
+        householdName: householdName ?? renewal.householdId,
+        incumbentCarrier: incumbentCarrier ?? '—',
       }));
     },
   };

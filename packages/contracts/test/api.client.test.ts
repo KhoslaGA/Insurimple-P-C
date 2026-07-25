@@ -207,7 +207,9 @@ describe('getRenewals — cents → Money, ISO → date', () => {
     const { impl } = stubFetch({ '/renewals': wireRenewals });
     const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
 
-    const [due, completed] = await client.getRenewals();
+    const [first, second] = await client.getRenewals();
+    const due = first.renewal;
+    const completed = second.renewal;
 
     // integer-cent column becomes a Money object
     expect(due.expiringPremium).toEqual({ currency: 'CAD', amountCents: 360000 });
@@ -221,6 +223,24 @@ describe('getRenewals — cents → Money, ISO → date', () => {
     expect(completed.outcome?.disposition).toBe('move');
     expect(completed.outcome?.chosenPremium).toEqual({ currency: 'CAD', amountCents: 167000 });
     expect(completed.outcome?.savedCents).toBe(18000);
+  });
+
+  it('surfaces the joined display fields, and nulls them rather than guessing', async () => {
+    const { impl } = stubFetch({
+      '/renewals': [
+        { ...wireRenewals[0], householdName: 'Okonkwo & Mensah', incumbentCarrier: 'True North P&C' },
+        wireRenewals[1], // no join fields on the wire at all
+      ],
+    });
+    const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
+
+    const [joined, unjoined] = await client.getRenewals();
+
+    expect(joined.householdName).toBe('Okonkwo & Mensah');
+    expect(joined.incumbentCarrier).toBe('True North P&C');
+    // absent on the wire → null, never a fabricated stand-in
+    expect(unjoined.householdName).toBeNull();
+    expect(unjoined.incumbentCarrier).toBeNull();
   });
 });
 

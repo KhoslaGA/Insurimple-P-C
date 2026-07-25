@@ -44,6 +44,9 @@ export const ApiRenewalSchema = z.object({
   status: z.enum(['due', 'shopping', 'completed']),
   shopId: z.string().nullable().optional(),
   outcome: z.unknown().nullable().optional(),
+  /** Joined display fields — null when the related record isn't visible to this tenant. */
+  householdName: z.string().nullable().optional(),
+  incumbentCarrier: z.string().nullable().optional(),
 });
 export type ApiRenewal = z.infer<typeof ApiRenewalSchema>;
 

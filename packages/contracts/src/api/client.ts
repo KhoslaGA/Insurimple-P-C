@@ -110,6 +110,17 @@ export function apiToQuoteResult(api: ApiQuoteResult): QuoteResult {
   });
 }
 
+/**
+ * A renewal plus the display fields the queue shows. `householdName` and `incumbentCarrier`
+ * are presentation joins (they live on household / policy), deliberately kept OUT of the
+ * canonical RenewalTransaction — the domain object stays the domain object.
+ */
+export interface RenewalListItem {
+  renewal: RenewalTransaction;
+  householdName: string | null;
+  incumbentCarrier: string | null;
+}
+
 /** Map a wire shop to the canonical {@link QuoteShop} (the backend also stores householdId,
  * which the canonical shop doesn't carry — it's dropped here). */
 export function apiToShop(api: ApiShop): QuoteShop {
@@ -180,8 +191,8 @@ export interface InsurimpleApiClient {
   getHousehold(id: string): Promise<ApiHousehold>;
   /** The household's policies, each with its canonical `risk` for prefill. */
   getPolicies(householdId: string): Promise<ApiPolicy[]>;
-  /** The renewal queue, mapped to canonical {@link RenewalTransaction}s. */
-  getRenewals(): Promise<RenewalTransaction[]>;
+  /** The renewal queue: canonical {@link RenewalTransaction}s plus their display joins. */
+  getRenewals(): Promise<RenewalListItem[]>;
   /** A shop's quote results, mapped to canonical {@link QuoteResult}s. */
   getShopResults(shopId: string): Promise<QuoteResult[]>;
   /** Open a shop (one risk version → N carriers); returns the created {@link QuoteShop}. */
@@ -254,7 +265,11 @@ export function createInsurimpleApiClient(
       return z
         .array(ApiRenewalSchema)
         .parse(await getJson('/renewals'))
-        .map(apiToRenewal);
+        .map((api) => ({
+          renewal: apiToRenewal(api),
+          householdName: api.householdName ?? null,
+          incumbentCarrier: api.incumbentCarrier ?? null,
+        }));
     },
     async getShopResults(shopId) {
       return z
