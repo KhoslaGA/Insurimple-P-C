@@ -49,6 +49,27 @@ function stubFetch(routes: Record<string, unknown>) {
   return { impl, calls };
 }
 
+/** A fetch stub for writes: answers every call with `response` and records method + body. */
+function writeStub(response: unknown) {
+  const calls: {
+    url: string;
+    method?: string;
+    headers: Record<string, string>;
+    body: unknown;
+  }[] = [];
+  const impl = (async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input.toString();
+    calls.push({
+      url,
+      method: init?.method,
+      headers: (init?.headers ?? {}) as Record<string, string>,
+      body: init?.body ? JSON.parse(init.body as string) : undefined,
+    });
+    return jsonResponse(response);
+  }) as typeof fetch;
+  return { impl, calls };
+}
+
 const wireHousehold: ApiHousehold = {
   id: 'OKONKA01',
   tenantId: TENANT,
@@ -257,5 +278,107 @@ describe('error handling', () => {
 
     await expect(client.getHousehold('nope')).rejects.toBeInstanceOf(InsurimpleApiError);
     await expect(client.getHousehold('nope')).rejects.toMatchObject({ status: 404 });
+  });
+});
+
+describe('writes — POST with tenant + content-type, Money → cents, canonical mapping back', () => {
+  it('openShop POSTs to /shops and maps the created QuoteShop', async () => {
+    const wireShop = {
+      id: 'shop-new-1',
+      tenantId: TENANT,
+      householdId: 'OKONKA01',
+      policyRef: null,
+      purpose: 'new_business',
+      requestedBy: 'user-rina',
+      riskRef: { riskId: 'risk-auto-1', version: 1 },
+      createdAt: '2026-07-01T12:00:00.000Z',
+    };
+    const { impl, calls } = writeStub(wireShop);
+    const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
+
+    const shop = await client.openShop({
+      householdId: 'OKONKA01',
+      purpose: 'new_business',
+      requestedBy: 'user-rina',
+      riskRef: { riskId: 'risk-auto-1', version: 1 },
+    });
+
+    expect(calls[0].url).toBe(`${BASE}/shops`);
+    expect(calls[0].method).toBe('POST');
+    expect(calls[0].headers['content-type']).toBe('application/json');
+    expect(calls[0].headers['x-tenant-id']).toBe(TENANT);
+    expect(calls[0].body).toMatchObject({
+      householdId: 'OKONKA01',
+      purpose: 'new_business',
+      riskRef: { riskId: 'risk-auto-1', version: 1 },
+    });
+    expect(shop.id).toBe('shop-new-1');
+    expect(shop.riskRef).toEqual({ riskId: 'risk-auto-1', version: 1 });
+  });
+
+  it('recordResult serializes premium Money → cents and maps the response back', async () => {
+    const { impl, calls } = writeStub(wireResults[0]);
+    const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
+
+    const result = await client.recordResult('shop-okonkwo-1', {
+      carrier: { id: 'MM', name: 'Maple Mutual' },
+      source: 'manual',
+      outcome: 'quoted',
+      provenance: 'firm',
+      premium: { currency: 'CAD', amountCents: 320400 },
+      coverageVariant: 'AUTO — $1M TPL, $1,000 collision/comp',
+      respondedAt: '2026-06-15T11:40:00.000Z',
+      presentedToClient: true,
+    });
+
+    expect(calls[0].url).toBe(`${BASE}/shops/shop-okonkwo-1/results`);
+    expect(calls[0].method).toBe('POST');
+    // Money flattened to a cents field; carrier split into id/name; no nested `premium` on the wire
+    expect(calls[0].body).toMatchObject({ carrierId: 'MM', carrierName: 'Maple Mutual', premiumCents: 320400 });
+    expect(calls[0].body).not.toHaveProperty('premium');
+    // response mapped back to canonical
+    expect(result.premium).toEqual({ currency: 'CAD', amountCents: 320400 });
+    expect(isPresentableAsFirm(result)).toBe(true);
+  });
+
+  it('recordRemarketOutcome serializes chosenPremium → cents and maps the completed renewal', async () => {
+    const { impl, calls } = writeStub(wireRenewals[1]); // the completed 'move' renewal
+    const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
+
+    const updated = await client.recordRemarketOutcome('ren-tremblay', {
+      disposition: 'move',
+      chosenCarrier: 'Maple Mutual',
+      chosenPremium: { currency: 'CAD', amountCents: 167000 },
+      reason: 'Cheaper with matching coverage.',
+      decidedAt: '2026-10-15T09:00:00.000Z',
+      shopId: 'shop-tremblay-1',
+    });
+
+    expect(calls[0].url).toBe(`${BASE}/renewals/ren-tremblay/outcome`);
+    expect(calls[0].method).toBe('POST');
+    expect(calls[0].body).toMatchObject({
+      disposition: 'move',
+      chosenCarrier: 'Maple Mutual',
+      chosenPremiumCents: 167000,
+    });
+    expect(calls[0].body).not.toHaveProperty('chosenPremium');
+    expect(updated.status).toBe('completed');
+    expect(updated.outcome?.chosenPremium).toEqual({ currency: 'CAD', amountCents: 167000 });
+    expect(updated.outcome?.savedCents).toBe(18000);
+  });
+
+  it('throws InsurimpleApiError when a write returns non-2xx', async () => {
+    const impl = (async () =>
+      jsonResponse({ message: 'bad' }, { status: 400, statusText: 'Bad Request' })) as typeof fetch;
+    const client = createInsurimpleApiClient({ baseUrl: BASE, tenantId: TENANT, fetchImpl: impl });
+
+    await expect(
+      client.openShop({
+        householdId: 'X',
+        purpose: 'new_business',
+        requestedBy: 'u',
+        riskRef: { riskId: 'r', version: 1 },
+      }),
+    ).rejects.toMatchObject({ status: 400 });
   });
 });

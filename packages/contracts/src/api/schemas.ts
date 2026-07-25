@@ -47,6 +47,18 @@ export const ApiRenewalSchema = z.object({
 });
 export type ApiRenewal = z.infer<typeof ApiRenewalSchema>;
 
+export const ApiShopSchema = z.object({
+  id: z.string(),
+  tenantId: z.string(),
+  householdId: z.string(),
+  policyRef: z.string().nullable().optional(),
+  purpose: z.enum(['new_business', 'remarket', 'renewal_shop']),
+  requestedBy: z.string(),
+  riskRef: z.object({ riskId: z.string(), version: z.number().int() }),
+  createdAt: z.string(),
+});
+export type ApiShop = z.infer<typeof ApiShopSchema>;
+
 export const ApiQuoteResultSchema = z.object({
   id: z.string(),
   tenantId: z.string(),

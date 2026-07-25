@@ -18,18 +18,32 @@
 import { z } from 'zod';
 import {
   RenewalTransactionSchema,
+  type RemarketDisposition,
   type RenewalTransaction,
 } from '../renewal';
-import { QuoteResultSchema, type QuoteResult } from '../quote';
+import {
+  QuoteResultSchema,
+  QuoteShopSchema,
+  type CarrierRef,
+  type QuoteOutcome,
+  type QuoteProvenance,
+  type QuoteResult,
+  type QuoteShop,
+  type QuoteSource,
+  type ShopPurpose,
+} from '../quote';
+import type { Money, RiskRef } from '../risk';
 import {
   ApiHouseholdSchema,
   ApiPolicySchema,
   ApiQuoteResultSchema,
   ApiRenewalSchema,
+  ApiShopSchema,
   type ApiHousehold,
   type ApiPolicy,
   type ApiQuoteResult,
   type ApiRenewal,
+  type ApiShop,
 } from './schemas';
 
 /** Thrown when the backend returns a non-2xx status. Carries the status + path for logging. */
@@ -96,6 +110,58 @@ export function apiToQuoteResult(api: ApiQuoteResult): QuoteResult {
   });
 }
 
+/** Map a wire shop to the canonical {@link QuoteShop} (the backend also stores householdId,
+ * which the canonical shop doesn't carry — it's dropped here). */
+export function apiToShop(api: ApiShop): QuoteShop {
+  return QuoteShopSchema.parse({
+    id: api.id,
+    tenantId: api.tenantId,
+    riskRef: api.riskRef,
+    purpose: api.purpose,
+    requestedBy: api.requestedBy,
+    createdAt: api.createdAt,
+    policyRef: api.policyRef ?? undefined,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Write inputs (canonical in; the client serializes Money → cents on the wire)
+// ---------------------------------------------------------------------------
+
+export interface OpenShopInput {
+  householdId: string;
+  purpose: ShopPurpose;
+  requestedBy: string;
+  riskRef: RiskRef;
+  /** For remarket / renewal shops, the existing policy being reshopped. */
+  policyRef?: string;
+}
+
+export interface RecordResultInput {
+  carrier: CarrierRef;
+  source: QuoteSource;
+  outcome: QuoteOutcome;
+  provenance: QuoteProvenance;
+  /** Present iff quoted; serialized to integer cents on the wire. */
+  premium?: Money;
+  coverageVariant?: string;
+  /** Present iff referral / declined. */
+  declineReason?: string;
+  respondedAt: string;
+  presentedToClient?: boolean;
+  simulated?: boolean;
+}
+
+export interface RecordRemarketOutcomeInput {
+  disposition: RemarketDisposition;
+  chosenCarrier?: string;
+  /** The chosen premium on a move; serialized to integer cents on the wire. */
+  chosenPremium?: Money;
+  reason: string;
+  decidedAt: string;
+  shopId?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Client
 // ---------------------------------------------------------------------------
@@ -118,6 +184,15 @@ export interface InsurimpleApiClient {
   getRenewals(): Promise<RenewalTransaction[]>;
   /** A shop's quote results, mapped to canonical {@link QuoteResult}s. */
   getShopResults(shopId: string): Promise<QuoteResult[]>;
+  /** Open a shop (one risk version → N carriers); returns the created {@link QuoteShop}. */
+  openShop(input: OpenShopInput): Promise<QuoteShop>;
+  /** Record one carrier's response within a shop; returns the created {@link QuoteResult}. */
+  recordResult(shopId: string, input: RecordResultInput): Promise<QuoteResult>;
+  /** Record a remarket outcome and complete the renewal; returns the updated {@link RenewalTransaction}. */
+  recordRemarketOutcome(
+    renewalId: string,
+    decision: RecordRemarketOutcomeInput,
+  ): Promise<RenewalTransaction>;
 }
 
 export function createInsurimpleApiClient(
@@ -139,6 +214,26 @@ export function createInsurimpleApiClient(
         res.status,
         path,
         `GET ${path} failed: ${res.status} ${res.statusText}`,
+      );
+    }
+    return (await res.json()) as unknown;
+  }
+
+  async function postJson(path: string, body: unknown): Promise<unknown> {
+    const res = await doFetch(`${base}${path}`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        'x-tenant-id': tenantId,
+      },
+      body: JSON.stringify(body), // JSON.stringify drops undefined fields — optionals just aren't sent
+    });
+    if (!res.ok) {
+      throw new InsurimpleApiError(
+        res.status,
+        path,
+        `POST ${path} failed: ${res.status} ${res.statusText}`,
       );
     }
     return (await res.json()) as unknown;
@@ -166,6 +261,43 @@ export function createInsurimpleApiClient(
         .array(ApiQuoteResultSchema)
         .parse(await getJson(`/shops/${encodeURIComponent(shopId)}/results`))
         .map(apiToQuoteResult);
+    },
+    async openShop(input) {
+      const raw = await postJson('/shops', {
+        householdId: input.householdId,
+        purpose: input.purpose,
+        requestedBy: input.requestedBy,
+        riskRef: input.riskRef,
+        policyRef: input.policyRef,
+      });
+      return apiToShop(ApiShopSchema.parse(raw));
+    },
+    async recordResult(shopId, input) {
+      const raw = await postJson(`/shops/${encodeURIComponent(shopId)}/results`, {
+        carrierId: input.carrier.id,
+        carrierName: input.carrier.name,
+        source: input.source,
+        outcome: input.outcome,
+        provenance: input.provenance,
+        premiumCents: input.premium?.amountCents,
+        coverageVariant: input.coverageVariant,
+        declineReason: input.declineReason,
+        respondedAt: input.respondedAt,
+        presentedToClient: input.presentedToClient,
+        simulated: input.simulated,
+      });
+      return apiToQuoteResult(ApiQuoteResultSchema.parse(raw));
+    },
+    async recordRemarketOutcome(renewalId, decision) {
+      const raw = await postJson(`/renewals/${encodeURIComponent(renewalId)}/outcome`, {
+        disposition: decision.disposition,
+        chosenCarrier: decision.chosenCarrier,
+        chosenPremiumCents: decision.chosenPremium?.amountCents,
+        reason: decision.reason,
+        decidedAt: decision.decidedAt,
+        shopId: decision.shopId,
+      });
+      return apiToRenewal(ApiRenewalSchema.parse(raw));
     },
   };
 }
