@@ -46,6 +46,22 @@ export interface CarrierAdapter {
   quote(request: QuoteRequest): Promise<AdapterResponse>;
 }
 
+/**
+ * A carrier interaction that failed for TECHNICAL reasons — a portal timeout, an expired
+ * session, a 500 from a carrier API.
+ *
+ * Deliberately NOT a QuoteResult. A declined risk is a carrier DECISION about the client
+ * and belongs in the evidence table; a failed request is our plumbing breaking and must
+ * never be presentable as one. Conflating them would let an outage read as "the market
+ * declined this risk", which is exactly the kind of thing that becomes an E&O problem.
+ */
+export interface AdapterFailure {
+  carrier: CarrierRef;
+  kind: AdapterKind;
+  /** Message from the thrown error, for the operator — never shown to a client. */
+  reason: string;
+}
+
 /** Deterministic result id for a (shop, carrier) pair — no randomness. */
 export function adapterResultId(shopId: string, carrier: CarrierRef): string {
   return `${shopId}-${carrier.id}`;

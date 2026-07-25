@@ -8,6 +8,7 @@ import {
   createPortalAdapter,
   createStubApiAdapter,
   runShop,
+  type CarrierAdapter,
 } from '../src';
 import { autoQuoteRequestFixture } from './fixtures';
 
@@ -44,5 +45,31 @@ describe('adapter orchestration', () => {
 
     expect(run.results).toHaveLength(4);
     expect(new Set(run.results.map((r) => r.carrier.id)).size).toBe(4);
+  });
+
+  it('one carrier failing does not cost the others', async () => {
+    // The production case: a real shop fans out to ~20 carriers and something is always
+    // down. All-or-nothing semantics would lose the whole shop.
+    const exploding: CarrierAdapter = {
+      kind: 'portal',
+      carrier: { id: 'DN', name: 'Downed Mutual' },
+      quote: () => Promise.reject(new Error('portal session expired')),
+    };
+
+    const run = await runShop(request, [
+      createStubApiAdapter({ id: 'A', name: 'Alpha' }),
+      exploding,
+      createStubApiAdapter({ id: 'B', name: 'Beta' }),
+    ]);
+
+    expect(run.results).toHaveLength(2);
+    expect(run.results.map((r) => r.carrier.id).sort()).toEqual(['A', 'B']);
+
+    // The failure is documented — and kept out of the evidence table, because a technical
+    // failure is not a carrier decision and must never be presentable as a decline.
+    expect(run.failures).toHaveLength(1);
+    expect(run.failures[0].carrier.id).toBe('DN');
+    expect(run.failures[0].reason).toBe('portal session expired');
+    expect(run.results.some((r) => r.carrier.id === 'DN')).toBe(false);
   });
 });
