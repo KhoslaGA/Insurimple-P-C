@@ -4,6 +4,10 @@ You are building Insurimple: a standalone multi-tenant B2B SaaS for Canadian bro
 One platform, three subscription modules (P&C, Life/LLQP, Mortgage) on one shared spine.
 This file is a contract. Violating an invariant fails the task regardless of feature completeness.
 
+**Current project state — what is built, what is proven, and what is next — is in
+`CONTEXT.md`. Read it before starting work.** This file is the standing contract;
+that one is the status.
+
 ## Repo shape (do not deviate)
 - pnpm workspaces + Turborepo.
 - `apps/bms` — the product (Next.js 15, React 19, App Router, Tailwind v4).
