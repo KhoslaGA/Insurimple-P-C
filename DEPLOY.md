@@ -9,6 +9,25 @@ The platform is three pieces:
 - **`packages/db`** — Postgres 16 schema + migrations → a **managed Postgres**
   (Neon / Supabase / RDS).
 
+## One repo, separate deploys
+
+The API lives in this monorepo (`apps/api`) and still deploys **independently**
+to its own host — monorepo is not monolith-deploy. Every host supports a
+subdirectory/Dockerfile root:
+
+| Host | How |
+|---|---|
+| **Render** | `render.yaml` at the repo root (checked in) — `dockerfilePath: ./apps/api/Dockerfile`, `dockerContext: .` |
+| **Railway** | `apps/api/railway.json` (checked in), or set the service **Root Directory** to `apps/api` |
+| **Fly** | `fly launch --dockerfile apps/api/Dockerfile` from the repo root |
+
+`apps/api` has **no workspace-package imports**, so its Dockerfile copies only
+`apps/api/**` and builds standalone. Keeping it in the monorepo is deliberate:
+`packages/contracts` is the single type source shared by the API and the web app
+(invariant 6), and a feature that spans contract + endpoint + screen lands as
+one atomic commit under one CI gate. A separate backend repo would reintroduce
+exactly the type drift the contracts package exists to prevent.
+
 There are two levels: a zero-config **preview** (see the UI immediately) and the
 **full stack** (real data + auth).
 

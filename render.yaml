@@ -1,0 +1,21 @@
+# Render blueprint — deploys the NestJS API from the monorepo subdirectory.
+# The API is self-contained (no workspace-package imports), so it builds and
+# scales independently of apps/bms even though the code lives together.
+services:
+  - type: web
+    name: insurimple-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      # The managed Postgres 16 connection string. Connect as a NON-SUPERUSER
+      # login role in production and leave DB_SET_ROLE unset (RLS must apply).
+      - key: DATABASE_URL
+        sync: false
+      # Boots the API in CLERK-JWT mode (org claim -> tenant). Without it the
+      # API refuses to start outside development.
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production

@@ -8,6 +8,7 @@ import type {
   PolicyLineDetail,
   ConsentRow,
 } from '@insurimple/contracts';
+import { NewTxnLauncher } from './NewTxnLauncher';
 
 const STATUS_TONE: Record<
   HouseholdDetail['header']['status'],
@@ -272,6 +273,9 @@ export function HouseholdDetailView({
           <h1 className="text-h1 text-text-1">{header.display_name}</h1>
           <Badge tone={STATUS_TONE[header.status]}>{titleCase(header.status)}</Badge>
           {preview ? <Badge tone="warning">Preview data</Badge> : null}
+          <span className="ml-auto">
+            <NewTxnLauncher accountId={header.id} preview={preview} />
+          </span>
         </div>
         <p className="mt-1 text-small text-text-2">
           {[
@@ -325,7 +329,11 @@ export function HouseholdDetailView({
         {service_summary.length ? (
           <div className="flex flex-col gap-3">
             {service_summary.map((t) => (
-              <div key={t.id} className="rounded-card border border-border-1 bg-surface-card p-4">
+              <Link
+                key={t.id}
+                href={`/transactions/${t.id}`}
+                className="block rounded-card border border-border-1 bg-surface-card p-4 transition-colors hover:bg-surface-panel"
+              >
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="text-small font-medium tabular-nums text-text-1">{t.reference ?? 'TXN'}</span>
                   <span className="text-small text-text-2">{titleCase(t.txn_type)}</span>
@@ -345,7 +353,7 @@ export function HouseholdDetailView({
                     ))}
                   </ol>
                 ) : null}
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
