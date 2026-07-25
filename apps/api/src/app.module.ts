@@ -10,16 +10,26 @@ import { MetricsController } from './metrics/metrics.controller';
 import { MetricsService } from './metrics/metrics.service';
 import { QueuesController } from './queues/queues.controller';
 import { QueuesService } from './queues/queues.service';
+import { MeController } from './me/me.controller';
+import { MeService } from './me/me.service';
 import { AuthGuard } from './common/auth.guard';
 
 @Module({
   imports: [DbModule],
-  controllers: [HealthController, TxnsController, AccountsController, MetricsController, QueuesController],
+  controllers: [
+    HealthController,
+    TxnsController,
+    AccountsController,
+    MetricsController,
+    QueuesController,
+    MeController,
+  ],
   providers: [
     TxnsService,
     AccountsService,
     MetricsService,
     QueuesService,
+    MeService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

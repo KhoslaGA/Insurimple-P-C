@@ -30,6 +30,25 @@ INSERT INTO carrier (id, tenant_id, name, csio_code) VALUES
  ('c0000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','Gore Mutual','GORE')
 ON CONFLICT DO NOTHING;
 
+-- ----------------------------------------------------------------------------
+-- Entitlement + licence + grant (invariants 3 & 4). Without these the DB
+-- refuses every transaction insert — the boundary is structural, so the seed
+-- must provision it exactly as production onboarding would.
+-- ----------------------------------------------------------------------------
+INSERT INTO tenant_module (tenant_id, module) VALUES
+ ('11111111-1111-1111-1111-111111111111','pc')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, issued_on, expires_on) VALUES
+ ('11c00000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
+  '50000000-0000-0000-0000-000000000001','ribo_l2','RIBO-100200','RIBO','2019-03-01', current_date + 300)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id) VALUES
+ ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
+  'admin_principal','11c00000-0000-0000-0000-000000000001')
+ON CONFLICT DO NOTHING;
+
 INSERT INTO account (id, tenant_id, branch_id, lookup_code, display_name, kind, status, source) VALUES
  ('a0000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
   'b0000000-0000-0000-0000-000000000001','ABTAHISE01','Seyed Moein Abtahi','personal','cancelling','toprates.ca')

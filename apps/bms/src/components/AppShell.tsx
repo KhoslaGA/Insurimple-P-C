@@ -68,13 +68,18 @@ export function AppShell({ children, preview = false }: { children: ReactNode; p
             ),
           )}
         </nav>
-        <div className="mt-auto flex items-center gap-2.5 border-t border-border-1 p-3">
+        <Link
+          href="/profile"
+          className={`mt-auto flex items-center gap-2.5 border-t border-border-1 p-3 transition-colors ${
+            pathname === '/profile' ? 'bg-accent-tint' : 'hover:bg-surface-panel'
+          }`}
+        >
           <Avatar name="Gautam Khosla" size="sm" />
           <div className="text-small">
             <div className="font-medium">Gautam Khosla</div>
             <div className="text-caption text-text-3">Principal broker</div>
           </div>
-        </div>
+        </Link>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">

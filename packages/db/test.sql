@@ -23,7 +23,9 @@ VALUES ('22222222-2222-2222-2222-222222222222','Other Brokerage Inc.');
 -- Everything below runs as the app role, scoped to Insurimple.
 SET ROLE app;
 SELECT set_config('app.current_tenant','11111111-1111-1111-1111-111111111111', false);
-SELECT set_config('app.current_actor','gautam', false);
+-- The actor is the staff UUID: capabilities are resolved from that staff
+-- member's licence-anchored grants (0009_licences_roles.sql).
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 
 -- ---- reference data -------------------------------------------------------
 INSERT INTO branch (id, tenant_id, code, name, is_default)
@@ -34,6 +36,33 @@ VALUES ('50000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-11111111
 
 INSERT INTO carrier (id, tenant_id, name, csio_code)
 VALUES ('c0000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','Pembridge','PEMB');
+
+-- ---- entitlement + licence + grant (invariants 3 & 4) ----------------------
+-- The tenant subscribes to P&C; Gautam holds a live RIBO licence, and his
+-- principal-broker grant is anchored to it.
+INSERT INTO tenant_module (tenant_id, module)
+VALUES ('11111111-1111-1111-1111-111111111111','pc');
+
+INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, expires_on)
+VALUES ('11c00000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
+        '50000000-0000-0000-0000-000000000001','ribo_l2','RIBO-100200','RIBO', current_date + 365);
+
+INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
+VALUES ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
+        'admin_principal','11c00000-0000-0000-0000-000000000001');
+
+-- A Life-only colleague: LLQP licence, life_only role — no P&C authority.
+INSERT INTO staff (id, tenant_id, full_name, email, role, ribo_level)
+VALUES ('50000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111',
+        'Priya Life-Only','priya@insurimple.ca','broker','unlicensed');
+
+INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, expires_on)
+VALUES ('11c00000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111',
+        '50000000-0000-0000-0000-000000000002','llqp','LLQP-55501','FSRA', current_date + 365);
+
+INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
+VALUES ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000002',
+        'life_only','11c00000-0000-0000-0000-000000000002');
 
 -- ---- account + party + consent (Abtahi) -----------------------------------
 INSERT INTO account (id, tenant_id, branch_id, lookup_code, display_name, kind, status, source)
@@ -218,6 +247,64 @@ BEGIN
 EXCEPTION WHEN others THEN
     IF SQLERRM LIKE '%append-only%' THEN RAISE NOTICE 'TEST5b PASS: audit log is append-only';
     ELSE RAISE; END IF;
+END $$;
+
+-- ============================================================================
+-- TEST 6 — LICENCE IS THE SECURITY BOUNDARY (invariant 3) and ENTITLEMENT IS
+--          THE COMMERCIAL BOUNDARY (invariant 4). Enforced by the DB, so no
+--          application bug can bypass either.
+-- ============================================================================
+SET ROLE app;
+SELECT set_config('app.current_tenant','11111111-1111-1111-1111-111111111111', false);
+
+-- 6a — a Life-only user CANNOT create a P&C transaction.
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
+DO $$
+BEGIN
+    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
+    VALUES ('11111111-1111-1111-1111-111111111111','endorsement',
+            'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
+    RAISE EXCEPTION 'TEST6a FAIL: a Life-only user created a P&C transaction';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST6a PASS: Life-only user denied P&C txn (%)', SQLERRM;
+END $$;
+
+-- 6b — the licensed principal CAN.
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
+VALUES ('70000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','endorsement',
+        'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
+DO $$ BEGIN RAISE NOTICE 'TEST6b PASS: licensed principal broker created the P&C txn'; END $$;
+
+-- 6c — an EXPIRED licence removes the capability it carried.
+UPDATE licence SET expires_on = current_date - 1
+ WHERE id = '11c00000-0000-0000-0000-000000000001';
+DO $$
+BEGIN
+    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
+    VALUES ('11111111-1111-1111-1111-111111111111','endorsement',
+            'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
+    RAISE EXCEPTION 'TEST6c FAIL: an expired licence still granted P&C authority';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST6c PASS: expired licence revokes authority (%)', SQLERRM;
+END $$;
+UPDATE licence SET expires_on = current_date + 365
+ WHERE id = '11c00000-0000-0000-0000-000000000001';
+
+-- 6d — entitlement: the tenant has no Life module, so even the principal
+--      (who holds life.txn.create) cannot open a Life transaction.
+INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
+VALUES ('90000000-0000-0000-0000-0000000000ff',
+        '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
+        'c0000000-0000-0000-0000-000000000001','LIFE-1','life','in_force');
+DO $$
+BEGIN
+    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
+    VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+            'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-0000000000ff','draft');
+    RAISE EXCEPTION 'TEST6d FAIL: a Life txn was created without the Life entitlement';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST6d PASS: Life module not entitled — txn denied (%)', SQLERRM;
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

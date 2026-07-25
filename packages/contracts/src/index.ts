@@ -404,3 +404,57 @@ export const workQueues = z.object({
   suspense: z.array(queueSuspenseItem),
 });
 export type WorkQueues = z.infer<typeof workQueues>;
+
+/* ============================================================
+   Authority — licence (invariant 3) and entitlement (invariant 4).
+   GET /me returns what the caller may actually do; `capabilities`
+   comes from the SAME DB function the write guard uses, so the UI
+   can never disagree with enforcement.
+   ============================================================ */
+
+export const moduleCode = z.enum(['pc', 'life', 'mortgage']);
+export type ModuleCode = z.infer<typeof moduleCode>;
+
+export const licenceClass = z.enum([
+  'ribo_l1', 'ribo_l2', 'ribo_l3', 'llqp', 'mortgage_agent', 'unlicensed',
+]);
+export type LicenceClass = z.infer<typeof licenceClass>;
+
+export const licenceRow = z.object({
+  id: z.string().uuid(),
+  licence_class: licenceClass,
+  licence_number: z.string().nullable(),
+  regulator: z.string().nullable(),
+  issued_on: z.string().nullable(),
+  expires_on: z.string().nullable(),
+  status: z.enum(['active', 'suspended', 'revoked', 'lapsed']),
+  expired: z.boolean(),
+  expiring_soon: z.boolean(),
+});
+export type LicenceRow = z.infer<typeof licenceRow>;
+
+export const roleGrant = z.object({
+  role_code: z.string(),
+  role_name: z.string(),
+  licence_id: z.string().uuid().nullable(),
+  granted_at: z.string(),
+});
+export type RoleGrant = z.infer<typeof roleGrant>;
+
+export const meProfile = z.object({
+  staff: z
+    .object({
+      id: z.string().uuid(),
+      full_name: z.string(),
+      email: z.string(),
+      role: z.string(),
+      ribo_level: z.string().nullable(),
+      tenant_name: z.string().nullable(),
+    })
+    .nullable(),
+  licences: z.array(licenceRow),
+  roles: z.array(roleGrant),
+  capabilities: z.array(z.string()),
+  modules: z.array(moduleCode),
+});
+export type MeProfile = z.infer<typeof meProfile>;

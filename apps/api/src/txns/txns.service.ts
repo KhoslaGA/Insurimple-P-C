@@ -1,5 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { DbService } from '../db/db.module';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { DbService, Q } from '../db/db.module';
 import { Ctx } from '../common/ctx';
 
 export interface OpenTxnDto {
@@ -18,28 +23,45 @@ export interface OpenTxnDto {
 export class TxnsService {
   constructor(private readonly db: DbService) {}
 
-  /** Open a transaction in draft — and write the E&O activity alongside it. */
+  /**
+   * Open a transaction in draft — and write the E&O activity alongside it.
+   *
+   * Authority (entitlement + licence-derived grant) is enforced by the DB
+   * trigger, not here: 0009_licences_roles.sql raises insufficient_privilege
+   * when the tenant lacks the module or the actor lacks the capability. We
+   * translate that into a 403 so the boundary reads correctly over HTTP.
+   */
   open(ctx: Ctx, dto: OpenTxnDto) {
-    return this.db.withTenant(ctx.tenantId, ctx.actor, async (q) => {
-      const r = await q(
-        `INSERT INTO txn (tenant_id, reference, txn_type, account_id, policy_id,
-                          carrier_id, reason, effective_date)
-         VALUES (current_tenant(), $1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, reference, txn_type, state, opened_at`,
-        [dto.reference ?? null, dto.txnType, dto.accountId, dto.policyId ?? null,
-         dto.carrierId ?? null, dto.reason ?? null, dto.effectiveDate ?? null],
-      );
-      const txn = r.rows[0];
-      await q(
-        `INSERT INTO activity (tenant_id, account_id, policy_id, txn_id,
-                               activity_type, title, body)
-         VALUES (current_tenant(), $1, $2, $3, $4, $5, $6)`,
-        [dto.accountId, dto.policyId ?? null, txn.id,
-         dto.txnType === 'claim_fnol' ? 'claim_fnol' : 'follow_up',
-         `${dto.txnType} opened`, dto.reason ?? null],
-      );
-      return txn;
-    });
+    return this.db
+      .withTenant(ctx.tenantId, ctx.actor, async (q) => this.insertTxn(q, dto))
+      .catch((e: unknown) => {
+        const err = e as { code?: string; message?: string };
+        if (err?.code === '42501') {
+          throw new ForbiddenException(err.message ?? 'not authorized to open this transaction');
+        }
+        throw e;
+      });
+  }
+
+  private async insertTxn(q: Q, dto: OpenTxnDto) {
+    const r = await q(
+      `INSERT INTO txn (tenant_id, reference, txn_type, account_id, policy_id,
+                        carrier_id, reason, effective_date)
+       VALUES (current_tenant(), $1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, reference, txn_type, state, module, opened_at`,
+      [dto.reference ?? null, dto.txnType, dto.accountId, dto.policyId ?? null,
+       dto.carrierId ?? null, dto.reason ?? null, dto.effectiveDate ?? null],
+    );
+    const txn = r.rows[0];
+    await q(
+      `INSERT INTO activity (tenant_id, account_id, policy_id, txn_id,
+                             activity_type, title, body)
+       VALUES (current_tenant(), $1, $2, $3, $4, $5, $6)`,
+      [dto.accountId, dto.policyId ?? null, txn.id,
+       dto.txnType === 'claim_fnol' ? 'claim_fnol' : 'follow_up',
+       `${dto.txnType} opened`, dto.reason ?? null],
+    );
+    return txn;
   }
 
   /** Generate the transaction's document (LPV, application, ...) from policy data. */
