@@ -12,6 +12,8 @@ import { QueuesController } from './queues/queues.controller';
 import { QueuesService } from './queues/queues.service';
 import { MeController } from './me/me.controller';
 import { MeService } from './me/me.service';
+import { TeamController } from './team/team.controller';
+import { TeamService } from './team/team.service';
 import { AuthGuard } from './common/auth.guard';
 
 @Module({
@@ -23,6 +25,7 @@ import { AuthGuard } from './common/auth.guard';
     MetricsController,
     QueuesController,
     MeController,
+    TeamController,
   ],
   providers: [
     TxnsService,
@@ -30,6 +33,7 @@ import { AuthGuard } from './common/auth.guard';
     MetricsService,
     QueuesService,
     MeService,
+    TeamService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

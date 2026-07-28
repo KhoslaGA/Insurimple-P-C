@@ -441,6 +441,41 @@ export const roleGrant = z.object({
 });
 export type RoleGrant = z.infer<typeof roleGrant>;
 
+/** A staff member's role grant as seen on the team roster. */
+export const teamGrant = roleGrant.extend({
+  id: z.string().uuid(),
+  staff_id: z.string().uuid(),
+});
+export type TeamGrant = z.infer<typeof teamGrant>;
+
+export const teamLicence = licenceRow.extend({
+  staff_id: z.string().uuid(),
+});
+export type TeamLicence = z.infer<typeof teamLicence>;
+
+export const teamMember = z.object({
+  id: z.string().uuid(),
+  full_name: z.string(),
+  email: z.string(),
+  role: z.string(),
+  ribo_level: z.string().nullable(),
+  licences: z.array(teamLicence),
+  grants: z.array(teamGrant),
+});
+export type TeamMember = z.infer<typeof teamMember>;
+
+export const teamRoster = z.object({
+  roles: z.array(
+    z.object({
+      code: z.string(),
+      name: z.string(),
+      description: z.string().nullable(),
+    }),
+  ),
+  members: z.array(teamMember),
+});
+export type TeamRoster = z.infer<typeof teamRoster>;
+
 export const meProfile = z.object({
   staff: z
     .object({

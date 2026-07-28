@@ -34,6 +34,10 @@ ON CONFLICT DO NOTHING;
 -- Entitlement + licence + grant (invariants 3 & 4). Without these the DB
 -- refuses every transaction insert — the boundary is structural, so the seed
 -- must provision it exactly as production onboarding would.
+--
+-- This runs as a superuser (RLS and the team.manage guard both bypassed for
+-- seeding). In production the equivalent path is tenant provisioning acting as
+-- `system`: the first principal cannot grant themselves authority.
 -- ----------------------------------------------------------------------------
 INSERT INTO tenant_module (tenant_id, module) VALUES
  ('11111111-1111-1111-1111-111111111111','pc')

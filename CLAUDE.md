@@ -12,7 +12,7 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 - `packages/contracts` — shared types/zod schemas + API client. New shared types land here FIRST.
 - `packages/config` — eslint, tsconfig, tailwind preset, adherence lint.
 - Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (40 tables,
-  9 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
+  10 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
   ledger) go through the NestJS API. Run the schema locally with
   `pnpm --filter @insurimple/db migrate` (+ `seed` for dev fixtures, `test` for the CI gate).
 

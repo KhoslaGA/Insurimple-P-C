@@ -23,6 +23,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'flame', label: 'Claims' },
   { icon: 'receipt', label: 'Billing & receivables' },
   { icon: 'chart-bar', label: 'Book & compliance' },
+  { icon: 'users-group', label: 'Team & roles', href: '/team' },
 ];
 
 export function AppShell({ children, preview = false }: { children: ReactNode; preview?: boolean }) {

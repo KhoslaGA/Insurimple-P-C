@@ -40,6 +40,12 @@ VALUES ('c0000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-11111111
 -- ---- entitlement + licence + grant (invariants 3 & 4) ----------------------
 -- The tenant subscribes to P&C; Gautam holds a live RIBO licence, and his
 -- principal-broker grant is anchored to it.
+--
+-- Tenant provisioning runs as `system`: the first principal cannot grant
+-- themselves authority (0010_team_admin.sql gates licence and grant writes on
+-- team.manage), so bootstrap is a privileged path by construction.
+SELECT set_config('app.current_actor','system', false);
+
 INSERT INTO tenant_module (tenant_id, module)
 VALUES ('11111111-1111-1111-1111-111111111111','pc');
 
@@ -63,6 +69,9 @@ VALUES ('11c00000-0000-0000-0000-000000000002','11111111-1111-1111-1111-11111111
 INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
 VALUES ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000002',
         'life_only','11c00000-0000-0000-0000-000000000002');
+
+-- Provisioning done — back to acting as the principal broker.
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 
 -- ---- account + party + consent (Abtahi) -----------------------------------
 INSERT INTO account (id, tenant_id, branch_id, lookup_code, display_name, kind, status, source)
@@ -277,8 +286,13 @@ VALUES ('70000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-11111111
 DO $$ BEGIN RAISE NOTICE 'TEST6b PASS: licensed principal broker created the P&C txn'; END $$;
 
 -- 6c — an EXPIRED licence removes the capability it carried.
+-- Expiring and restoring run as `system`: once the principal's own licence
+-- lapses they lose team.manage too, so they cannot un-expire themselves. That
+-- is the intended behaviour — a lapsed principal is not self-restoring.
+SELECT set_config('app.current_actor','system', false);
 UPDATE licence SET expires_on = current_date - 1
  WHERE id = '11c00000-0000-0000-0000-000000000001';
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 DO $$
 BEGIN
     INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
@@ -288,8 +302,10 @@ BEGIN
 EXCEPTION WHEN insufficient_privilege THEN
     RAISE NOTICE 'TEST6c PASS: expired licence revokes authority (%)', SQLERRM;
 END $$;
+SELECT set_config('app.current_actor','system', false);
 UPDATE licence SET expires_on = current_date + 365
  WHERE id = '11c00000-0000-0000-0000-000000000001';
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 
 -- 6d — entitlement: the tenant has no Life module, so even the principal
 --      (who holds life.txn.create) cannot open a Life transaction.
@@ -305,6 +321,54 @@ BEGIN
     RAISE EXCEPTION 'TEST6d FAIL: a Life txn was created without the Life entitlement';
 EXCEPTION WHEN insufficient_privilege THEN
     RAISE NOTICE 'TEST6d PASS: Life module not entitled — txn denied (%)', SQLERRM;
+END $$;
+
+-- ============================================================================
+-- TEST 7 — managing the boundary is inside the boundary (0010_team_admin.sql).
+--          Without this, a Life-only user could simply grant themselves the
+--          P&C role and TEST6a would be decorative.
+-- ============================================================================
+
+-- 7a — a Life-only user CANNOT grant themselves a P&C-capable role.
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
+DO $$
+BEGIN
+    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
+    VALUES ('11111111-1111-1111-1111-111111111111',
+            '50000000-0000-0000-0000-000000000002','pc_sales');
+    RAISE EXCEPTION 'TEST7a FAIL: a Life-only user granted themselves a P&C role';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST7a PASS: privilege escalation blocked (%)', SQLERRM;
+END $$;
+
+-- 7b — nor can they extend their own licence, or record a new one.
+DO $$
+BEGIN
+    INSERT INTO licence (tenant_id, staff_id, licence_class, licence_number, expires_on)
+    VALUES ('11111111-1111-1111-1111-111111111111',
+            '50000000-0000-0000-0000-000000000002','ribo_l2','SELF-ISSUED', current_date + 365);
+    RAISE EXCEPTION 'TEST7b FAIL: a Life-only user issued themselves a RIBO licence';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST7b PASS: self-issued licence blocked (%)', SQLERRM;
+END $$;
+
+-- 7c — the principal (holding team.manage) CAN grant a role, and the grant
+--      immediately confers its capabilities.
+SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
+VALUES ('11111111-1111-1111-1111-111111111111',
+        '50000000-0000-0000-0000-000000000002','pc_service');
+DO $$
+DECLARE ok boolean;
+BEGIN
+    RAISE NOTICE 'TEST7c PASS: principal granted the P&C service role';
+    -- and now the formerly Life-only user can transact P&C
+    PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
+    SELECT actor_has_capability('pc.txn.create') INTO ok;
+    IF NOT ok THEN
+        RAISE EXCEPTION 'TEST7d FAIL: granted role did not confer pc.txn.create';
+    END IF;
+    RAISE NOTICE 'TEST7d PASS: the new grant confers pc.txn.create immediately';
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

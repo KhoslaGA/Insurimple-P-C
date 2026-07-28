@@ -1,5 +1,6 @@
 import type {
   AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail, MeProfile,
+  TeamRoster,
 } from "@insurimple/contracts";
 
 /**
@@ -1046,7 +1047,7 @@ export const DEMO_ME = ({
       "licence_number": "RIBO-100200",
       "regulator": "RIBO",
       "issued_on": "2019-03-01",
-      "expires_on": "2027-05-21",
+      "expires_on": "2027-05-24",
       "status": "active",
       "expired": false,
       "expiring_soon": false
@@ -1057,7 +1058,7 @@ export const DEMO_ME = ({
       "role_code": "admin_principal",
       "role_name": "Admin / Principal broker",
       "licence_id": "11c00000-0000-0000-0000-000000000001",
-      "granted_at": "2026-07-25 22:57:46.499998+00"
+      "granted_at": "2026-07-28 00:22:33.319632+00"
     }
   ],
   "capabilities": [
@@ -1069,9 +1070,109 @@ export const DEMO_ME = ({
     "mortgage.txn.create",
     "pc.policy.write",
     "pc.quote.create",
-    "pc.txn.create"
+    "pc.txn.create",
+    "team.manage"
   ],
   "modules": [
     "pc"
   ]
 }) as unknown as MeProfile;
+
+export const DEMO_TEAM = ({
+  "roles": [
+    {
+      "code": "admin_principal",
+      "name": "Admin / Principal broker",
+      "description": "Full access incl. compliance sign-off"
+    },
+    {
+      "code": "llqp_no_life",
+      "name": "LLQP (no life sales)",
+      "description": "Support role; no life or P&C transaction authority"
+    },
+    {
+      "code": "life_only",
+      "name": "Life only",
+      "description": "Life/A&S business only — no P&C authority"
+    },
+    {
+      "code": "mortgage",
+      "name": "Mortgage",
+      "description": "Mortgage referrals only"
+    },
+    {
+      "code": "pc_sales",
+      "name": "P&C sales",
+      "description": "Quotes and new P&C business"
+    },
+    {
+      "code": "pc_service",
+      "name": "P&C service",
+      "description": "Services the existing P&C book"
+    }
+  ],
+  "members": [
+    {
+      "id": "50000000-0000-0000-0000-0000000000c5",
+      "full_name": "Dana CSR",
+      "email": "dana@insurimple.ca",
+      "role": "csr",
+      "ribo_level": null,
+      "licences": [
+        {
+          "id": "0f6095e8-fadf-4926-b144-23484f4745bc",
+          "staff_id": "50000000-0000-0000-0000-0000000000c5",
+          "licence_class": "ribo_l1",
+          "licence_number": "RIBO-204411",
+          "regulator": "RIBO",
+          "issued_on": null,
+          "expires_on": "2027-02-28",
+          "status": "active",
+          "expired": false,
+          "expiring_soon": false
+        }
+      ],
+      "grants": [
+        {
+          "id": "0bdf43bc-ff58-4138-8d13-00da66273ad1",
+          "staff_id": "50000000-0000-0000-0000-0000000000c5",
+          "role_code": "pc_service",
+          "role_name": "P&C service",
+          "licence_id": null,
+          "granted_at": "2026-07-28 00:22:59.270001+00"
+        }
+      ]
+    },
+    {
+      "id": "50000000-0000-0000-0000-000000000001",
+      "full_name": "Gautam Khosla",
+      "email": "gautam@insurimple.ca",
+      "role": "principal_broker",
+      "ribo_level": "L1",
+      "licences": [
+        {
+          "id": "11c00000-0000-0000-0000-000000000001",
+          "staff_id": "50000000-0000-0000-0000-000000000001",
+          "licence_class": "ribo_l2",
+          "licence_number": "RIBO-100200",
+          "regulator": "RIBO",
+          "issued_on": "2019-03-01",
+          "expires_on": "2027-05-24",
+          "status": "active",
+          "expired": false,
+          "expiring_soon": false
+        }
+      ],
+      "grants": [
+        {
+          "id": "f5fb6778-7bd1-4612-a18c-08a55fc81f1b",
+          "staff_id": "50000000-0000-0000-0000-000000000001",
+          "role_code": "admin_principal",
+          "role_name": "Admin / Principal broker",
+          "licence_id": "11c00000-0000-0000-0000-000000000001",
+          "granted_at": "2026-07-28 00:22:33.319632+00"
+        }
+      ]
+    }
+  ]
+}) as unknown as TeamRoster;
