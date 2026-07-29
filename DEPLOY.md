@@ -44,16 +44,52 @@ With **no environment variables set**, the app runs in *preview mode*:
 
 This is what makes the Vercel deploy viewable with one click.
 
-### Vercel settings
-- **Root Directory:** `apps/bms`
-- **Framework preset:** Next.js (auto-detected)
-- Install/build are handled by the pnpm workspace + Turborepo; the default
-  `pnpm install` / `next build` works. No `vercel.json` required.
-- If a deploy ever 500s with `MIDDLEWARE_INVOCATION_FAILED`, it means Clerk keys
-  are partially set — either set both (`CLERK_SECRET_KEY` +
-  `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`) or neither.
+### Vercel settings — first-time setup
 
-Deploy → open the URL → click **Households** or a **Locate** row.
+1. **Vercel → Add New → Project**, import `KhoslaGA/Insurimple-P-C`.
+2. **Root Directory:** `apps/bms` (this is the one setting that matters —
+   everything else is auto-detected, and `apps/bms/vercel.json` pins the
+   framework and build command).
+3. Leave **Environment Variables empty** for the preview. The app detects the
+   absence of `API_URL` and renders the seed snapshot, badged "Preview data".
+4. **Deploy.**
+
+Vercel installs from the workspace root automatically (it detects the pnpm
+workspace); `next.config.ts` already lists the workspace packages in
+`transpilePackages`, so the shipped-as-TypeScript packages compile as part of
+the app. A plain `next build` from `apps/bms` is all it needs.
+
+### Seeing changes as they're built
+
+Once the repo is connected, **every push gets its own preview URL**
+automatically — no action needed. Pushing to the working branch
+(`claude/vscode-claude-chat-continue-2xx3p9`) produces a preview deployment;
+merging to `main` updates production. The Vercel dashboard lists each
+deployment against its commit, so a screen can be reviewed at the commit that
+introduced it.
+
+### A custom domain
+
+**Project → Settings → Domains → Add.**
+
+- A domain bought through Vercel is configured automatically.
+- A domain held elsewhere: add it, then at the registrar create either
+  `A @ 76.76.21.21` for an apex domain, or `CNAME <sub> cname.vercel-dns.com`
+  for a subdomain. TLS is issued automatically once DNS resolves.
+- Assign the domain to the branch you want it to track. A practical split:
+  `app.insurimple.com` → production (`main`), and a preview domain such as
+  `next.insurimple.com` → the working branch, so there is always one stable URL
+  showing the latest build without hunting for a deployment hash.
+
+### Troubleshooting
+
+- **`MIDDLEWARE_INVOCATION_FAILED`** — Clerk keys are partially set. Set both
+  (`CLERK_SECRET_KEY` + `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`) or neither.
+- **Screens render but every list is empty** — `API_URL` is set but the API is
+  unreachable, so the preview fallback is off and the fetch is failing. Unset
+  `API_URL` to go back to the snapshot, or fix the API host.
+- **Build cannot resolve `@insurimple/*`** — Root Directory is not `apps/bms`,
+  so Vercel installed only the app rather than the workspace.
 
 ---
 
