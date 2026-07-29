@@ -412,6 +412,64 @@ export const workQueues = z.object({
 export type WorkQueues = z.infer<typeof workQueues>;
 
 /* ============================================================
+   Billing & receivables. The ledger is double-entry and append-only;
+   screens read it, the transaction spine writes it. Trust surplus
+   below zero is a shortfall — a RIBO reportable event.
+   ============================================================ */
+
+export const ledgerEntry = z.object({
+  id: z.string().uuid(),
+  book: z.enum(['trust', 'general']),
+  reference: z.string().nullable(),
+  description: z.string().nullable(),
+  entry_date: z.string(),
+  posted: z.boolean(),
+  amount: z.union([z.number(), z.string()]),
+});
+export type LedgerEntry = z.infer<typeof ledgerEntry>;
+
+export const commissionRow = z.object({
+  id: z.string().uuid(),
+  period: z.string().nullable(),
+  expected: money,
+  received: money,
+  variance: z.union([z.number(), z.string()]),
+  status: z.enum(['open', 'matched', 'variance', 'written_off']),
+  carrier_name: z.string().nullable(),
+  policy_number: z.string().nullable(),
+  line: z.string().nullable(),
+  account_name: z.string().nullable(),
+});
+export type CommissionRow = z.infer<typeof commissionRow>;
+
+export const trustHolding = z.object({
+  account_id: z.string().uuid(),
+  account_name: z.string(),
+  lookup_code: z.string().nullable(),
+  held_in_trust: z.union([z.number(), z.string()]),
+});
+export type TrustHolding = z.infer<typeof trustHolding>;
+
+export const billingOverview = z.object({
+  trust: z.object({
+    assets: z.number(),
+    liabilities: z.number(),
+    surplus: z.number(),
+  }),
+  commission_summary: z.object({
+    expected: z.number(),
+    received: z.number(),
+    variance: z.number(),
+    open: z.number(),
+    in_variance: z.number(),
+  }),
+  entries: z.array(ledgerEntry),
+  commissions: z.array(commissionRow),
+  held_in_trust: z.array(trustHolding),
+});
+export type BillingOverview = z.infer<typeof billingOverview>;
+
+/* ============================================================
    Proofs & documents. Every issued proof is a first-class record
    with the 6-year RIBO retention clock, not a file in a folder.
    ============================================================ */

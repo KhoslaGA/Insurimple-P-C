@@ -14,6 +14,8 @@ import { MeController } from './me/me.controller';
 import { MeService } from './me/me.service';
 import { TeamController } from './team/team.controller';
 import { TeamService } from './team/team.service';
+import { BillingController } from './billing/billing.controller';
+import { BillingService } from './billing/billing.service';
 import { DocumentsController } from './documents/documents.controller';
 import { DocumentsService } from './documents/documents.service';
 import { AuthGuard } from './common/auth.guard';
@@ -29,6 +31,7 @@ import { AuthGuard } from './common/auth.guard';
     MeController,
     TeamController,
     DocumentsController,
+    BillingController,
   ],
   providers: [
     TxnsService,
@@ -38,6 +41,7 @@ import { AuthGuard } from './common/auth.guard';
     MeService,
     TeamService,
     DocumentsService,
+    BillingService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

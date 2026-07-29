@@ -378,4 +378,60 @@ E'LETTER OF EXPERIENCE\n\n'
   1,'2026-01-01')
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- Accounting. Trust and general are separate books; entries are immutable once
+-- posted and a correction is a reversing entry, never an edit. Trust surplus
+-- must never go negative — a shortfall is a RIBO reportable event.
+-- ============================================================================
+INSERT INTO ledger_account (id, tenant_id, book, code, name, type) VALUES
+ ('1a000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','trust','1000','Trust bank — premium','asset'),
+ ('1a000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','trust','2000','Premiums payable to carriers','liability'),
+ ('1a000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','general','1100','Operating bank','asset'),
+ ('1a000000-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','general','4000','Commission revenue','revenue'),
+ ('1a000000-0000-0000-0000-000000000005','11111111-1111-1111-1111-111111111111','general','1200','Commissions receivable','asset')
+ON CONFLICT DO NOTHING;
+
+-- Premium receipt from the Kapoor household (trust book).
+INSERT INTO journal_entry (id, tenant_id, book, reference, description, entry_date) VALUES
+ ('1e000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','trust','RCP-4401','Premium receipt — Kapoor home + auto', current_date - 21)
+ON CONFLICT DO NOTHING;
+INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000004',4300.00,0),
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',0,4300.00)
+ON CONFLICT DO NOTHING;
+UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000001';
+
+-- Remittance to the carrier (trust book) — money leaves trust.
+INSERT INTO journal_entry (id, tenant_id, book, reference, description, entry_date) VALUES
+ ('1e000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','trust','REM-2210','Remittance to Pembridge — January statement', current_date - 12)
+ON CONFLICT DO NOTHING;
+-- The liability line carries party_account_id so the trust sub-ledger ties
+-- back to the control account. An unattributed remittance would leave "held
+-- for each client" out of balance with total premiums payable — precisely
+-- what a RIBO spot check looks for.
+INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',3100.00,0),
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000001',NULL,0,3100.00)
+ON CONFLICT DO NOTHING;
+UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000002';
+
+-- Premium receipt from Mehta.
+INSERT INTO journal_entry (id, tenant_id, book, reference, description, entry_date) VALUES
+ ('1e000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','trust','RCP-4408','Premium receipt — Mehta auto + tenant', current_date - 5)
+ON CONFLICT DO NOTHING;
+INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000003',2300.00,0),
+ ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000003',0,2300.00)
+ON CONFLICT DO NOTHING;
+UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000003';
+
+-- Commission reconciliation: expected vs received per carrier statement.
+INSERT INTO commission_entry (tenant_id, policy_id, carrier_id, period, expected, received, status) VALUES
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 267.50, 267.50,'matched'),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 307.50, 246.00,'variance'),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 368.00, NULL,'open'),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 215.00, 215.00,'matched'),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 48.00, NULL,'open')
+ON CONFLICT DO NOTHING;
+
 SELECT 'seed complete' AS result;
