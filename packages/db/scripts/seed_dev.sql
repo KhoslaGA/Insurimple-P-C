@@ -241,4 +241,54 @@ INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, t
  ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005',NULL,NULL,'follow_up','Prospect follow-up — Gurpreet Sandhu quote','Quoted auto at $2,010. Follow up on bind decision.','50000000-0000-0000-0000-000000000001','high','open', now() - interval '2 days', true)
 ON CONFLICT DO NOTHING;
 
+-- ----------------------------------------------------------------------------
+-- Document templates for the proofs hub. Merge fields are {{snake_case}} and
+-- are filled by the API from policy / account / party data at issue time.
+-- Form editions matter in Ontario, hence effective_from + version.
+-- ----------------------------------------------------------------------------
+INSERT INTO document_template (id, tenant_id, code, name, body, version, effective_from) VALUES
+ ('7e110000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
+  'PINK_SLIP','Ontario liability slip (pink card)',
+E'ONTARIO MOTOR VEHICLE LIABILITY INSURANCE CARD\n\n'
+'Insurer: {{carrier_name}}\n'
+'Policy number: {{policy_number}}\n'
+'Named insured: {{insured_name}}\n'
+'Address: {{insured_address}}\n\n'
+'Effective: {{effective_date}}    Expires: {{expiry_date}}\n\n'
+'Vehicle(s):\n{{vehicles}}\n\n'
+'This card is evidence that the policy shown is in force on the dates stated.\n'
+'Issued by {{brokerage_name}} on {{issued_on}}.',
+  1,'2026-01-01'),
+
+ ('7e110000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111',
+  'BINDER_LETTER','Evidence of property insurance (lender)',
+E'EVIDENCE OF PROPERTY INSURANCE\n\n'
+'To: {{issued_to}}\n'
+'Date: {{issued_on}}\n\n'
+'This confirms that {{brokerage_name}} has placed the following coverage:\n\n'
+'Named insured: {{insured_name}}\n'
+'Risk address: {{insured_address}}\n'
+'Insurer: {{carrier_name}}\n'
+'Policy number: {{policy_number}}\n'
+'Policy period: {{effective_date}} to {{expiry_date}}\n\n'
+'Coverages in force:\n{{coverages}}\n\n'
+'The insurer will endeavour to provide notice of cancellation in accordance\n'
+'with the policy terms and the Insurance Act (Ontario).',
+  1,'2026-01-01'),
+
+ ('7e110000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111',
+  'LOE','Letter of experience',
+E'LETTER OF EXPERIENCE\n\n'
+'Date: {{issued_on}}\n'
+'Re: {{insured_name}} ({{lookup_code}})\n\n'
+'{{brokerage_name}} confirms the following insurance history:\n\n'
+'Insurer: {{carrier_name}}\n'
+'Policy number: {{policy_number}}\n'
+'Continuously insured from: {{effective_date}}\n\n'
+'Loss history:\n{{loss_history}}\n\n'
+'Issued at the request of the named insured for the purpose of establishing\n'
+'prior insurance experience.',
+  1,'2026-01-01')
+ON CONFLICT DO NOTHING;
+
 SELECT 'seed complete' AS result;

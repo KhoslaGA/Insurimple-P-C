@@ -1,6 +1,6 @@
 import type {
   AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail, MeProfile,
-  TeamRoster,
+  TeamRoster, DocumentRow, DocumentTemplate,
 } from "@insurimple/contracts";
 
 /**
@@ -1058,7 +1058,7 @@ export const DEMO_ME = ({
       "role_code": "admin_principal",
       "role_name": "Admin / Principal broker",
       "licence_id": "11c00000-0000-0000-0000-000000000001",
-      "granted_at": "2026-07-29 13:17:56.782046+00"
+      "granted_at": "2026-07-29 13:23:18.685207+00"
     }
   ],
   "capabilities": [
@@ -1069,6 +1069,7 @@ export const DEMO_ME = ({
     "life.txn.create",
     "mortgage.txn.create",
     "pc.policy.write",
+    "pc.proof.issue",
     "pc.quote.create",
     "pc.txn.create",
     "team.manage"
@@ -1176,3 +1177,69 @@ export const DEMO_TEAM = ({
     }
   ]
 }) as unknown as TeamRoster;
+
+export const DEMO_DOCUMENTS = ([
+  {
+    "id": "615f972f-8386-44ae-9703-b580edf4ecbf",
+    "doc_type": "loe",
+    "filename": "GILLAM01-LOE-2026-07-29.pdf",
+    "source": "generated",
+    "issued_to": null,
+    "retention_until": "2032-07-29",
+    "created_at": "2026-07-29 13:26:16.11958+00",
+    "account_id": "a0000000-0000-0000-0000-000000000002",
+    "account_name": "Amrit Gill",
+    "lookup_code": "GILLAM01",
+    "policy_id": "90000000-0000-0000-0000-000000000002",
+    "policy_number": "GM-771204",
+    "line": "auto"
+  },
+  {
+    "id": "abfb3423-3e8d-4975-8d1b-232df37529c0",
+    "doc_type": "binder_letter",
+    "filename": "MEHTARA01-BINDER_LETTER-2026-07-29.pdf",
+    "source": "generated",
+    "issued_to": "TD Canada Trust — Mortgage Services",
+    "retention_until": "2032-07-29",
+    "created_at": "2026-07-29 13:26:16.102672+00",
+    "account_id": "a0000000-0000-0000-0000-000000000003",
+    "account_name": "Rahul Mehta",
+    "lookup_code": "MEHTARA01",
+    "policy_id": "90000000-0000-0000-0000-000000000013",
+    "policy_number": "GM-880132",
+    "line": "tenant"
+  },
+  {
+    "id": "a259485b-61eb-4a0d-a56c-ea04da9817c1",
+    "doc_type": "pink_slip",
+    "filename": "ABTAHISE01-PINK_SLIP-2026-07-29.pdf",
+    "source": "generated",
+    "issued_to": null,
+    "retention_until": "2032-07-29",
+    "created_at": "2026-07-29 13:26:16.077805+00",
+    "account_id": "a0000000-0000-0000-0000-000000000001",
+    "account_name": "Seyed Moein Abtahi",
+    "lookup_code": "ABTAHISE01",
+    "policy_id": "90000000-0000-0000-0000-000000000001",
+    "policy_number": "240517202",
+    "line": "auto"
+  }
+]) as unknown as DocumentRow[];
+
+export const DEMO_TEMPLATES = ([
+  {
+    "code": "BINDER_LETTER",
+    "name": "Evidence of property insurance (lender)",
+    "version": 1
+  },
+  {
+    "code": "LOE",
+    "name": "Letter of experience",
+    "version": 1
+  },
+  {
+    "code": "PINK_SLIP",
+    "name": "Ontario liability slip (pink card)",
+    "version": 1
+  }
+]) as unknown as DocumentTemplate[];

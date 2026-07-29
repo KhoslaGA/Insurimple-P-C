@@ -406,6 +406,47 @@ export const workQueues = z.object({
 export type WorkQueues = z.infer<typeof workQueues>;
 
 /* ============================================================
+   Proofs & documents. Every issued proof is a first-class record
+   with the 6-year RIBO retention clock, not a file in a folder.
+   ============================================================ */
+
+export const documentRow = z.object({
+  id: z.string().uuid(),
+  doc_type: z.string(),
+  filename: z.string(),
+  source: z.string(),
+  issued_to: z.string().nullable(),
+  retention_until: z.string().nullable(),
+  created_at: z.string(),
+  account_id: z.string().uuid().nullable(),
+  account_name: z.string().nullable(),
+  lookup_code: z.string().nullable(),
+  policy_id: z.string().uuid().nullable(),
+  policy_number: z.string().nullable(),
+  line: z.string().nullable(),
+});
+export type DocumentRow = z.infer<typeof documentRow>;
+
+export const documentTemplate = z.object({
+  code: z.string(),
+  name: z.string(),
+  version: z.number(),
+});
+export type DocumentTemplate = z.infer<typeof documentTemplate>;
+
+export const issuedProof = z.object({
+  id: z.string().uuid(),
+  doc_type: z.string(),
+  filename: z.string(),
+  issued_to: z.string().nullable(),
+  retention_until: z.string().nullable(),
+  created_at: z.string(),
+  rendered_body: z.string(),
+  template_name: z.string(),
+});
+export type IssuedProof = z.infer<typeof issuedProof>;
+
+/* ============================================================
    Authority — licence (invariant 3) and entitlement (invariant 4).
    GET /me returns what the caller may actually do; `capabilities`
    comes from the SAME DB function the write guard uses, so the UI
