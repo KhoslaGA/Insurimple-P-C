@@ -1047,7 +1047,7 @@ export const DEMO_ME = ({
       "licence_number": "RIBO-100200",
       "regulator": "RIBO",
       "issued_on": "2019-03-01",
-      "expires_on": "2027-05-24",
+      "expires_on": "2027-05-25",
       "status": "active",
       "expired": false,
       "expiring_soon": false
@@ -1058,7 +1058,7 @@ export const DEMO_ME = ({
       "role_code": "admin_principal",
       "role_name": "Admin / Principal broker",
       "licence_id": "11c00000-0000-0000-0000-000000000001",
-      "granted_at": "2026-07-28 00:22:33.319632+00"
+      "granted_at": "2026-07-29 13:17:56.782046+00"
     }
   ],
   "capabilities": [
@@ -1120,7 +1120,7 @@ export const DEMO_TEAM = ({
       "ribo_level": null,
       "licences": [
         {
-          "id": "0f6095e8-fadf-4926-b144-23484f4745bc",
+          "id": "d4b236f7-6740-499c-ba2f-f8182fdc0fb2",
           "staff_id": "50000000-0000-0000-0000-0000000000c5",
           "licence_class": "ribo_l1",
           "licence_number": "RIBO-204411",
@@ -1134,12 +1134,12 @@ export const DEMO_TEAM = ({
       ],
       "grants": [
         {
-          "id": "0bdf43bc-ff58-4138-8d13-00da66273ad1",
+          "id": "ca078531-6872-4850-9a4e-b4bf3499e666",
           "staff_id": "50000000-0000-0000-0000-0000000000c5",
           "role_code": "pc_service",
           "role_name": "P&C service",
-          "licence_id": null,
-          "granted_at": "2026-07-28 00:22:59.270001+00"
+          "licence_id": "d4b236f7-6740-499c-ba2f-f8182fdc0fb2",
+          "granted_at": "2026-07-29 13:18:17.228204+00"
         }
       ]
     },
@@ -1157,7 +1157,7 @@ export const DEMO_TEAM = ({
           "licence_number": "RIBO-100200",
           "regulator": "RIBO",
           "issued_on": "2019-03-01",
-          "expires_on": "2027-05-24",
+          "expires_on": "2027-05-25",
           "status": "active",
           "expired": false,
           "expiring_soon": false
@@ -1165,12 +1165,12 @@ export const DEMO_TEAM = ({
       ],
       "grants": [
         {
-          "id": "f5fb6778-7bd1-4612-a18c-08a55fc81f1b",
+          "id": "3f51d7b5-39e5-4009-95fd-67195fe85c91",
           "staff_id": "50000000-0000-0000-0000-000000000001",
           "role_code": "admin_principal",
           "role_name": "Admin / Principal broker",
           "licence_id": "11c00000-0000-0000-0000-000000000001",
-          "granted_at": "2026-07-28 00:22:33.319632+00"
+          "granted_at": "2026-07-29 13:17:56.782046+00"
         }
       ]
     }

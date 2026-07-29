@@ -285,14 +285,9 @@ VALUES ('70000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-11111111
         'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
 DO $$ BEGIN RAISE NOTICE 'TEST6b PASS: licensed principal broker created the P&C txn'; END $$;
 
--- 6c — an EXPIRED licence removes the capability it carried.
--- Expiring and restoring run as `system`: once the principal's own licence
--- lapses they lose team.manage too, so they cannot un-expire themselves. That
--- is the intended behaviour — a lapsed principal is not self-restoring.
-SELECT set_config('app.current_actor','system', false);
+-- 6c — an EXPIRED licence removes the LICENSED capabilities it carried.
 UPDATE licence SET expires_on = current_date - 1
  WHERE id = '11c00000-0000-0000-0000-000000000001';
-SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 DO $$
 BEGIN
     INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
@@ -302,10 +297,32 @@ BEGIN
 EXCEPTION WHEN insufficient_privilege THEN
     RAISE NOTICE 'TEST6c PASS: expired licence revokes authority (%)', SQLERRM;
 END $$;
-SELECT set_config('app.current_actor','system', false);
+-- 6e — but the lapsed principal is NOT stranded (0011): administering records
+--      is not a licensed activity, so they can still record the renewal. This
+--      is the same write that was refused before the capability/licence scope
+--      split, and it is what stops a solo brokerage locking itself out.
+DO $$
+DECLARE ok boolean;
+BEGIN
+    SELECT actor_has_capability('team.manage') INTO ok;
+    IF NOT ok THEN
+        RAISE EXCEPTION 'TEST6e FAIL: a lapsed principal lost team.manage and is stranded';
+    END IF;
+    RAISE NOTICE 'TEST6e PASS: lapsed principal keeps team.manage (can record the renewal)';
+END $$;
+
+-- and they do exactly that — restoring transaction authority.
 UPDATE licence SET expires_on = current_date + 365
  WHERE id = '11c00000-0000-0000-0000-000000000001';
-SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+DO $$
+DECLARE ok boolean;
+BEGIN
+    SELECT actor_has_capability('pc.txn.create') INTO ok;
+    IF NOT ok THEN
+        RAISE EXCEPTION 'TEST6f FAIL: renewing the licence did not restore authority';
+    END IF;
+    RAISE NOTICE 'TEST6f PASS: renewed licence restores pc.txn.create';
+END $$;
 
 -- 6d — entitlement: the tenant has no Life module, so even the principal
 --      (who holds life.txn.create) cannot open a Life transaction.
@@ -352,23 +369,49 @@ EXCEPTION WHEN insufficient_privilege THEN
     RAISE NOTICE 'TEST7b PASS: self-issued licence blocked (%)', SQLERRM;
 END $$;
 
--- 7c — the principal (holding team.manage) CAN grant a role, and the grant
---      immediately confers its capabilities.
+-- 7c — a licensed role cannot be granted without a licence anchor (0011).
 SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
-INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
+DO $$
+BEGIN
+    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
+    VALUES ('11111111-1111-1111-1111-111111111111',
+            '50000000-0000-0000-0000-000000000002','pc_service');
+    RAISE EXCEPTION 'TEST7c FAIL: a licensed role was granted with no licence';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST7c PASS: licensed role requires a licence anchor (%)', SQLERRM;
+END $$;
+
+-- 7d — nor anchored to the WRONG class: Priya holds LLQP, which cannot carry
+--      a P&C role. Without this the principal could hand out P&C authority on
+--      a life licence, bypassing invariant 3 through the admin path.
+DO $$
+BEGIN
+    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
+    VALUES ('11111111-1111-1111-1111-111111111111',
+            '50000000-0000-0000-0000-000000000002','pc_service',
+            '11c00000-0000-0000-0000-000000000002');
+    RAISE EXCEPTION 'TEST7d FAIL: an LLQP licence carried a P&C role';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST7d PASS: wrong licence class rejected (%)', SQLERRM;
+END $$;
+
+-- 7e — with the RIGHT licence recorded, the grant works and confers authority.
+INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, expires_on)
+VALUES ('11c00000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111',
+        '50000000-0000-0000-0000-000000000002','ribo_l1','RIBO-204411','RIBO', current_date + 365);
+INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
 VALUES ('11111111-1111-1111-1111-111111111111',
-        '50000000-0000-0000-0000-000000000002','pc_service');
+        '50000000-0000-0000-0000-000000000002','pc_service',
+        '11c00000-0000-0000-0000-000000000003');
 DO $$
 DECLARE ok boolean;
 BEGIN
-    RAISE NOTICE 'TEST7c PASS: principal granted the P&C service role';
-    -- and now the formerly Life-only user can transact P&C
     PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
     SELECT actor_has_capability('pc.txn.create') INTO ok;
     IF NOT ok THEN
-        RAISE EXCEPTION 'TEST7d FAIL: granted role did not confer pc.txn.create';
+        RAISE EXCEPTION 'TEST7e FAIL: a correctly licensed grant did not confer pc.txn.create';
     END IF;
-    RAISE NOTICE 'TEST7d PASS: the new grant confers pc.txn.create immediately';
+    RAISE NOTICE 'TEST7e PASS: RIBO-anchored grant confers pc.txn.create';
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;
