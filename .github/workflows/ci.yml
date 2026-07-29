@@ -16,6 +16,8 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo build lint typecheck
+      - name: unit tests (contracts + preview snapshot integrity)
+        run: pnpm --filter @insurimple/contracts test && pnpm --filter bms test
 
   schema:
     runs-on: ubuntu-latest
