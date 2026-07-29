@@ -412,6 +412,39 @@ export const workQueues = z.object({
 export type WorkQueues = z.infer<typeof workQueues>;
 
 /* ============================================================
+   Claims — intake and carrier referral only. The carrier adjudicates;
+   we own the evidence that the loss was reported and chased.
+   ============================================================ */
+
+export const claimStatus = z.enum([
+  'open', 'acknowledged', 'in_progress', 'settled', 'closed', 'denied',
+]);
+export type ClaimStatus = z.infer<typeof claimStatus>;
+
+export const claimRow = z.object({
+  id: z.string().uuid(),
+  claim_number: z.string().nullable(),
+  loss_date: z.string().nullable(),
+  reported_date: z.string().nullable(),
+  status: claimStatus,
+  adjuster: z.string().nullable(),
+  reserve: money,
+  paid: money,
+  account_id: z.string().uuid(),
+  account_name: z.string(),
+  lookup_code: z.string().nullable(),
+  policy_id: z.string().uuid().nullable(),
+  policy_number: z.string().nullable(),
+  line: z.string().nullable(),
+  txn_id: z.string().uuid().nullable(),
+  txn_reference: z.string().nullable(),
+  txn_state: txnState.nullable(),
+  carrier_name: z.string().nullable(),
+  days_open: z.number(),
+});
+export type ClaimRow = z.infer<typeof claimRow>;
+
+/* ============================================================
    Book & compliance — the principal broker's supervision view.
    Exceptions are DERIVED (what's missing), never a flag someone
    has to remember to set.

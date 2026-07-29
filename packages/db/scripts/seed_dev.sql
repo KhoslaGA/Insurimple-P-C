@@ -434,4 +434,32 @@ INSERT INTO commission_entry (tenant_id, policy_id, carrier_id, period, expected
  ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 48.00, NULL,'open')
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- Claims. Intake and carrier referral only — the carrier is the system of
+-- record for adjudication; we track that the loss was reported, to whom, and
+-- what came back. The FNOL is a transaction like everything else.
+-- ============================================================================
+INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id, carrier_id, state, reason, effective_date, owner_id, opened_at) VALUES
+ ('d0000000-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','TXN-3070','claim_fnol',
+  'a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000003','c0000000-0000-0000-0000-000000000001',
+  'submitted','Rear-ended at a stop light — not at fault','2026-07-18',
+  '50000000-0000-0000-0000-000000000001', now() - interval '11 days')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, at) VALUES
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004',NULL,'draft','Gautam Khosla', now() - interval '11 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','draft','doc_generated','Gautam Khosla', now() - interval '11 days' + interval '15 minutes'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','doc_generated','sig_pending','Gautam Khosla', now() - interval '11 days' + interval '30 minutes'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','sig_pending','signed','Gautam Khosla', now() - interval '10 days'),
+ ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','signed','submitted','Gautam Khosla', now() - interval '10 days')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO claim (id, tenant_id, account_id, policy_id, txn_id, carrier_id, claim_number,
+                   loss_date, reported_date, status, adjuster, reserve, paid) VALUES
+ ('c1a00000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
+  'a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000003',
+  'd0000000-0000-0000-0000-000000000004','c0000000-0000-0000-0000-000000000001',
+  'PEMB-CL-88214','2026-07-18','2026-07-18','in_progress','J. Whitfield, Pembridge Claims',8500.00,0.00)
+ON CONFLICT DO NOTHING;
+
 SELECT 'seed complete' AS result;
