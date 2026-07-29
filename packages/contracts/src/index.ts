@@ -411,6 +411,28 @@ export const workQueues = z.object({
 });
 export type WorkQueues = z.infer<typeof workQueues>;
 
+/** The flat book — one row per policy, for the policies list. */
+export const policyListRow = z.object({
+  id: z.string().uuid(),
+  policy_number: z.string().nullable(),
+  line,
+  status: z.enum(['quoted', 'bound', 'in_force', 'cancelled', 'lapsed', 'expired']),
+  effective_date: z.string().nullable(),
+  expiry_date: z.string().nullable(),
+  annual_premium: money,
+  billing_type: z.string().nullable(),
+  payment_plan: z.string().nullable(),
+  carrier_name: z.string().nullable(),
+  account_id: z.string().uuid(),
+  account_name: z.string(),
+  lookup_code: z.string().nullable(),
+  vehicle_count: z.number(),
+  dwelling_count: z.number(),
+  coverage_count: z.number(),
+  days_to_expiry: z.number().nullable(),
+});
+export type PolicyListRow = z.infer<typeof policyListRow>;
+
 /* ============================================================
    Claims — intake and carrier referral only. The carrier adjudicates;
    we own the evidence that the loss was reported and chased.
@@ -507,6 +529,17 @@ export const complianceOverview = z.object({
         licence_number: z.string().nullable(),
         expires_on: z.string().nullable(),
         expired: z.boolean(),
+      }),
+    ),
+    expired_in_force: z.array(
+      z.object({
+        id: z.string().uuid(),
+        policy_number: z.string().nullable(),
+        line,
+        expiry_date: z.string().nullable(),
+        days_past: z.number(),
+        account_id: z.string().uuid(),
+        account_name: z.string(),
       }),
     ),
     consent_gaps: z.array(

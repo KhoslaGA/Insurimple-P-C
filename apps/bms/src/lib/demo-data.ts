@@ -1,6 +1,7 @@
 import type {
   AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail, MeProfile,
-  TeamRoster, DocumentRow, DocumentTemplate, BillingOverview, ComplianceOverview, ClaimRow,
+  TeamRoster, DocumentRow, DocumentTemplate, BillingOverview, ComplianceOverview,
+  ClaimRow, PolicyListRow,
 } from "@insurimple/contracts";
 
 /**
@@ -9,10 +10,6 @@ import type {
  * deploy) so the whole app is viewable without a backend. Never live carrier
  * data (invariant 7); screens badge it "Preview data". When API_URL is set the
  * real path is used and this module is never read.
- *
- * Regenerate by capturing GET /accounts, /accounts/:id, /queues, /txns,
- * /txns/:id, /me, /team, /documents, /documents/templates and /billing against
- * a seeded database.
  */
 export const DEMO_ACCOUNTS = ([
   {
@@ -114,8 +111,8 @@ export const DEMO_HOUSEHOLDS = ({
         "line": "auto",
         "status": "in_force",
         "carrier_name": "Pembridge",
-        "effective_date": "2025-06-24",
-        "expiry_date": "2026-06-24",
+        "effective_date": "2026-06-24",
+        "expiry_date": "2027-06-24",
         "annual_premium": "2140.00",
         "billing_type": "agency",
         "payment_plan": "monthly PAD",
@@ -212,7 +209,7 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "submitted",
         "reason": "Client sold the vehicle — cancel auto, flat rate",
         "effective_date": "2026-07-15",
-        "opened_at": "2026-07-20 13:46:31.37256+00",
+        "opened_at": "2026-07-20 13:52:44.457987+00",
         "closed_at": null,
         "carrier_name": "Pembridge",
         "events": [
@@ -220,31 +217,31 @@ export const DEMO_HOUSEHOLDS = ({
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-07-20 13:46:31.37256+00"
+            "at": "2026-07-20 13:52:44.457987+00"
           },
           {
             "from_state": "draft",
             "to_state": "doc_generated",
             "actor": "Gautam Khosla",
-            "at": "2026-07-20 14:06:31.37256+00"
+            "at": "2026-07-20 14:12:44.457987+00"
           },
           {
             "from_state": "doc_generated",
             "to_state": "sig_pending",
             "actor": "Gautam Khosla",
-            "at": "2026-07-21 13:46:31.37256+00"
+            "at": "2026-07-21 13:52:44.457987+00"
           },
           {
             "from_state": "sig_pending",
             "to_state": "signed",
             "actor": "Gautam Khosla",
-            "at": "2026-07-23 13:46:31.37256+00"
+            "at": "2026-07-23 13:52:44.457987+00"
           },
           {
             "from_state": "signed",
             "to_state": "submitted",
             "actor": "Gautam Khosla",
-            "at": "2026-07-24 13:46:31.37256+00"
+            "at": "2026-07-24 13:52:44.457987+00"
           }
         ]
       }
@@ -253,7 +250,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-06-24 13:46:31.37256+00",
+        "captured_at": "2025-06-24 13:52:44.457987+00",
         "expires_at": null,
         "source": "signed application"
       },
@@ -372,51 +369,51 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "completed",
         "reason": "New auto policy — bound at Gore Mutual",
         "effective_date": "2025-09-01",
-        "opened_at": "2026-06-24 13:46:31.37256+00",
-        "closed_at": "2026-07-01 13:46:31.37256+00",
+        "opened_at": "2026-06-24 13:52:44.457987+00",
+        "closed_at": "2026-07-01 13:52:44.457987+00",
         "carrier_name": "Gore Mutual",
         "events": [
           {
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-06-24 13:46:31.37256+00"
+            "at": "2026-06-24 13:52:44.457987+00"
           },
           {
             "from_state": "draft",
             "to_state": "doc_generated",
             "actor": "Gautam Khosla",
-            "at": "2026-06-25 13:46:31.37256+00"
+            "at": "2026-06-25 13:52:44.457987+00"
           },
           {
             "from_state": "doc_generated",
             "to_state": "sig_pending",
             "actor": "Gautam Khosla",
-            "at": "2026-06-26 13:46:31.37256+00"
+            "at": "2026-06-26 13:52:44.457987+00"
           },
           {
             "from_state": "sig_pending",
             "to_state": "signed",
             "actor": "Gautam Khosla",
-            "at": "2026-06-27 13:46:31.37256+00"
+            "at": "2026-06-27 13:52:44.457987+00"
           },
           {
             "from_state": "signed",
             "to_state": "submitted",
             "actor": "Gautam Khosla",
-            "at": "2026-06-28 13:46:31.37256+00"
+            "at": "2026-06-28 13:52:44.457987+00"
           },
           {
             "from_state": "submitted",
             "to_state": "carrier_ack",
             "actor": "Gautam Khosla",
-            "at": "2026-06-30 13:46:31.37256+00"
+            "at": "2026-06-30 13:52:44.457987+00"
           },
           {
             "from_state": "carrier_ack",
             "to_state": "completed",
             "actor": "Gautam Khosla",
-            "at": "2026-07-01 13:46:31.37256+00"
+            "at": "2026-07-01 13:52:44.457987+00"
           }
         ]
       }
@@ -425,7 +422,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2026-01-10 13:46:31.37256+00",
+        "captured_at": "2026-01-10 13:52:44.457987+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -688,25 +685,12 @@ export const DEMO_HOUSEHOLDS = ({
         "forms_endorsements": []
       }
     ],
-    "service_summary": [
-      {
-        "id": "24b14f20-60ef-49d6-abd5-2f660f858fba",
-        "reference": null,
-        "txn_type": "claim_fnol",
-        "state": "draft",
-        "reason": "Basement water damage after storm — sewer backup suspected",
-        "effective_date": "2026-07-26",
-        "opened_at": "2026-07-29 13:46:55.972214+00",
-        "closed_at": null,
-        "carrier_name": "Pembridge",
-        "events": []
-      }
-    ],
+    "service_summary": [],
     "consent": [
       {
         "channel": "email",
         "basis": "express",
-        "captured_at": "2025-10-02 13:46:31.37256+00",
+        "captured_at": "2025-10-02 13:52:44.457987+00",
         "expires_at": null,
         "source": "signed application"
       }
@@ -767,7 +751,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "phone",
         "basis": "express",
-        "captured_at": "2026-07-19 13:46:31.37256+00",
+        "captured_at": "2026-07-19 13:52:44.457987+00",
         "expires_at": null,
         "source": "quote intake call"
       }
@@ -984,7 +968,7 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "draft",
         "reason": "Add winter tire discount",
         "effective_date": "2026-07-25",
-        "opened_at": "2026-07-28 13:46:31.37256+00",
+        "opened_at": "2026-07-28 13:52:44.457987+00",
         "closed_at": null,
         "carrier_name": "Pembridge",
         "events": [
@@ -992,7 +976,7 @@ export const DEMO_HOUSEHOLDS = ({
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-07-28 13:46:31.37256+00"
+            "at": "2026-07-28 13:52:44.457987+00"
           }
         ]
       },
@@ -1003,7 +987,7 @@ export const DEMO_HOUSEHOLDS = ({
         "state": "submitted",
         "reason": "Rear-ended at a stop light — not at fault",
         "effective_date": "2026-07-18",
-        "opened_at": "2026-07-18 13:46:31.37256+00",
+        "opened_at": "2026-07-18 13:52:44.457987+00",
         "closed_at": null,
         "carrier_name": "Pembridge",
         "events": [
@@ -1011,31 +995,31 @@ export const DEMO_HOUSEHOLDS = ({
             "from_state": null,
             "to_state": "draft",
             "actor": "Gautam Khosla",
-            "at": "2026-07-18 13:46:31.37256+00"
+            "at": "2026-07-18 13:52:44.457987+00"
           },
           {
             "from_state": "draft",
             "to_state": "doc_generated",
             "actor": "Gautam Khosla",
-            "at": "2026-07-18 14:01:31.37256+00"
+            "at": "2026-07-18 14:07:44.457987+00"
           },
           {
             "from_state": "doc_generated",
             "to_state": "sig_pending",
             "actor": "Gautam Khosla",
-            "at": "2026-07-18 14:16:31.37256+00"
+            "at": "2026-07-18 14:22:44.457987+00"
           },
           {
             "from_state": "sig_pending",
             "to_state": "signed",
             "actor": "Gautam Khosla",
-            "at": "2026-07-19 13:46:31.37256+00"
+            "at": "2026-07-19 13:52:44.457987+00"
           },
           {
             "from_state": "signed",
             "to_state": "submitted",
             "actor": "Gautam Khosla",
-            "at": "2026-07-19 13:46:31.37256+00"
+            "at": "2026-07-19 13:52:44.457987+00"
           }
         ]
       }
@@ -1044,7 +1028,7 @@ export const DEMO_HOUSEHOLDS = ({
       {
         "channel": "email",
         "basis": "implied",
-        "captured_at": "2026-04-30 13:46:31.37256+00",
+        "captured_at": "2026-04-30 13:52:44.457987+00",
         "expires_at": null,
         "source": "existing client"
       }
@@ -1055,72 +1039,60 @@ export const DEMO_HOUSEHOLDS = ({
 export const DEMO_QUEUES = ({
   "activities": [
     {
-      "id": "99e17b2a-8af1-4a31-9c41-52c88956807e",
+      "id": "d6190f51-aed5-4336-9c35-9a3382ed8c32",
       "title": "Prospect follow-up — Gurpreet Sandhu quote",
       "body": "Quoted auto at $2,010. Follow up on bind decision.",
       "activity_type": "follow_up",
       "priority": "high",
-      "due_at": "2026-07-27 13:46:31.37256+00",
+      "due_at": "2026-07-27 13:52:44.457987+00",
       "overdue": true,
       "account_id": "a0000000-0000-0000-0000-000000000005",
       "account_name": "Gurpreet Sandhu",
       "lookup_code": "SANDHUGU01"
     },
     {
-      "id": "445e3fab-afab-44a5-91ae-ff1fcfb2035e",
+      "id": "6f84621c-d57d-4dde-8111-764b4d3365ea",
       "title": "eDoc received — tenant policy confirmation",
       "body": "Auto-filed from CSIOnet. Review and close.",
       "activity_type": "edoc_received",
       "priority": "low",
-      "due_at": "2026-07-30 13:46:31.37256+00",
+      "due_at": "2026-07-30 13:52:44.457987+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000003",
       "account_name": "Rahul Mehta",
       "lookup_code": "MEHTARA01"
     },
     {
-      "id": "beaa2d7a-4bd1-449c-b4fd-0033a4db245e",
-      "title": "Refer claim to carrier and confirm claim number",
-      "body": "Basement water damage after storm — sewer backup suspected",
-      "activity_type": "claim_fnol",
-      "priority": "high",
-      "due_at": "2026-07-30 13:46:55.972214+00",
-      "overdue": false,
-      "account_id": "a0000000-0000-0000-0000-000000000004",
-      "account_name": "Gautam & Tanvi Kapoor",
-      "lookup_code": "KAPOORGA01"
-    },
-    {
-      "id": "4bdc1405-783f-42ac-bc08-c7598b0f9c5b",
+      "id": "50f8d1de-4fc2-4d63-9561-5eef2d6d10ba",
       "title": "Chase Pembridge — cancellation acknowledgement",
       "body": "Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.",
       "activity_type": "follow_up",
       "priority": "high",
-      "due_at": "2026-07-31 13:46:31.37256+00",
+      "due_at": "2026-07-31 13:52:44.457987+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000001",
       "account_name": "Seyed Moein Abtahi",
       "lookup_code": "ABTAHISE01"
     },
     {
-      "id": "b75474f4-5281-4b49-8824-ff201f7e9659",
+      "id": "c2c4e9be-b32b-4410-bd38-276a66f21baf",
       "title": "Verify OPCF 47R on file — Kapoor auto",
       "body": "SABS optionality: confirm signed 47R before the reform effective date.",
       "activity_type": "compliance_note",
       "priority": "high",
-      "due_at": "2026-08-01 13:46:31.37256+00",
+      "due_at": "2026-08-01 13:52:44.457987+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000004",
       "account_name": "Gautam & Tanvi Kapoor",
       "lookup_code": "KAPOORGA01"
     },
     {
-      "id": "7c7a0efa-51ed-4326-9171-4a84543432d3",
+      "id": "4e2421b3-e4ea-4cb0-af8c-ca30be278550",
       "title": "Renewal review — Amrit Gill (expires Sep 1)",
       "body": "Auto renewal at Gore Mutual. Check for premium increase before offer goes out.",
       "activity_type": "renew",
       "priority": "medium",
-      "due_at": "2026-08-07 13:46:31.37256+00",
+      "due_at": "2026-08-07 13:52:44.457987+00",
       "overdue": false,
       "account_id": "a0000000-0000-0000-0000-000000000002",
       "account_name": "Amrit Gill",
@@ -1175,7 +1147,7 @@ export const DEMO_QUEUES = ({
       "account_name": "Rahul Mehta",
       "carrier_name": "Pembridge",
       "reason": "Rear-ended at a stop light — not at fault",
-      "opened_at": "2026-07-18 13:46:31.37256+00"
+      "opened_at": "2026-07-18 13:52:44.457987+00"
     },
     {
       "txn_id": "d0000000-0000-0000-0000-000000000001",
@@ -1186,24 +1158,12 @@ export const DEMO_QUEUES = ({
       "account_name": "Seyed Moein Abtahi",
       "carrier_name": "Pembridge",
       "reason": "Client sold the vehicle — cancel auto, flat rate",
-      "opened_at": "2026-07-20 13:46:31.37256+00"
+      "opened_at": "2026-07-20 13:52:44.457987+00"
     }
   ]
 }) as unknown as WorkQueues;
 
 export const DEMO_TXNS = ([
-  {
-    "id": "24b14f20-60ef-49d6-abd5-2f660f858fba",
-    "reference": null,
-    "txn_type": "claim_fnol",
-    "state": "draft",
-    "reason": "Basement water damage after storm — sewer backup suspected",
-    "effective_date": "2026-07-26T00:00:00.000Z",
-    "opened_at": "2026-07-29T13:46:55.972Z",
-    "closed_at": null,
-    "account_name": "Gautam & Tanvi Kapoor",
-    "carrier_name": "Pembridge"
-  },
   {
     "id": "d0000000-0000-0000-0000-000000000003",
     "reference": "TXN-3062",
@@ -1211,7 +1171,7 @@ export const DEMO_TXNS = ([
     "state": "draft",
     "reason": "Add winter tire discount",
     "effective_date": "2026-07-25T00:00:00.000Z",
-    "opened_at": "2026-07-28T13:46:31.372Z",
+    "opened_at": "2026-07-28T13:52:44.457Z",
     "closed_at": null,
     "account_name": "Rahul Mehta",
     "carrier_name": "Pembridge"
@@ -1223,7 +1183,7 @@ export const DEMO_TXNS = ([
     "state": "submitted",
     "reason": "Client sold the vehicle — cancel auto, flat rate",
     "effective_date": "2026-07-15T00:00:00.000Z",
-    "opened_at": "2026-07-20T13:46:31.372Z",
+    "opened_at": "2026-07-20T13:52:44.457Z",
     "closed_at": null,
     "account_name": "Seyed Moein Abtahi",
     "carrier_name": "Pembridge"
@@ -1235,7 +1195,7 @@ export const DEMO_TXNS = ([
     "state": "submitted",
     "reason": "Rear-ended at a stop light — not at fault",
     "effective_date": "2026-07-18T00:00:00.000Z",
-    "opened_at": "2026-07-18T13:46:31.372Z",
+    "opened_at": "2026-07-18T13:52:44.457Z",
     "closed_at": null,
     "account_name": "Rahul Mehta",
     "carrier_name": "Pembridge"
@@ -1247,40 +1207,14 @@ export const DEMO_TXNS = ([
     "state": "completed",
     "reason": "New auto policy — bound at Gore Mutual",
     "effective_date": "2025-09-01T00:00:00.000Z",
-    "opened_at": "2026-06-24T13:46:31.372Z",
-    "closed_at": "2026-07-01T13:46:31.372Z",
+    "opened_at": "2026-06-24T13:52:44.457Z",
+    "closed_at": "2026-07-01T13:52:44.457Z",
     "account_name": "Amrit Gill",
     "carrier_name": "Gore Mutual"
   }
 ]) as unknown as TxnSummary[];
 
 export const DEMO_TXN_DETAIL = ({
-  "24b14f20-60ef-49d6-abd5-2f660f858fba": {
-    "id": "24b14f20-60ef-49d6-abd5-2f660f858fba",
-    "tenant_id": "11111111-1111-1111-1111-111111111111",
-    "branch_id": null,
-    "reference": null,
-    "txn_type": "claim_fnol",
-    "account_id": "a0000000-0000-0000-0000-000000000004",
-    "policy_id": "90000000-0000-0000-0000-000000000024",
-    "carrier_id": "c0000000-0000-0000-0000-000000000001",
-    "state": "draft",
-    "reason": "Basement water damage after storm — sewer backup suspected",
-    "effective_date": "Sun Jul 26",
-    "owner_id": null,
-    "premium_delta": null,
-    "metadata": {},
-    "opened_at": "2026-07-29T13:46:55.972Z",
-    "closed_at": null,
-    "created_at": "2026-07-29T13:46:55.972Z",
-    "updated_at": "2026-07-29T13:46:55.972Z",
-    "module": "pc",
-    "account_name": "Gautam & Tanvi Kapoor",
-    "carrier_name": "Pembridge",
-    "events": [],
-    "submissions": [],
-    "documents": []
-  },
   "d0000000-0000-0000-0000-000000000003": {
     "id": "d0000000-0000-0000-0000-000000000003",
     "tenant_id": "11111111-1111-1111-1111-111111111111",
@@ -1296,10 +1230,10 @@ export const DEMO_TXN_DETAIL = ({
     "owner_id": "50000000-0000-0000-0000-000000000001",
     "premium_delta": null,
     "metadata": {},
-    "opened_at": "2026-07-28T13:46:31.372Z",
+    "opened_at": "2026-07-28T13:52:44.457Z",
     "closed_at": null,
-    "created_at": "2026-07-29T13:46:31.372Z",
-    "updated_at": "2026-07-29T13:46:31.372Z",
+    "created_at": "2026-07-29T13:52:44.457Z",
+    "updated_at": "2026-07-29T13:52:44.457Z",
     "module": "pc",
     "account_name": "Rahul Mehta",
     "carrier_name": "Pembridge",
@@ -1308,7 +1242,7 @@ export const DEMO_TXN_DETAIL = ({
         "from_state": null,
         "to_state": "draft",
         "actor": "Gautam Khosla",
-        "at": "2026-07-28T13:46:31.372Z"
+        "at": "2026-07-28T13:52:44.457Z"
       }
     ],
     "submissions": [],
@@ -1329,10 +1263,10 @@ export const DEMO_TXN_DETAIL = ({
     "owner_id": "50000000-0000-0000-0000-000000000001",
     "premium_delta": null,
     "metadata": {},
-    "opened_at": "2026-07-20T13:46:31.372Z",
+    "opened_at": "2026-07-20T13:52:44.457Z",
     "closed_at": null,
-    "created_at": "2026-07-29T13:46:31.372Z",
-    "updated_at": "2026-07-29T13:46:31.372Z",
+    "created_at": "2026-07-29T13:52:44.457Z",
+    "updated_at": "2026-07-29T13:52:44.457Z",
     "module": "pc",
     "account_name": "Seyed Moein Abtahi",
     "carrier_name": "Pembridge",
@@ -1341,31 +1275,31 @@ export const DEMO_TXN_DETAIL = ({
         "from_state": null,
         "to_state": "draft",
         "actor": "Gautam Khosla",
-        "at": "2026-07-20T13:46:31.372Z"
+        "at": "2026-07-20T13:52:44.457Z"
       },
       {
         "from_state": "draft",
         "to_state": "doc_generated",
         "actor": "Gautam Khosla",
-        "at": "2026-07-20T14:06:31.372Z"
+        "at": "2026-07-20T14:12:44.457Z"
       },
       {
         "from_state": "doc_generated",
         "to_state": "sig_pending",
         "actor": "Gautam Khosla",
-        "at": "2026-07-21T13:46:31.372Z"
+        "at": "2026-07-21T13:52:44.457Z"
       },
       {
         "from_state": "sig_pending",
         "to_state": "signed",
         "actor": "Gautam Khosla",
-        "at": "2026-07-23T13:46:31.372Z"
+        "at": "2026-07-23T13:52:44.457Z"
       },
       {
         "from_state": "signed",
         "to_state": "submitted",
         "actor": "Gautam Khosla",
-        "at": "2026-07-24T13:46:31.372Z"
+        "at": "2026-07-24T13:52:44.457Z"
       }
     ],
     "submissions": [
@@ -1373,7 +1307,7 @@ export const DEMO_TXN_DETAIL = ({
         "channel": "portal",
         "status": "sent",
         "carrier_ref": null,
-        "submitted_at": "2026-07-24T13:46:31.372Z",
+        "submitted_at": "2026-07-24T13:52:44.457Z",
         "acknowledged_at": null
       }
     ],
@@ -1394,10 +1328,10 @@ export const DEMO_TXN_DETAIL = ({
     "owner_id": "50000000-0000-0000-0000-000000000001",
     "premium_delta": null,
     "metadata": {},
-    "opened_at": "2026-07-18T13:46:31.372Z",
+    "opened_at": "2026-07-18T13:52:44.457Z",
     "closed_at": null,
-    "created_at": "2026-07-29T13:46:31.372Z",
-    "updated_at": "2026-07-29T13:46:31.372Z",
+    "created_at": "2026-07-29T13:52:44.457Z",
+    "updated_at": "2026-07-29T13:52:44.457Z",
     "module": "pc",
     "account_name": "Rahul Mehta",
     "carrier_name": "Pembridge",
@@ -1406,31 +1340,31 @@ export const DEMO_TXN_DETAIL = ({
         "from_state": null,
         "to_state": "draft",
         "actor": "Gautam Khosla",
-        "at": "2026-07-18T13:46:31.372Z"
+        "at": "2026-07-18T13:52:44.457Z"
       },
       {
         "from_state": "draft",
         "to_state": "doc_generated",
         "actor": "Gautam Khosla",
-        "at": "2026-07-18T14:01:31.372Z"
+        "at": "2026-07-18T14:07:44.457Z"
       },
       {
         "from_state": "doc_generated",
         "to_state": "sig_pending",
         "actor": "Gautam Khosla",
-        "at": "2026-07-18T14:16:31.372Z"
+        "at": "2026-07-18T14:22:44.457Z"
       },
       {
         "from_state": "sig_pending",
         "to_state": "signed",
         "actor": "Gautam Khosla",
-        "at": "2026-07-19T13:46:31.372Z"
+        "at": "2026-07-19T13:52:44.457Z"
       },
       {
         "from_state": "signed",
         "to_state": "submitted",
         "actor": "Gautam Khosla",
-        "at": "2026-07-19T13:46:31.372Z"
+        "at": "2026-07-19T13:52:44.457Z"
       }
     ],
     "submissions": [],
@@ -1451,10 +1385,10 @@ export const DEMO_TXN_DETAIL = ({
     "owner_id": "50000000-0000-0000-0000-000000000001",
     "premium_delta": null,
     "metadata": {},
-    "opened_at": "2026-06-24T13:46:31.372Z",
-    "closed_at": "2026-07-01T13:46:31.372Z",
-    "created_at": "2026-07-29T13:46:31.372Z",
-    "updated_at": "2026-07-29T13:46:31.372Z",
+    "opened_at": "2026-06-24T13:52:44.457Z",
+    "closed_at": "2026-07-01T13:52:44.457Z",
+    "created_at": "2026-07-29T13:52:44.457Z",
+    "updated_at": "2026-07-29T13:52:44.457Z",
     "module": "pc",
     "account_name": "Amrit Gill",
     "carrier_name": "Gore Mutual",
@@ -1463,43 +1397,43 @@ export const DEMO_TXN_DETAIL = ({
         "from_state": null,
         "to_state": "draft",
         "actor": "Gautam Khosla",
-        "at": "2026-06-24T13:46:31.372Z"
+        "at": "2026-06-24T13:52:44.457Z"
       },
       {
         "from_state": "draft",
         "to_state": "doc_generated",
         "actor": "Gautam Khosla",
-        "at": "2026-06-25T13:46:31.372Z"
+        "at": "2026-06-25T13:52:44.457Z"
       },
       {
         "from_state": "doc_generated",
         "to_state": "sig_pending",
         "actor": "Gautam Khosla",
-        "at": "2026-06-26T13:46:31.372Z"
+        "at": "2026-06-26T13:52:44.457Z"
       },
       {
         "from_state": "sig_pending",
         "to_state": "signed",
         "actor": "Gautam Khosla",
-        "at": "2026-06-27T13:46:31.372Z"
+        "at": "2026-06-27T13:52:44.457Z"
       },
       {
         "from_state": "signed",
         "to_state": "submitted",
         "actor": "Gautam Khosla",
-        "at": "2026-06-28T13:46:31.372Z"
+        "at": "2026-06-28T13:52:44.457Z"
       },
       {
         "from_state": "submitted",
         "to_state": "carrier_ack",
         "actor": "Gautam Khosla",
-        "at": "2026-06-30T13:46:31.372Z"
+        "at": "2026-06-30T13:52:44.457Z"
       },
       {
         "from_state": "carrier_ack",
         "to_state": "completed",
         "actor": "Gautam Khosla",
-        "at": "2026-07-01T13:46:31.372Z"
+        "at": "2026-07-01T13:52:44.457Z"
       }
     ],
     "submissions": [
@@ -1507,8 +1441,8 @@ export const DEMO_TXN_DETAIL = ({
         "channel": "portal",
         "status": "acknowledged",
         "carrier_ref": "GM-771204",
-        "submitted_at": "2026-06-28T13:46:31.372Z",
-        "acknowledged_at": "2026-06-30T13:46:31.372Z"
+        "submitted_at": "2026-06-28T13:52:44.457Z",
+        "acknowledged_at": "2026-06-30T13:52:44.457Z"
       }
     ],
     "documents": []
@@ -1542,7 +1476,7 @@ export const DEMO_ME = ({
       "role_code": "admin_principal",
       "role_name": "Admin / Principal broker",
       "licence_id": "11c00000-0000-0000-0000-000000000001",
-      "granted_at": "2026-07-29 13:38:28.200418+00"
+      "granted_at": "2026-07-29 13:52:44.457987+00"
     }
   ],
   "capabilities": [
@@ -1605,7 +1539,7 @@ export const DEMO_TEAM = ({
       "ribo_level": null,
       "licences": [
         {
-          "id": "2d8400df-e1a7-410d-9c41-62f9c4754ca2",
+          "id": "8971aab0-4659-4561-b13a-40bdee8e28cc",
           "staff_id": "50000000-0000-0000-0000-0000000000c5",
           "licence_class": "ribo_l1",
           "licence_number": "RIBO-204411",
@@ -1619,12 +1553,12 @@ export const DEMO_TEAM = ({
       ],
       "grants": [
         {
-          "id": "cb47df95-dd99-40d5-835d-b0499da252d6",
+          "id": "3ca07a96-1fac-4528-83b0-304bc1ab290b",
           "staff_id": "50000000-0000-0000-0000-0000000000c5",
           "role_code": "pc_service",
           "role_name": "P&C service",
-          "licence_id": "2d8400df-e1a7-410d-9c41-62f9c4754ca2",
-          "granted_at": "2026-07-29 13:38:56.251206+00"
+          "licence_id": "8971aab0-4659-4561-b13a-40bdee8e28cc",
+          "granted_at": "2026-07-29 13:53:05.624906+00"
         }
       ]
     },
@@ -1650,12 +1584,12 @@ export const DEMO_TEAM = ({
       ],
       "grants": [
         {
-          "id": "624f9b68-0290-45eb-80e7-6d08e3881bea",
+          "id": "717753f2-f3f2-4b7e-85b9-3ebcde5f759b",
           "staff_id": "50000000-0000-0000-0000-000000000001",
           "role_code": "admin_principal",
           "role_name": "Admin / Principal broker",
           "licence_id": "11c00000-0000-0000-0000-000000000001",
-          "granted_at": "2026-07-29 13:38:28.200418+00"
+          "granted_at": "2026-07-29 13:52:44.457987+00"
         }
       ]
     }
@@ -1664,13 +1598,13 @@ export const DEMO_TEAM = ({
 
 export const DEMO_DOCUMENTS = ([
   {
-    "id": "ff0354ac-ed2b-4b9e-acc1-47a6fed4992c",
+    "id": "a4d4875a-2d1f-4621-95d5-5524e28ab3e7",
     "doc_type": "loe",
     "filename": "GILLAM01-LOE-2026-07-29.pdf",
     "source": "generated",
     "issued_to": null,
     "retention_until": "2032-07-29",
-    "created_at": "2026-07-29 13:38:56.135535+00",
+    "created_at": "2026-07-29 13:53:05.502477+00",
     "account_id": "a0000000-0000-0000-0000-000000000002",
     "account_name": "Amrit Gill",
     "lookup_code": "GILLAM01",
@@ -1679,13 +1613,13 @@ export const DEMO_DOCUMENTS = ([
     "line": "auto"
   },
   {
-    "id": "bc841243-8d69-441f-93a4-260dbf9d0181",
+    "id": "cb2ea92d-53b9-4456-8bf4-cc868b6c8cc8",
     "doc_type": "binder_letter",
     "filename": "KAPOORGA01-BINDER_LETTER-2026-07-29.pdf",
     "source": "generated",
     "issued_to": "TD Canada Trust — Mortgage Services",
     "retention_until": "2032-07-29",
-    "created_at": "2026-07-29 13:38:56.119615+00",
+    "created_at": "2026-07-29 13:53:05.484951+00",
     "account_id": "a0000000-0000-0000-0000-000000000004",
     "account_name": "Gautam & Tanvi Kapoor",
     "lookup_code": "KAPOORGA01",
@@ -1694,13 +1628,13 @@ export const DEMO_DOCUMENTS = ([
     "line": "property"
   },
   {
-    "id": "2148cd84-d869-4a5e-a8db-481e542f2bb8",
+    "id": "5d32b4b2-b023-46ba-b337-d6ae35110044",
     "doc_type": "pink_slip",
     "filename": "ABTAHISE01-PINK_SLIP-2026-07-29.pdf",
     "source": "generated",
     "issued_to": null,
     "retention_until": "2032-07-29",
-    "created_at": "2026-07-29 13:38:56.087391+00",
+    "created_at": "2026-07-29 13:53:05.437923+00",
     "account_id": "a0000000-0000-0000-0000-000000000001",
     "account_name": "Seyed Moein Abtahi",
     "lookup_code": "ABTAHISE01",
@@ -1772,7 +1706,7 @@ export const DEMO_BILLING = ({
   ],
   "commissions": [
     {
-      "id": "e36362b5-4898-41fb-93c4-f3a3541e7b1a",
+      "id": "537da2ea-a030-4b77-a263-cd2c5184b165",
       "period": "2026-06-01",
       "expected": "215.00",
       "received": "215.00",
@@ -1784,7 +1718,7 @@ export const DEMO_BILLING = ({
       "account_name": "Amrit Gill"
     },
     {
-      "id": "29adbe96-9077-406e-8ff1-0a72db83cfdf",
+      "id": "c5c93224-3e74-4261-9ee6-6af7a645f9ef",
       "period": "2026-06-01",
       "expected": "267.50",
       "received": "267.50",
@@ -1796,7 +1730,7 @@ export const DEMO_BILLING = ({
       "account_name": "Seyed Moein Abtahi"
     },
     {
-      "id": "086c7996-b8ab-4b7d-9f92-582874fe17f3",
+      "id": "304f74cd-0e02-47f0-b52c-25ce850667db",
       "period": "2026-06-01",
       "expected": "48.00",
       "received": null,
@@ -1808,7 +1742,7 @@ export const DEMO_BILLING = ({
       "account_name": "Rahul Mehta"
     },
     {
-      "id": "73c6fa72-0f2b-43ca-a3d2-108fbb451872",
+      "id": "90770ff5-728f-4900-b817-2bd706c2635e",
       "period": "2026-06-01",
       "expected": "368.00",
       "received": null,
@@ -1820,7 +1754,7 @@ export const DEMO_BILLING = ({
       "account_name": "Gautam & Tanvi Kapoor"
     },
     {
-      "id": "308d3fb2-a831-48e1-a5a0-a1401a8af00f",
+      "id": "77a30ffb-0c2d-466a-9bf7-3dece63ea476",
       "period": "2026-06-01",
       "expected": "307.50",
       "received": "246.00",
@@ -1881,11 +1815,6 @@ export const DEMO_COMPLIANCE = ({
     ],
     "by_expiry_month": [
       {
-        "label": "Jun 2026",
-        "value": 1,
-        "premium": 2140
-      },
-      {
         "label": "Sep 2026",
         "value": 1,
         "premium": 1720
@@ -1899,6 +1828,11 @@ export const DEMO_COMPLIANCE = ({
         "label": "Jan 2027",
         "value": 3,
         "premium": 4660
+      },
+      {
+        "label": "Jun 2027",
+        "value": 1,
+        "premium": 2140
       }
     ]
   },
@@ -1910,9 +1844,9 @@ export const DEMO_COMPLIANCE = ({
   "exceptions": {
     "overdue_activities": [
       {
-        "id": "99e17b2a-8af1-4a31-9c41-52c88956807e",
+        "id": "d6190f51-aed5-4336-9c35-9a3382ed8c32",
         "title": "Prospect follow-up — Gurpreet Sandhu quote",
-        "due_at": "2026-07-27 13:46:31.37256+00",
+        "due_at": "2026-07-27 13:52:44.457987+00",
         "account_name": "Gurpreet Sandhu",
         "account_id": "a0000000-0000-0000-0000-000000000005"
       }
@@ -1950,11 +1884,12 @@ export const DEMO_COMPLIANCE = ({
         "txn_type": "cancellation",
         "account_name": "Seyed Moein Abtahi",
         "account_id": "a0000000-0000-0000-0000-000000000001",
-        "submitted_at": "2026-07-24 13:46:31.37256+00",
+        "submitted_at": "2026-07-24 13:52:44.457987+00",
         "days_waiting": 5
       }
     ],
     "licence_alerts": [],
+    "expired_in_force": [],
     "consent_gaps": [
       {
         "account_id": "a0000000-0000-0000-0000-000000000006",
@@ -1966,27 +1901,6 @@ export const DEMO_COMPLIANCE = ({
 }) as unknown as ComplianceOverview;
 
 export const DEMO_CLAIMS = ([
-  {
-    "id": "9fa6b78f-0284-4a73-9786-1e9a654a5d91",
-    "claim_number": null,
-    "loss_date": "2026-07-26",
-    "reported_date": "2026-07-29",
-    "status": "open",
-    "adjuster": null,
-    "reserve": "12000.00",
-    "paid": null,
-    "account_id": "a0000000-0000-0000-0000-000000000004",
-    "account_name": "Gautam & Tanvi Kapoor",
-    "lookup_code": "KAPOORGA01",
-    "policy_id": "90000000-0000-0000-0000-000000000024",
-    "policy_number": "PB-HAB-77120",
-    "line": "property",
-    "txn_id": "24b14f20-60ef-49d6-abd5-2f660f858fba",
-    "txn_reference": null,
-    "txn_state": "draft",
-    "carrier_name": "Pembridge",
-    "days_open": 0
-  },
   {
     "id": "c1a00000-0000-0000-0000-000000000001",
     "claim_number": "PEMB-CL-88214",
@@ -2009,3 +1923,177 @@ export const DEMO_CLAIMS = ([
     "days_open": 11
   }
 ]) as unknown as ClaimRow[];
+
+export const DEMO_POLICIES = ([
+  {
+    "id": "90000000-0000-0000-0000-000000000002",
+    "policy_number": "GM-771204",
+    "line": "auto",
+    "status": "in_force",
+    "effective_date": "2025-09-01",
+    "expiry_date": "2026-09-01",
+    "annual_premium": "1720.00",
+    "billing_type": "direct",
+    "payment_plan": "monthly",
+    "carrier_name": "Gore Mutual",
+    "account_id": "a0000000-0000-0000-0000-000000000002",
+    "account_name": "Amrit Gill",
+    "lookup_code": "GILLAM01",
+    "vehicle_count": 1,
+    "dwelling_count": 0,
+    "coverage_count": 3,
+    "days_to_expiry": 34
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000004",
+    "policy_number": "PB-450992",
+    "line": "auto",
+    "status": "in_force",
+    "effective_date": "2026-01-10",
+    "expiry_date": "2027-01-10",
+    "annual_premium": "2460.00",
+    "billing_type": "agency",
+    "payment_plan": "monthly PAD",
+    "carrier_name": "Pembridge",
+    "account_id": "a0000000-0000-0000-0000-000000000004",
+    "account_name": "Gautam & Tanvi Kapoor",
+    "lookup_code": "KAPOORGA01",
+    "vehicle_count": 1,
+    "dwelling_count": 0,
+    "coverage_count": 3,
+    "days_to_expiry": 165
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000024",
+    "policy_number": "PB-HAB-77120",
+    "line": "property",
+    "status": "in_force",
+    "effective_date": "2026-01-10",
+    "expiry_date": "2027-01-10",
+    "annual_premium": "1840.00",
+    "billing_type": "agency",
+    "payment_plan": "monthly PAD",
+    "carrier_name": "Pembridge",
+    "account_id": "a0000000-0000-0000-0000-000000000004",
+    "account_name": "Gautam & Tanvi Kapoor",
+    "lookup_code": "KAPOORGA01",
+    "vehicle_count": 0,
+    "dwelling_count": 1,
+    "coverage_count": 5,
+    "days_to_expiry": 165
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000014",
+    "policy_number": "GM-451001",
+    "line": "tenant",
+    "status": "in_force",
+    "effective_date": "2026-01-10",
+    "expiry_date": "2027-01-10",
+    "annual_premium": "360.00",
+    "billing_type": "direct",
+    "payment_plan": "annual",
+    "carrier_name": "Gore Mutual",
+    "account_id": "a0000000-0000-0000-0000-000000000004",
+    "account_name": "Gautam & Tanvi Kapoor",
+    "lookup_code": "KAPOORGA01",
+    "vehicle_count": 0,
+    "dwelling_count": 1,
+    "coverage_count": 2,
+    "days_to_expiry": 165
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000005",
+    "policy_number": "PB-QUOTE-51",
+    "line": "auto",
+    "status": "quoted",
+    "effective_date": "2026-08-01",
+    "expiry_date": null,
+    "annual_premium": "2010.00",
+    "billing_type": "agency",
+    "payment_plan": null,
+    "carrier_name": "Pembridge",
+    "account_id": "a0000000-0000-0000-0000-000000000005",
+    "account_name": "Gurpreet Sandhu",
+    "lookup_code": "SANDHUGU01",
+    "vehicle_count": 0,
+    "dwelling_count": 0,
+    "coverage_count": 0,
+    "days_to_expiry": null
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000006",
+    "policy_number": "GM-220417",
+    "line": "auto",
+    "status": "cancelled",
+    "effective_date": "2024-05-01",
+    "expiry_date": "2025-05-01",
+    "annual_premium": "1540.00",
+    "billing_type": "direct",
+    "payment_plan": "monthly",
+    "carrier_name": "Gore Mutual",
+    "account_id": "a0000000-0000-0000-0000-000000000006",
+    "account_name": "Nikolai Petrov",
+    "lookup_code": "PETROVNI01",
+    "vehicle_count": 0,
+    "dwelling_count": 0,
+    "coverage_count": 0,
+    "days_to_expiry": -454
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000003",
+    "policy_number": "PB-330871",
+    "line": "auto",
+    "status": "in_force",
+    "effective_date": "2025-11-15",
+    "expiry_date": "2026-11-15",
+    "annual_premium": "1980.00",
+    "billing_type": "agency",
+    "payment_plan": "annual",
+    "carrier_name": "Pembridge",
+    "account_id": "a0000000-0000-0000-0000-000000000003",
+    "account_name": "Rahul Mehta",
+    "lookup_code": "MEHTARA01",
+    "vehicle_count": 1,
+    "dwelling_count": 0,
+    "coverage_count": 3,
+    "days_to_expiry": 109
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000013",
+    "policy_number": "GM-880132",
+    "line": "tenant",
+    "status": "in_force",
+    "effective_date": "2025-11-15",
+    "expiry_date": "2026-11-15",
+    "annual_premium": "320.00",
+    "billing_type": "direct",
+    "payment_plan": "annual",
+    "carrier_name": "Gore Mutual",
+    "account_id": "a0000000-0000-0000-0000-000000000003",
+    "account_name": "Rahul Mehta",
+    "lookup_code": "MEHTARA01",
+    "vehicle_count": 0,
+    "dwelling_count": 1,
+    "coverage_count": 3,
+    "days_to_expiry": 109
+  },
+  {
+    "id": "90000000-0000-0000-0000-000000000001",
+    "policy_number": "240517202",
+    "line": "auto",
+    "status": "in_force",
+    "effective_date": "2026-06-24",
+    "expiry_date": "2027-06-24",
+    "annual_premium": "2140.00",
+    "billing_type": "agency",
+    "payment_plan": "monthly PAD",
+    "carrier_name": "Pembridge",
+    "account_id": "a0000000-0000-0000-0000-000000000001",
+    "account_name": "Seyed Moein Abtahi",
+    "lookup_code": "ABTAHISE01",
+    "vehicle_count": 1,
+    "dwelling_count": 0,
+    "coverage_count": 4,
+    "days_to_expiry": 330
+  }
+]) as unknown as PolicyListRow[];

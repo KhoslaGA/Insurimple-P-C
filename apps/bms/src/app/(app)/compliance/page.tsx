@@ -90,6 +90,7 @@ export default async function CompliancePage() {
     x.unsigned_transactions.length +
     x.unacknowledged_submissions.length +
     x.licence_alerts.length +
+    x.expired_in_force.length +
     x.consent_gaps.length;
 
   const inForce = retention.in_force + retention.cancelled + retention.lapsed;
@@ -199,6 +200,22 @@ export default async function CompliancePage() {
                 <Badge tone={l.expired ? "danger" : "warning"}>
                   {l.expired ? "Expired" : "Expiring"} {fmtDate(l.expires_on)}
                 </Badge>
+              </li>
+            ))}
+          </ul>
+        </Exceptions>
+
+        <Exceptions title="In force past expiry" count={x.expired_in_force.length} tone="danger">
+          <ul className="flex flex-col gap-1.5">
+            {x.expired_in_force.map((p) => (
+              <li key={p.id} className="flex flex-wrap items-center gap-2 text-small">
+                <Link href={`/households/${p.account_id}`} className="font-medium text-text-link">
+                  {p.account_name}
+                </Link>
+                <span className="tabular-nums text-text-2">{p.policy_number ?? "—"}</span>
+                <span className="ml-auto text-caption tabular-nums text-danger">
+                  expired {p.days_past}d ago
+                </span>
               </li>
             ))}
           </ul>

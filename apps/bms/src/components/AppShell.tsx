@@ -15,7 +15,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'layout-dashboard', label: 'Overview', href: '/dashboard' },
   { icon: 'search', label: 'Locate', href: '/locate' },
   { icon: 'users', label: 'Households', href: '/households' },
-  { icon: 'car', label: 'Policies' },
+  { icon: 'car', label: 'Policies', href: '/policies' },
   { icon: 'list-check', label: 'Work queues', href: '/queues' },
   { icon: 'arrows-exchange', label: 'Transactions', href: '/transactions' },
   { icon: 'certificate', label: 'Proofs & documents', href: '/proofs' },

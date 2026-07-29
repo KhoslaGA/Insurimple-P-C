@@ -96,6 +96,19 @@ export class ComplianceService {
           ORDER BY l.expires_on`,
       );
 
+      // Still flagged in force after the expiry date — either the renewal was
+      // never processed or the status was never updated. Both are coverage
+      // questions, which is why this is an exception and not a report.
+      const expiredInForce = await q(
+        `SELECT p.id, p.policy_number, p.line, p.expiry_date::text AS expiry_date,
+                (current_date - p.expiry_date) AS days_past,
+                a.id AS account_id, a.display_name AS account_name
+           FROM policy p JOIN account a ON a.id = p.account_id
+          WHERE p.status = 'in_force' AND p.expiry_date IS NOT NULL
+            AND p.expiry_date < current_date
+          ORDER BY p.expiry_date`,
+      );
+
       // Marketing without a CASL basis on the primary contact.
       const consentGaps = await q(
         `SELECT a.id AS account_id, a.display_name AS account_name, a.lookup_code
@@ -127,6 +140,10 @@ export class ComplianceService {
             days_waiting: Number(r.days_waiting),
           })),
           licence_alerts: licences.rows,
+          expired_in_force: expiredInForce.rows.map((r) => ({
+            ...r,
+            days_past: Number(r.days_past),
+          })),
           consent_gaps: consentGaps.rows,
         },
       };

@@ -76,7 +76,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status, effective_date, expiry_date, billing_type, payment_plan, annual_premium) VALUES
  ('90000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
   'a0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001',
-  '240517202','auto','in_force','2025-06-24','2026-06-24','agency','monthly PAD',2140.00)
+  '240517202','auto','in_force','2026-06-24','2027-06-24','agency','monthly PAD',2140.00)
 ON CONFLICT DO NOTHING;
 
 -- Abtahi is the servicing broker's account.
