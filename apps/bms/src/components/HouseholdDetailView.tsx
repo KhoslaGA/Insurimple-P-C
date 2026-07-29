@@ -173,16 +173,37 @@ function LinePanel({
 
       <Section title="Locations">
         {policy.locations.length ? (
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-3">
             {policy.locations.map((l) => {
               const a = (l.address ?? {}) as Record<string, unknown>;
-              const line = [a.line1, a.city, a.prov].filter(Boolean).join(', ');
+              const line = [a.line1, a.city, a.prov, a.postal].filter(Boolean).join(', ');
               return (
-                <div key={l.id} className="flex flex-wrap items-center gap-x-3 text-small">
-                  <span className="font-medium text-text-1">{line || '—'}</span>
-                  {l.occupancy ? <span className="text-caption text-text-3">{titleCase(l.occupancy)}</span> : null}
-                  {l.year_built ? <span className="text-caption tabular-nums text-text-3">Built {l.year_built}</span> : null}
-                  {l.construction ? <span className="text-caption text-text-3">{l.construction}</span> : null}
+                <div key={l.id} className="flex flex-col gap-2 rounded-control border border-border-1 p-3">
+                  <div className="flex flex-wrap items-center gap-x-3">
+                    <span className="text-small font-medium text-text-1">{line || '—'}</span>
+                    {l.occupancy ? <Badge tone="neutral">{titleCase(l.occupancy)}</Badge> : null}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                    <KV label="Year built" value={l.year_built ?? '—'} />
+                    <KV label="Construction" value={l.construction ?? '—'} />
+                    <KV label="Roof age" value={l.roof_age != null ? `${l.roof_age} yrs` : '—'} />
+                    <KV label="Heating" value={l.heating ?? '—'} />
+                    <KV label="Replacement cost" value={money(l.replacement_cost)} />
+                    <KV
+                      label="Knob & tube"
+                      value={
+                        l.has_knob_tube == null ? '—' :
+                        <Badge tone={l.has_knob_tube ? 'warning' : 'success'}>{l.has_knob_tube ? 'Present' : 'None'}</Badge>
+                      }
+                    />
+                    <KV
+                      label="Oil tank"
+                      value={
+                        l.has_oil_tank == null ? '—' :
+                        <Badge tone={l.has_oil_tank ? 'warning' : 'success'}>{l.has_oil_tank ? 'Present' : 'None'}</Badge>
+                      }
+                    />
+                  </div>
                 </div>
               );
             })}

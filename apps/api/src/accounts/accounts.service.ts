@@ -98,6 +98,7 @@ export class AccountsService {
           this.forPolicies(
             q,
             `SELECT d.policy_id, d.id, d.address, d.occupancy, d.year_built, d.construction,
+                    d.roof_age, d.heating, d.has_knob_tube, d.has_oil_tank, d.replacement_cost,
                     coalesce(mp.legal_name, trim(concat_ws(' ', mp.first_name, mp.last_name))) AS mortgagee_name
                FROM dwelling d LEFT JOIN party mp ON mp.id = d.mortgagee_party
               WHERE d.policy_id = ANY($1::uuid[])`,
@@ -234,6 +235,11 @@ export class AccountsService {
             occupancy: d.occupancy,
             year_built: d.year_built,
             construction: d.construction,
+            roof_age: d.roof_age,
+            heating: d.heating,
+            has_knob_tube: d.has_knob_tube,
+            has_oil_tank: d.has_oil_tank,
+            replacement_cost: d.replacement_cost,
           })),
           loss_history: (los.get(p.id) ?? []).map((l) => ({
             loss_date: l.loss_date,

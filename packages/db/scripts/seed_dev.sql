@@ -241,6 +241,93 @@ INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, t
  ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005',NULL,NULL,'follow_up','Prospect follow-up — Gurpreet Sandhu quote','Quoted auto at $2,010. Follow up on bind decision.','50000000-0000-0000-0000-000000000001','high','open', now() - interval '2 days', true)
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- Property lines. A real Ontario personal-lines book is mostly home+auto
+-- bundles, so the tree needs the same depth on the property side: dwelling
+-- risk detail, structured property coverages, and the water endorsements
+-- every Ontario renewal now turns on.
+-- ============================================================================
+
+-- Mortgagee (additional interest on the homeowner policy).
+INSERT INTO party (id, tenant_id, party_type, legal_name, business_number) VALUES
+ ('40000000-0000-0000-0000-0000000000f2','11111111-1111-1111-1111-111111111111','organization','TD Canada Trust — Mortgage Services','TDMS-0091')
+ON CONFLICT DO NOTHING;
+
+-- Kapoor homeowner policy (the bundle partner to their auto).
+INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status, effective_date, expiry_date, billing_type, payment_plan, annual_premium) VALUES
+ ('90000000-0000-0000-0000-000000000024','11111111-1111-1111-1111-111111111111',
+  'a0000000-0000-0000-0000-000000000004','c0000000-0000-0000-0000-000000000001',
+  'PB-HAB-77120','property','in_force','2026-01-10','2027-01-10','agency','monthly PAD',1840.00)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO dwelling (id, tenant_id, policy_id, address, year_built, construction, roof_age, heating,
+                      has_knob_tube, has_oil_tank, replacement_cost, occupancy, mortgagee_party) VALUES
+ -- Kapoor: owner-occupied detached home, financed
+ ('da000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
+  '90000000-0000-0000-0000-000000000024',
+  '{"line1":"5 Financial Dr","city":"Brampton","prov":"ON","postal":"L6Y 0M4"}',
+  2012,'Brick veneer',6,'Forced air gas',false,false,780000.00,'owner',
+  '40000000-0000-0000-0000-0000000000f2'),
+ -- Kapoor tenant policy on a second unit
+ ('da000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111',
+  '90000000-0000-0000-0000-000000000014',
+  '{"line1":"5 Financial Dr, Unit B","city":"Brampton","prov":"ON","postal":"L6Y 0M4"}',
+  2012,'Brick veneer',6,'Forced air gas',false,false,NULL,'tenant',NULL),
+ -- Mehta tenant
+ ('da000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111',
+  '90000000-0000-0000-0000-000000000013',
+  '{"line1":"88 Eglinton Ave, Unit 1204","city":"Mississauga","prov":"ON","postal":"L5R 3G1"}',
+  2005,'Concrete high-rise',NULL,'Electric baseboard',false,false,NULL,'tenant',NULL)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO coverage (tenant_id, policy_id, dwelling_id, csio_code, description, limit_amount, deductible, premium) VALUES
+ -- Homeowner (Kapoor)
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','DWELL','Dwelling — guaranteed replacement cost',780000.00,1000.00,910.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','CONT','Contents',546000.00,1000.00,320.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','PLIA','Personal liability',2000000.00,NULL,180.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','SEWER','Sewer backup',25000.00,2500.00,240.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','OVLND','Overland water',25000.00,2500.00,190.00),
+ -- Mehta tenant
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','CONT','Contents',60000.00,500.00,190.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','PLIA','Personal liability',1000000.00,NULL,90.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','SEWER','Sewer backup',15000.00,1000.00,40.00),
+ -- Kapoor tenant unit
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','CONT','Contents',45000.00,500.00,210.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','PLIA','Personal liability',1000000.00,NULL,90.00)
+ON CONFLICT DO NOTHING;
+
+-- Vehicles and coverages on the rest of the auto book, so every line in the
+-- tree has the same depth rather than looking half-populated.
+INSERT INTO vehicle (id, tenant_id, policy_id, vin, year, make, model, primary_use, annual_km, ownership, winter_tires) VALUES
+ ('7e000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','3FA6P0H73HR100002',2018,'Ford','Fusion','commute',16000,'owned',true),
+ ('7e000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','5YJ3E1EA7KF100003',2021,'Tesla','Model 3','commute',22000,'financed',true),
+ ('7e000000-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','2T3H1RFV8LC100004',2020,'Toyota','RAV4','pleasure',12000,'owned',true)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO coverage (tenant_id, policy_id, vehicle_id, csio_code, description, limit_amount, deductible, premium) VALUES
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','TPL','Third Party Liability',1000000.00,NULL,760.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','DCPD','Direct Compensation — Property Damage',NULL,0.00,210.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','COLL','Collision',NULL,1000.00,470.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','TPL','Third Party Liability',2000000.00,NULL,880.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COLL','Collision',NULL,500.00,640.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COMP','Comprehensive',NULL,500.00,460.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','TPL','Third Party Liability',2000000.00,NULL,1020.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COLL','Collision',NULL,1000.00,720.00),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COMP','Comprehensive',NULL,1000.00,520.00)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO driver_record (tenant_id, party_id, licence_number, licence_class, licence_date, autoplus_consent, at_fault_count) VALUES
+ ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000002','G2100-11111-22222','G','2014-08-02',true,0),
+ ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000003','M3300-33333-44444','G','2009-11-19',true,1),
+ ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000004','K4400-55555-66666','G','2008-05-30',true,0),
+ ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000014','K4400-77777-88888','G','2012-09-14',true,0)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO policy_endorsement (tenant_id, policy_id, form_code, description, premium, effective_date) VALUES
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','SEF/HOM 43','Guaranteed replacement cost on the dwelling',0.00,'2026-01-10'),
+ ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','WATER PKG','Combined sewer backup + overland water package',430.00,'2026-01-10')
+ON CONFLICT DO NOTHING;
+
 -- ----------------------------------------------------------------------------
 -- Document templates for the proofs hub. Merge fields are {{snake_case}} and
 -- are filled by the API from policy / account / party data at issue time.

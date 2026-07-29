@@ -212,12 +212,18 @@ export const vehicleRow = z.object({
 });
 export type VehicleRow = z.infer<typeof vehicleRow>;
 
+/** Dwelling risk detail — the property equivalent of the vehicle record. */
 export const locationRow = z.object({
   id: z.string().uuid(),
   address: z.record(z.string(), z.unknown()).nullable(),
   occupancy: z.string().nullable(),
   year_built: z.number().nullable(),
   construction: z.string().nullable(),
+  roof_age: z.number().nullable(),
+  heating: z.string().nullable(),
+  has_knob_tube: z.boolean().nullable(),
+  has_oil_tank: z.boolean().nullable(),
+  replacement_cost: money,
 });
 export type LocationRow = z.infer<typeof locationRow>;
 
