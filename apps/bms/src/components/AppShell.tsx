@@ -22,7 +22,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'cloud-download', label: 'Rating & carrier' },
   { icon: 'flame', label: 'Claims' },
   { icon: 'receipt', label: 'Billing & receivables', href: '/billing' },
-  { icon: 'chart-bar', label: 'Book & compliance' },
+  { icon: 'chart-bar', label: 'Book & compliance', href: '/compliance' },
   { icon: 'users-group', label: 'Team & roles', href: '/team' },
 ];
 

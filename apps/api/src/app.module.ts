@@ -18,6 +18,8 @@ import { BillingController } from './billing/billing.controller';
 import { BillingService } from './billing/billing.service';
 import { DocumentsController } from './documents/documents.controller';
 import { DocumentsService } from './documents/documents.service';
+import { ComplianceController } from './compliance/compliance.controller';
+import { ComplianceService } from './compliance/compliance.service';
 import { AuthGuard } from './common/auth.guard';
 
 @Module({
@@ -32,6 +34,7 @@ import { AuthGuard } from './common/auth.guard';
     TeamController,
     DocumentsController,
     BillingController,
+    ComplianceController,
   ],
   providers: [
     TxnsService,
@@ -42,6 +45,7 @@ import { AuthGuard } from './common/auth.guard';
     TeamService,
     DocumentsService,
     BillingService,
+    ComplianceService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

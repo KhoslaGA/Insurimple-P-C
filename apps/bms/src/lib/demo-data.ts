@@ -1,6 +1,6 @@
 import type {
   AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail, MeProfile,
-  TeamRoster, DocumentRow, DocumentTemplate, BillingOverview,
+  TeamRoster, DocumentRow, DocumentTemplate, BillingOverview, ComplianceOverview,
 } from "@insurimple/contracts";
 
 /**
@@ -1661,3 +1661,112 @@ export const DEMO_BILLING = ({
     }
   ]
 }) as unknown as BillingOverview;
+
+export const DEMO_COMPLIANCE = ({
+  "book": {
+    "by_line": [
+      {
+        "label": "auto",
+        "value": 4,
+        "premium": 8300
+      },
+      {
+        "label": "property",
+        "value": 1,
+        "premium": 1840
+      },
+      {
+        "label": "tenant",
+        "value": 2,
+        "premium": 680
+      }
+    ],
+    "by_carrier": [
+      {
+        "label": "Pembridge",
+        "value": 4,
+        "premium": 8420
+      },
+      {
+        "label": "Gore Mutual",
+        "value": 3,
+        "premium": 2400
+      }
+    ],
+    "by_expiry_month": [
+      {
+        "label": "Jun 2026",
+        "value": 1,
+        "premium": 2140
+      },
+      {
+        "label": "Sep 2026",
+        "value": 1,
+        "premium": 1720
+      },
+      {
+        "label": "Nov 2026",
+        "value": 2,
+        "premium": 2300
+      },
+      {
+        "label": "Jan 2027",
+        "value": 3,
+        "premium": 4660
+      }
+    ]
+  },
+  "retention": {
+    "in_force": 7,
+    "cancelled": 1,
+    "lapsed": 0
+  },
+  "exceptions": {
+    "overdue_activities": [
+      {
+        "id": "fe4fddc1-bfda-42c0-8896-b8845cc9842a",
+        "title": "Prospect follow-up — Gurpreet Sandhu quote",
+        "due_at": "2026-07-27 13:38:28.200418+00",
+        "account_name": "Gurpreet Sandhu",
+        "account_id": "a0000000-0000-0000-0000-000000000005"
+      }
+    ],
+    "unsigned_transactions": [
+      {
+        "id": "d0000000-0000-0000-0000-000000000002",
+        "reference": "TXN-3055",
+        "txn_type": "new_business",
+        "state": "completed",
+        "account_name": "Amrit Gill",
+        "account_id": "a0000000-0000-0000-0000-000000000002"
+      },
+      {
+        "id": "d0000000-0000-0000-0000-000000000001",
+        "reference": "TXN-3041",
+        "txn_type": "cancellation",
+        "state": "submitted",
+        "account_name": "Seyed Moein Abtahi",
+        "account_id": "a0000000-0000-0000-0000-000000000001"
+      }
+    ],
+    "unacknowledged_submissions": [
+      {
+        "id": "d0000000-0000-0000-0000-000000000001",
+        "reference": "TXN-3041",
+        "txn_type": "cancellation",
+        "account_name": "Seyed Moein Abtahi",
+        "account_id": "a0000000-0000-0000-0000-000000000001",
+        "submitted_at": "2026-07-24 13:38:28.200418+00",
+        "days_waiting": 5
+      }
+    ],
+    "licence_alerts": [],
+    "consent_gaps": [
+      {
+        "account_id": "a0000000-0000-0000-0000-000000000006",
+        "account_name": "Nikolai Petrov",
+        "lookup_code": "PETROVNI01"
+      }
+    ]
+  }
+}) as unknown as ComplianceOverview;

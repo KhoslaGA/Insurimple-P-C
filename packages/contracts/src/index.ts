@@ -412,6 +412,82 @@ export const workQueues = z.object({
 export type WorkQueues = z.infer<typeof workQueues>;
 
 /* ============================================================
+   Book & compliance — the principal broker's supervision view.
+   Exceptions are DERIVED (what's missing), never a flag someone
+   has to remember to set.
+   ============================================================ */
+
+export const bookSlice = z.object({
+  label: z.string(),
+  value: z.number(),
+  premium: z.number(),
+});
+export type BookSlice = z.infer<typeof bookSlice>;
+
+export const complianceOverview = z.object({
+  book: z.object({
+    by_line: z.array(bookSlice),
+    by_carrier: z.array(bookSlice),
+    by_expiry_month: z.array(bookSlice),
+  }),
+  retention: z.object({
+    in_force: z.number(),
+    cancelled: z.number(),
+    lapsed: z.number(),
+  }),
+  exceptions: z.object({
+    overdue_activities: z.array(
+      z.object({
+        id: z.string().uuid(),
+        title: z.string(),
+        due_at: z.string().nullable(),
+        account_name: z.string().nullable(),
+        account_id: z.string().uuid().nullable(),
+      }),
+    ),
+    unsigned_transactions: z.array(
+      z.object({
+        id: z.string().uuid(),
+        reference: z.string().nullable(),
+        txn_type: txnType,
+        state: txnState,
+        account_name: z.string(),
+        account_id: z.string().uuid(),
+      }),
+    ),
+    unacknowledged_submissions: z.array(
+      z.object({
+        id: z.string().uuid(),
+        reference: z.string().nullable(),
+        txn_type: txnType,
+        account_name: z.string(),
+        account_id: z.string().uuid(),
+        submitted_at: z.string().nullable(),
+        days_waiting: z.number(),
+      }),
+    ),
+    licence_alerts: z.array(
+      z.object({
+        id: z.string().uuid(),
+        full_name: z.string(),
+        licence_class: z.string(),
+        licence_number: z.string().nullable(),
+        expires_on: z.string().nullable(),
+        expired: z.boolean(),
+      }),
+    ),
+    consent_gaps: z.array(
+      z.object({
+        account_id: z.string().uuid(),
+        account_name: z.string(),
+        lookup_code: z.string().nullable(),
+      }),
+    ),
+  }),
+});
+export type ComplianceOverview = z.infer<typeof complianceOverview>;
+
+/* ============================================================
    Billing & receivables. The ledger is double-entry and append-only;
    screens read it, the transaction spine writes it. Trust surplus
    below zero is a shortfall — a RIBO reportable event.
