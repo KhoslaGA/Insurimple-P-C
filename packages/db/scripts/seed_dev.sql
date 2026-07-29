@@ -462,4 +462,22 @@ INSERT INTO claim (id, tenant_id, account_id, policy_id, txn_id, carrier_id, cla
   'PEMB-CL-88214','2026-07-18','2026-07-18','in_progress','J. Whitfield, Pembridge Claims',8500.00,0.00)
 ON CONFLICT DO NOTHING;
 
+-- ============================================================================
+-- Market availability — what we can place, with whom, and how each carrier is
+-- actually reached. The realistic hybrid: some rater, some portal, some email.
+-- These are PENDING appointments (active=false) until real contracts land; the
+-- CarrierAdapter runs on deterministic mock data until then (invariant 7).
+-- ============================================================================
+INSERT INTO market_availability (tenant_id, carrier_id, line, broker_code, commission_rate,
+                                 quote_channel, submit_channel, download_channel, fnol_routing, active) VALUES
+ ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','auto','INS-PEMB-01',0.1250,
+  'rater','portal','csio_edocs','{"phone":"1-800-555-0110","email":"claims@pembridge.example"}',false),
+ ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','property','INS-PEMB-01',0.2000,
+  'rater','portal','csio_edocs','{"phone":"1-800-555-0110"}',false),
+ ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','auto','INS-GORE-04',0.1250,
+  'portal','secure_delivery','csio_edocs','{"phone":"1-800-555-0220"}',false),
+ ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','tenant','INS-GORE-04',0.2000,
+  'portal','email','none','{"phone":"1-800-555-0220"}',false)
+ON CONFLICT DO NOTHING;
+
 SELECT 'seed complete' AS result;

@@ -68,18 +68,40 @@ merging to `main` updates production. The Vercel dashboard lists each
 deployment against its commit, so a screen can be reviewed at the commit that
 introduced it.
 
-### A custom domain
+### Domains
 
-**Project → Settings → Domains → Add.**
+`insurimple.com` and `insurimple.ca` are held at GoDaddy.
 
-- A domain bought through Vercel is configured automatically.
-- A domain held elsewhere: add it, then at the registrar create either
-  `A @ 76.76.21.21` for an apex domain, or `CNAME <sub> cname.vercel-dns.com`
-  for a subdomain. TLS is issued automatically once DNS resolves.
-- Assign the domain to the branch you want it to track. A practical split:
-  `app.insurimple.com` → production (`main`), and a preview domain such as
-  `next.insurimple.com` → the working branch, so there is always one stable URL
-  showing the latest build without hunting for a deployment hash.
+**The P&C leg does not get its own domain.** P&C is a module gated by
+`tenant_modules`, not a separate product — one platform, three modules on a
+shared spine (brief §3: *"Single app domain (`app.insurimple.com`) year one;
+vanity subdomains later"*). A per-module domain would fragment exactly what
+the shared spine exists to unify, and would have to be undone when Life and
+Mortgage land.
+
+| Host | Points at | Tracks |
+|---|---|---|
+| `app.insurimple.com` | `apps/bms` on Vercel | production (`main`) |
+| `next.insurimple.com` | `apps/bms` on Vercel | the working branch — always the latest build |
+| `api.insurimple.com` | `apps/api` on its Node host | production API *(add once the API is hosted)* |
+| `insurimple.com` | `apps/marketing` | P3 — not built yet |
+
+**Setup:** in Vercel → **Settings → Domains**, add the host and assign it to
+the branch it should track. Then at GoDaddy add one DNS record per subdomain:
+
+```
+CNAME   next   cname.vercel-dns.com
+CNAME   app    cname.vercel-dns.com
+```
+
+(An apex domain instead needs `A @ 76.76.21.21`.) TLS is issued automatically
+once DNS resolves. Don't point `api.` anywhere until the API actually has a
+host.
+
+**Renewals:** `insurimple.com` and `insurimple.ca` both renew **15 August**.
+Keep auto-renew and the registrar lock on, and enable ownership protection —
+a lapse takes down the app, the marketing site and any email on the domain at
+once.
 
 ### Troubleshooting
 

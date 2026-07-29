@@ -19,7 +19,7 @@ const NAV: Array<{ icon: string; label: string; href?: string }> = [
   { icon: 'list-check', label: 'Work queues', href: '/queues' },
   { icon: 'arrows-exchange', label: 'Transactions', href: '/transactions' },
   { icon: 'certificate', label: 'Proofs & documents', href: '/proofs' },
-  { icon: 'cloud-download', label: 'Rating & carrier' },
+  { icon: 'cloud-download', label: 'Rating & carrier', href: '/rating' },
   { icon: 'flame', label: 'Claims', href: '/claims' },
   { icon: 'receipt', label: 'Billing & receivables', href: '/billing' },
   { icon: 'chart-bar', label: 'Book & compliance', href: '/compliance' },

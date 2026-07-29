@@ -24,6 +24,8 @@ import { ClaimsController } from './claims/claims.controller';
 import { ClaimsService } from './claims/claims.service';
 import { PoliciesController } from './policies/policies.controller';
 import { PoliciesService } from './policies/policies.service';
+import { CarriersController } from './carriers/carriers.controller';
+import { CarriersService } from './carriers/carriers.service';
 import { AuthGuard } from './common/auth.guard';
 
 @Module({
@@ -41,6 +43,7 @@ import { AuthGuard } from './common/auth.guard';
     ComplianceController,
     ClaimsController,
     PoliciesController,
+    CarriersController,
   ],
   providers: [
     TxnsService,
@@ -54,6 +57,7 @@ import { AuthGuard } from './common/auth.guard';
     ComplianceService,
     ClaimsService,
     PoliciesService,
+    CarriersService,
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
 })

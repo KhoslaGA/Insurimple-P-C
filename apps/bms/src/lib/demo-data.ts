@@ -1,7 +1,7 @@
 import type {
   AccountSummary, HouseholdDetail, WorkQueues, TxnSummary, TxnDetail, MeProfile,
   TeamRoster, DocumentRow, DocumentTemplate, BillingOverview, ComplianceOverview,
-  ClaimRow, PolicyListRow,
+  ClaimRow, PolicyListRow, MarketRow,
 } from "@insurimple/contracts";
 
 /**
@@ -2097,3 +2097,71 @@ export const DEMO_POLICIES = ([
     "days_to_expiry": 330
   }
 ]) as unknown as PolicyListRow[];
+
+export const DEMO_MARKETS = ([
+  {
+    "id": "97dd0527-3c7d-46fa-ac03-1132a6e1d091",
+    "line": "auto",
+    "broker_code": "INS-GORE-04",
+    "commission_rate": "0.1250",
+    "quote_channel": "portal",
+    "submit_channel": "secure_delivery",
+    "download_channel": "csio_edocs",
+    "fnol_routing": {
+      "phone": "1-800-555-0220"
+    },
+    "active": false,
+    "carrier_id": "c0000000-0000-0000-0000-000000000002",
+    "carrier_name": "Gore Mutual",
+    "csio_code": "GORE"
+  },
+  {
+    "id": "299f77fb-d52d-4a67-96cf-47f67b57c5c2",
+    "line": "tenant",
+    "broker_code": "INS-GORE-04",
+    "commission_rate": "0.2000",
+    "quote_channel": "portal",
+    "submit_channel": "email",
+    "download_channel": "none",
+    "fnol_routing": {
+      "phone": "1-800-555-0220"
+    },
+    "active": false,
+    "carrier_id": "c0000000-0000-0000-0000-000000000002",
+    "carrier_name": "Gore Mutual",
+    "csio_code": "GORE"
+  },
+  {
+    "id": "02fbd7bd-55fa-43db-8d2a-e971cf3e6e26",
+    "line": "auto",
+    "broker_code": "INS-PEMB-01",
+    "commission_rate": "0.1250",
+    "quote_channel": "rater",
+    "submit_channel": "portal",
+    "download_channel": "csio_edocs",
+    "fnol_routing": {
+      "email": "claims@pembridge.example",
+      "phone": "1-800-555-0110"
+    },
+    "active": false,
+    "carrier_id": "c0000000-0000-0000-0000-000000000001",
+    "carrier_name": "Pembridge",
+    "csio_code": "PEMB"
+  },
+  {
+    "id": "9517124b-2821-4a7e-b040-fd14c0e794a3",
+    "line": "property",
+    "broker_code": "INS-PEMB-01",
+    "commission_rate": "0.2000",
+    "quote_channel": "rater",
+    "submit_channel": "portal",
+    "download_channel": "csio_edocs",
+    "fnol_routing": {
+      "phone": "1-800-555-0110"
+    },
+    "active": false,
+    "carrier_id": "c0000000-0000-0000-0000-000000000001",
+    "carrier_name": "Pembridge",
+    "csio_code": "PEMB"
+  }
+]) as unknown as MarketRow[];

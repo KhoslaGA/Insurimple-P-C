@@ -411,6 +411,61 @@ export const workQueues = z.object({
 });
 export type WorkQueues = z.infer<typeof workQueues>;
 
+/* ============================================================
+   Rating & carrier — the CarrierAdapter seam.
+   `is_mock` is set by the adapter itself, so a fixture can never
+   be mistaken for a live carrier response (invariant 7).
+   ============================================================ */
+
+export const quoteChannel = z.enum([
+  'csio_json_api', 'direct_api', 'rater', 'portal', 'manual',
+]);
+export type QuoteChannel = z.infer<typeof quoteChannel>;
+
+export const marketRow = z.object({
+  id: z.string().uuid(),
+  line,
+  broker_code: z.string().nullable(),
+  commission_rate: money,
+  quote_channel: quoteChannel.nullable(),
+  submit_channel: z.string().nullable(),
+  download_channel: z.string().nullable(),
+  fnol_routing: z.record(z.string(), z.unknown()).nullable(),
+  active: z.boolean(),
+  carrier_id: z.string().uuid(),
+  carrier_name: z.string(),
+  csio_code: z.string().nullable(),
+});
+export type MarketRow = z.infer<typeof marketRow>;
+
+export const carrierQuote = z.object({
+  carrierId: z.string().uuid(),
+  carrierName: z.string(),
+  channel: quoteChannel,
+  annualPremium: z.number(),
+  breakdown: z.array(z.object({ description: z.string(), premium: z.number() })),
+  factors: z.array(z.string()),
+  declined: z.boolean().optional(),
+  declineReason: z.string().optional(),
+  is_mock: z.boolean(),
+  quotedAt: z.string(),
+});
+export type CarrierQuote = z.infer<typeof carrierQuote>;
+
+export const quoteResult = z.object({
+  policy: z.object({
+    id: z.string().uuid(),
+    line,
+    account_id: z.string().uuid(),
+    account_name: z.string(),
+  }),
+  risk: z.record(z.string(), z.unknown()),
+  quotes: z.array(carrierQuote),
+  best: carrierQuote.nullable(),
+  indicative_only: z.boolean(),
+});
+export type QuoteResult = z.infer<typeof quoteResult>;
+
 /** The flat book — one row per policy, for the policies list. */
 export const policyListRow = z.object({
   id: z.string().uuid(),
