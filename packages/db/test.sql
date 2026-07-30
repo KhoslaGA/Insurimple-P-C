@@ -508,4 +508,61 @@ BEGIN
     RAISE NOTICE 'TEST8e PASS: audit_event is tenant-isolated — no cross-tenant row images';
 END $$;
 
+-- ============================================================================
+-- TEST9 — the actor default fails closed.
+--
+-- current_actor() used to default to 'system', the actor every authority guard
+-- in 0009-0012 bypasses. A connection that never set app.current_actor
+-- therefore held full provisioning authority: it could create transactions
+-- without a licence, issue proofs, and grant itself roles. Nothing errored,
+-- which is what made it survive. The default is now 'anonymous', which holds
+-- no capability at all.
+-- ============================================================================
+
+-- 9a — with no actor set, the licence guard refuses a transaction
+DO $$
+DECLARE v_state text;
+BEGIN
+    PERFORM set_config('app.current_tenant','11111111-1111-1111-1111-111111111111', false);
+    PERFORM set_config('app.current_actor', '', false);
+    IF current_actor() <> 'anonymous' THEN
+        RAISE EXCEPTION 'TEST9a FAIL: unset actor resolved to %, not anonymous', current_actor();
+    END IF;
+    BEGIN
+        INSERT INTO txn (tenant_id, txn_type, account_id)
+        VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+                (SELECT id FROM account WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1));
+        RAISE EXCEPTION 'TEST9a FAIL: a caller with no actor created a transaction';
+    EXCEPTION WHEN insufficient_privilege THEN
+        RAISE NOTICE 'TEST9a PASS: no actor set — transaction refused, licence guard held';
+    END;
+END $$;
+
+-- 9b — and it refuses to grant itself the authority it lacks
+DO $$
+BEGIN
+    PERFORM set_config('app.current_actor', '', false);
+    BEGIN
+        INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
+        VALUES ('11111111-1111-1111-1111-111111111111',
+                '50000000-0000-0000-0000-000000000001','admin_principal');
+        RAISE EXCEPTION 'TEST9b FAIL: a caller with no actor granted itself a role';
+    EXCEPTION WHEN insufficient_privilege THEN
+        RAISE NOTICE 'TEST9b PASS: no actor set — self-grant refused, team.manage guard held';
+    END;
+END $$;
+
+-- 9c — `system` still works, but only when asked for by name
+DO $$
+DECLARE v_id uuid;
+BEGIN
+    PERFORM set_config('app.current_actor', 'system', false);
+    INSERT INTO txn (tenant_id, txn_type, account_id)
+    VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+            (SELECT id FROM account WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1))
+    RETURNING id INTO v_id;
+    DELETE FROM txn WHERE id = v_id;
+    RAISE NOTICE 'TEST9c PASS: system remains privileged when named explicitly';
+END $$;
+
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

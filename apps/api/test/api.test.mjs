@@ -90,6 +90,11 @@ before(async () => {
   // Provision the fixtures the authority tests need. This runs as the
   // superuser (the seeding path), because a principal cannot bootstrap their
   // own authority — which is exactly what 0010 enforces.
+  //
+  // `system` is named explicitly: current_actor() defaults to `anonymous`, so
+  // provisioning authority is something a caller asks for rather than
+  // something it inherits by not setting an actor.
+  await client.query(`SELECT set_config('app.current_actor', 'system', false)`);
   await client.query(
     `INSERT INTO staff (id, tenant_id, full_name, email, role) VALUES
        ($1,$3,'Priya Life-Only','priya.test@insurimple.ca','broker'),

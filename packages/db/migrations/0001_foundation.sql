@@ -57,10 +57,17 @@ CREATE TABLE staff (
 );
 
 -- ----------------------------------------------------------------------------
--- Session context. NestJS sets these per request/connection:
---   SET app.current_tenant = '<uuid>';
---   SET app.current_actor  = '<staff uuid or "system">';
+-- Session context. NestJS sets these per transaction:
+--   set_config('app.current_tenant', '<uuid>',                  true)
+--   set_config('app.current_actor',  '<staff uuid|system>',     true)
 -- RLS policies and the audit trigger read them.
+--
+-- Both default to a value that CAN DO NOTHING when unset. `system` is the
+-- actor that bypasses every authority guard in 0009-0012 — the licence check,
+-- the entitlement check, the proof-issue check, the team.manage check — so
+-- defaulting to it would mean a connection that forgot to set an actor got
+-- full provisioning authority. That is a failure mode with no error message:
+-- everything works, and it works too well. `system` must be asked for.
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION current_tenant() RETURNS uuid
 LANGUAGE sql STABLE AS $$
@@ -69,7 +76,7 @@ $$;
 
 CREATE OR REPLACE FUNCTION current_actor() RETURNS text
 LANGUAGE sql STABLE AS $$
-    SELECT coalesce(nullif(current_setting('app.current_actor', true), ''), 'system')
+    SELECT coalesce(nullif(current_setting('app.current_actor', true), ''), 'anonymous')
 $$;
 
 -- ----------------------------------------------------------------------------

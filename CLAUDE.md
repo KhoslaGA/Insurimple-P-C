@@ -26,6 +26,9 @@ This file is a contract. Violating an invariant fails the task regardless of fea
    `SET` (pooler leak). pgTAP isolation tests must stay green in CI.
 3. LICENCE IS THE SECURITY BOUNDARY. Role grants derive from a licence on file with
    expiry. A Life-only user cannot create a P&C transaction — enforced by grant, test-asserted.
+   `current_actor()` defaults to `anonymous`, which holds no capability. `system` — the actor
+   every authority guard bypasses — must be named explicitly; it is never inherited by a
+   caller that forgot to set one.
 4. ENTITLEMENT IS THE COMMERCIAL BOUNDARY. `tenant_modules` gates every module-scoped
    capability server-side. UI hiding is not enforcement.
 5. INDEPENDENCE FROM RATE FAMILY. No imports, no shared DB, no runtime dependency on any

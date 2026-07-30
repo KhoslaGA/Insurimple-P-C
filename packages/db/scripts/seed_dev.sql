@@ -10,6 +10,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app;
 
+-- Seeding is tenant provisioning, which acts as `system` — the actor that
+-- bypasses the licence, entitlement and team.manage guards. It has to be asked
+-- for explicitly: current_actor() defaults to `anonymous`, which can do
+-- nothing, so that a caller who forgets does not silently inherit provisioning
+-- authority.
+SELECT set_config('app.current_actor', 'system', false);
+
 INSERT INTO tenant (id, legal_name, trade_name, ribo_licence) VALUES
  ('11111111-1111-1111-1111-111111111111','Insurimple Brokerage Inc.','Insurimple','RIBO-PENDING')
 ON CONFLICT DO NOTHING;

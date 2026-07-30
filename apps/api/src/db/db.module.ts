@@ -28,6 +28,13 @@ export class DbService implements OnModuleDestroy {
     actor: string,
     fn: (q: Q) => Promise<T>,
   ): Promise<T> {
+    // Belt to the database's braces. current_actor() defaults to `anonymous`
+    // when the setting is empty, so an empty actor fails closed rather than
+    // escalating — but it fails deep inside a trigger, as a 403 on an unrelated
+    // write. Refusing here names the actual fault.
+    if (!tenantId) throw new Error('withTenant called with no tenant id');
+    if (!actor) throw new Error('withTenant called with no actor');
+
     const client: PoolClient = await this.pool.connect();
     try {
       await client.query('BEGIN');
