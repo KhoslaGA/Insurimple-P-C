@@ -414,4 +414,98 @@ BEGIN
     RAISE NOTICE 'TEST7e PASS: RIBO-anchored grant confers pc.txn.create';
 END $$;
 
+-- ============================================================================
+-- TEST 8 — role topology (DB.1). The isolation guarantee must not depend on
+--          which role happens to connect.
+-- ============================================================================
+RESET ROLE;
+
+-- 8a — every table carrying tenant_id has RLS both ENABLED and FORCED.
+DO $$ BEGIN
+    PERFORM assert_rls_complete();
+    RAISE NOTICE 'TEST8a PASS: every tenant-scoped table has ENABLE + FORCE row level security';
+END $$;
+
+-- 8b — the app role is not a superuser and does not hold BYPASSRLS.
+DO $$ BEGIN
+    PERFORM assert_app_role_unprivileged();
+    RAISE NOTICE 'TEST8b PASS: app role holds neither SUPERUSER nor BYPASSRLS';
+END $$;
+
+-- 8c — the backstop bites. Drop FORCE from one table and confirm the assertion
+--      names that table specifically, then restore it. A check that cannot fail
+--      is not a check.
+DO $$
+DECLARE msg text;
+BEGIN
+    ALTER TABLE consent NO FORCE ROW LEVEL SECURITY;
+    BEGIN
+        PERFORM assert_rls_complete();
+        RAISE EXCEPTION 'TEST8c FAIL: the RLS backstop did not notice FORCE was removed';
+    EXCEPTION WHEN others THEN
+        msg := SQLERRM;
+        IF msg NOT LIKE '%consent%' THEN
+            RAISE EXCEPTION 'TEST8c FAIL: backstop fired but did not name consent (%)', msg;
+        END IF;
+    END;
+    ALTER TABLE consent FORCE ROW LEVEL SECURITY;
+    PERFORM assert_rls_complete();   -- and it is clean again
+    RAISE NOTICE 'TEST8c PASS: the RLS backstop bites, and names the offending table';
+END $$;
+
+-- 8d — the privileged bypass is REAL, and that is the whole reason for the role
+--      split. A SUPERUSER bypasses RLS unconditionally — FORCE does not
+--      constrain it, because FORCE only extends the policy to a non-superuser
+--      OWNER. So the guarantee is not "RLS is enabled"; it is "the application
+--      connects as a role that RLS applies to".
+--
+--      This asserts both halves against the same data and the same tenant
+--      context: privileged sees the foreign tenant's rows, insurimple_app does
+--      not.
+DO $$
+DECLARE n_privileged int; n_app int; is_super boolean;
+BEGIN
+    SELECT usesuper INTO is_super FROM pg_user WHERE usename = current_user;
+    PERFORM set_config('app.current_tenant','22222222-2222-2222-2222-222222222222', false);
+
+    -- Tenant 2222… owns no accounts; tenant 1111… owns one.
+    SELECT count(*) INTO n_privileged FROM account;
+
+    IF NOT is_super THEN
+        RAISE EXCEPTION 'TEST8d INCONCLUSIVE: expected to be running as a privileged role';
+    END IF;
+    IF n_privileged = 0 THEN
+        RAISE EXCEPTION
+            'TEST8d FAIL: a superuser saw 0 rows — the fixture is wrong, so this proves nothing';
+    END IF;
+
+    SET LOCAL ROLE app;
+    SELECT count(*) INTO n_app FROM account;
+    RESET ROLE;
+
+    IF n_app <> 0 THEN
+        RAISE EXCEPTION
+            'TEST8d FAIL: the app role saw % of another tenant''s accounts', n_app;
+    END IF;
+
+    RAISE NOTICE
+        'TEST8d PASS: privileged role sees % foreign-tenant row(s), app role sees 0 — RLS protects the app role, not the connection',
+        n_privileged;
+END $$;
+
+-- 8e — audit_event is tenant-isolated. It holds full before/after row images,
+--      so an unscoped audit table is a complete bypass of every other policy.
+DO $$
+DECLARE n_app int;
+BEGIN
+    PERFORM set_config('app.current_tenant','22222222-2222-2222-2222-222222222222', false);
+    SET LOCAL ROLE app;
+    SELECT count(*) INTO n_app FROM audit_event;
+    RESET ROLE;
+    IF n_app <> 0 THEN
+        RAISE EXCEPTION 'TEST8e FAIL: the app role read % audit rows belonging to another tenant', n_app;
+    END IF;
+    RAISE NOTICE 'TEST8e PASS: audit_event is tenant-isolated — no cross-tenant row images';
+END $$;
+
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

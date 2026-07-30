@@ -1,8 +1,14 @@
 # 0002 — Database and hosting
 
 **Date:** 2026-07-29
-**Status:** Proposed — decision brief for the operator. Not yet decided.
-**Prepared by:** Claude. Written to be decided *from*, not to pre-empt the decision.
+**Status:** **Accepted** — 2026-07-29.
+**Decision:** AWS RDS PostgreSQL 16, `ca-central-1`, **direct connection** (no RDS Proxy),
+non-owner app role. Staging/preview may run anywhere. Provisioning is deferred; the trigger
+is the first real client record.
+**Rationale:** Canadian residency is settled rather than argued, role control makes the RLS
+topology unambiguous, and instance sizing / partitioning / restore time are all things this
+platform needs direct control over at the design target.
+**Prepared by:** Claude; accepted by the operator via `tickets-DB` gate.
 
 ## What this is
 

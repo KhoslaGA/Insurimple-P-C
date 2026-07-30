@@ -38,6 +38,23 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 9. TESTS ARE THE ACCEPTANCE CRITERIA. A ticket is done when its assertions pass in CI.
 10. EVERY SCREEN CONSUMES `packages/design-system` ONLY. No local styles, no hardcoded
     colors — tenant theming reads CSS variables from the token layer. Adherence lint enforces this.
+11. CLIENT CODE IS CANONICAL AND IMMUTABLE: `first6(last) + first2(first) + counter`,
+    e.g. `ABTAHISE01`. This matches the live Epic book, so a migrated client keeps the code
+    already printed on their documents — code continuity across migration outranks a shorter
+    stem. Normalization (NFKD fold, A–Z only, never pad), the per-stem collision counter,
+    tenant-scoped uniqueness, immutability (a name change updates display name only), and the
+    two-function contract (`normalizeNameToStem` / `issueClientCode`) are all as specified.
+    Only the slice lengths differ from the original spec. Decided 2026-07-29 (tickets-DB gate 1).
+12. MIGRATIONS ARE REWRITTEN IN PLACE, NOT LAYERED. There is no production data and no
+    external consumer of the migration set. A corrective migration stacked on top is a
+    permanent archaeological layer for zero benefit. This holds only until the first real
+    client record exists; after that, migrations are append-only forever.
+13. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `ai_action` are range-partitioned by
+    month. `txn` is NOT partitioned: Postgres requires the partition key in the primary key,
+    so partitioning `txn` would force a composite `(id, created_at)` PK and propagate a
+    composite FK into every table that hangs off it — documents, signatures, carrier
+    submissions, activities, ledger entries — forever, to solve a problem a 30M-row table
+    does not have.
 
 ## Design system source of truth
 `Insurimple-P_C/_ds/insurimple-design-system-*/` — seven token files + `_ds_manifest.json`
