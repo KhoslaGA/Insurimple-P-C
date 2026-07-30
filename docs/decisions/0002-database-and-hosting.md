@@ -16,30 +16,54 @@ first-hand check rather than being asserted from memory.
 
 ---
 
-## 1. Start with the sizing, because it inverts the usual advice
+## 1. Start with the sizing, because it decides most of the rest
 
-The target book is **5,000 policies** across roughly 2,000 households, one brokerage,
-1–2 concurrent users, scaling to a handful of tenants.
+**Design target: 50,000 accounts and up to 100,000 policies**, across a growing number of
+tenants. This is the number to build against — not the single-brokerage starting book.
 
-Concretely, today's seeded book is 40 tables and a few hundred rows. At the *target*:
+Deriving the rest from it, at steady state:
 
-| | Rough scale |
-|---|---|
-| Accounts / policies | ~2,000 / ~5,000 |
-| Transactions per year | ~6,000 |
-| Documents (6-yr retention) | ~50,000 rows, blobs in S3 not Postgres |
-| Peak concurrent users | Single digits |
-| Working set | Comfortably under 1 GB |
+| | Rough scale | Notes |
+|---|---|---|
+| Accounts / policies | 50,000 / 100,000 | ~2 policies per household |
+| Parties, vehicles, dwellings | ~75k / ~70k / ~30k | |
+| Coverages | ~400,000 | ~4 per policy, structured not PDF |
+| **Transactions per year** | **~165,000** | every policy renews annually (100k), plus endorsements (~50k), new business, cancellations |
+| `txn_event` per year | ~1,000,000 | ~6 lifecycle transitions per transaction |
+| Documents per year | ~330,000 rows | 6-yr retention → ~2M rows. **Blobs in S3, never Postgres** |
+| Activities per year | ~250,000 | gated to stages that need documentation |
+| **`audit_event` per year** | **~3,000,000** | every mutation on every audited table |
+| Concurrent users | ~30–60 | ~125 staff at ~800 policies each |
 
-**This is a small database.** The entire book fits in RAM on the smallest instance any
-vendor sells. Nothing here is a performance decision — read replicas, autoscaling,
-sharding and serverless burst capacity are all solving problems this workload does not
-have.
+### The audit trail is the database, not the book
 
-That inverts the usual selection criteria. The decision should be made on **compliance,
-data residency, operational simplicity and cost floor** — not throughput. Any of the
-candidates is fast enough. Choosing for scale you will not reach is how a two-person
-brokerage ends up with a platform team's bill.
+The book itself is small: policies, coverages, parties and risks come to roughly **1–2 GB**.
+But `audit_event` stores **two full `jsonb` row images — `before` and `after` — for every
+mutation on every tenant-scoped table**. At ~1.5 KB per row and ~3M rows a year, over the
+six-year retention window that is **~18M rows and roughly 25–40 GB**, before indexes.
+
+**So: ~50–70 GB total, of which ~70% is the audit trail.** That is the single most
+important sizing fact here, and it is a direct consequence of invariant 1 — the
+append-only audit spine is the RIBO/E&O backbone, so it cannot simply be trimmed.
+
+### What this changes versus a small book
+
+This is still *comfortably* within one Postgres instance — tens of millions of rows is
+routine, not exotic. But three earlier assumptions no longer hold:
+
+1. **Never idle.** With dozens of concurrent users the database is continuously warm, so
+   **scale-to-zero is worth nothing and cold starts are a straight cost** — a broker on
+   the phone with a client waiting on a spun-down database is the worst version of this
+   product.
+2. **Connection pooling now matters.** 30–60 concurrent users against a pooled API is a
+   real pool-sizing exercise rather than an afterthought.
+3. **Indexing and partitioning become load-bearing** — see §3 below. At a few hundred
+   rows every query plan is fine; at 100k policies the wrong plan is a visible stall.
+
+The decision is *still* driven by compliance, residency and operational control rather
+than raw throughput — no candidate will struggle to serve 60 users — but "any tiny
+instance will do" is no longer true, and neither is the case for a serverless-first
+database.
 
 ---
 
@@ -75,6 +99,45 @@ Three consequences:
 virgin database (21 assertions, including "tenant B sees zero of tenant A's rows"). If
 those pass on the real host with the real pooler, the topology is sound. If the host
 cannot run them, that is the answer.
+
+### 2a-bis. RLS and the query planner — a scale-specific trap
+
+Because the policy is `USING (tenant_id = current_tenant())`, **every query carries a
+`tenant_id` predicate**, whether the application wrote one or not. A composite index must
+therefore **lead with `tenant_id`**, or it cannot satisfy both the RLS predicate and the
+query's own filter, and the planner falls back to a scan.
+
+The existing schema does this well — nearly every index already leads with `tenant_id`.
+The exceptions (`txn_event(txn_id, at)`, `journal_line(entry_id)`) are correct as-is,
+because the leading column is highly selective and the tenant predicate is a cheap
+recheck.
+
+Reading the queries the app actually runs surfaced two real gaps, now closed in
+`0013_scale_indexes.sql`:
+
+- **`policy(tenant_id, status)` did not exist**, yet `WHERE status = 'in_force'` appears
+  at **ten call sites** — metrics, compliance, billing, the renewal queue. At 100k
+  policies that is a sequential scan of the whole table on every dashboard load.
+- **`account` had no index beyond the lookup-code unique constraint**, while Locate,
+  Households and the consent-gap check all read it by status and name.
+
+`current_tenant()` is declared `STABLE`, which is what allows the planner to treat it as
+a constant within a statement and use these indexes at all. **Do not make it `VOLATILE`.**
+
+### 2a-ter. `audit_event` should be partitioned before it is large
+
+At ~3M rows a year with two `jsonb` images each, `audit_event` becomes the largest object
+in the database. Left as a single table it makes autovacuum, index maintenance and the
+eventual six-year retention sweep progressively more painful, and a `DELETE` of a year's
+worth is a long, bloating operation.
+
+**Range-partition it by month.** Then the retention sweep is a `DETACH`/`DROP` of a
+partition — effectively instant — and vacuum works on tranches rather than one huge heap.
+
+This is deliberately **not** done yet: partitioning is cheap to introduce while the table
+is small and expensive afterwards, but it also changes the shape of the audit spine, so it
+warrants its own ticket rather than being folded into an index migration. **Do it before
+the first live book, not after.**
 
 ### 2b. The API is a long-lived process, not serverless functions
 
@@ -142,16 +205,16 @@ Ordered by how well they fit *this* workload, not by general popularity.
 
 ### Neon
 
-- **For:** excellent scale-to-zero economics; branching is genuinely useful for
-  migrations and preview environments — a per-PR database branch would suit our CI well;
-  fast provisioning.
-- **Against:** **the serverless-connection advantage does not apply to us** (2b);
-  scale-to-zero cold starts are a poor fit for an interactive BMS where a broker is on
-  the phone with a client; **Canadian region availability is the open question and must
-  be verified — if there is no Canadian region, this is disqualified on 2c**; storage
-  architecture is further from stock Postgres, which matters more when the compliance
-  story depends on the database behaving exactly as documented.
-- **Cost shape:** lowest floor, usage-based.
+- **For:** branching is genuinely useful for migrations and preview environments — a
+  per-PR database branch would suit our CI well; fast provisioning; lowest floor cost.
+- **Against:** at the design target **both of its headline advantages evaporate**. The
+  serverless-connection benefit does not apply (2b), and scale-to-zero is worth nothing
+  on a database that is continuously warm — while cold starts remain a real cost to a
+  broker mid-call. **Canadian region availability is the open question and must be
+  verified — if there is no Canadian region, this is disqualified on 2c.** Storage
+  architecture is further from stock Postgres, which matters more once partitioning,
+  vacuum behaviour and a 70 GB restore are part of the operational story.
+- **Verdict:** good for **staging and per-PR branches**; not the live book.
 
 ### Railway / Render managed Postgres
 
@@ -179,6 +242,11 @@ Ordered by how well they fit *this* workload, not by general popularity.
    Supabase free tier. Seeded, disposable, no client data, no residency constraint.
    Neon's branching is genuinely attractive here for per-PR databases.
 
+**Sizing:** at 50–70 GB with a hot set of roughly the current year, target an instance
+with **8–16 GB RAM** so the working set stays cached, on SSD storage with headroom for
+the audit trail's growth. That is a modest instance, not a large one — but it is not the
+smallest tier either, and it should be sized deliberately rather than by default.
+
 **Do not adopt RDS before it is needed.** Nothing about the current build requires it: the
 preview deployment renders from a snapshot with no database at all, and staging can run
 anywhere. The trigger to provision production is **the first real client record**, which
@@ -186,9 +254,23 @@ is gated on RIBO registration and appointments — months out on the external cl
 Provisioning early buys an idle bill and a security surface, not progress.
 
 **If the operator prefers one vendor and one bill over the above:** Supabase in a
-Canadian region is the defensible single choice, provided §5's checks pass. It is a
-reasonable trade of some control for materially less operational surface, and I would not
-argue against it. RDS is the recommendation, not the only correct answer.
+Canadian region remains defensible, provided §5's checks pass — it is stock Postgres with
+real role control, which is what the compliance story depends on. At the design target I
+hold the recommendation more firmly than I would have at 5,000 policies, because instance
+sizing, partitioning and restore time all become things you want direct control over. But
+RDS is the recommendation, not the only correct answer.
+
+### What the scale target changed
+
+For the record, since this document was first drafted against a 5,000-policy book:
+- Serverless/scale-to-zero went from *plausible* to *actively wrong* — the database is
+  never idle, so the saving does not exist and the cold start is pure cost.
+- Indexing moved from "irrelevant at this size" to load-bearing; two real gaps were found
+  and closed (`0013_scale_indexes.sql`).
+- `audit_event` partitioning became a **pre-launch requirement** rather than a nicety.
+- Instance sizing became a deliberate choice rather than "the smallest tier".
+- The recommendation itself did **not** change — the constraints that produced it
+  (residency, role control, restore discipline) got stronger, not weaker.
 
 ---
 
@@ -208,8 +290,12 @@ Vendor facts change and my knowledge has a cutoff. Confirm each **first-hand**:
    before there is client data to lose.
 5. **Whether any carrier appointment package imposes data-residency or subprocessor
    terms** — this can override everything above, and it arrives with the appointments.
-6. **`pg_trgm` is available** (used by the party search index in `0002_parties.sql`;
-   CI enables it explicitly).
+6. **`pg_trgm` is available** (used by the party and account search indexes in
+   `0002_parties.sql` and `0013_scale_indexes.sql`; CI enables it explicitly).
+7. **Restore time for a ~70 GB database on the chosen tier.** At this size a restore is
+   tens of minutes, not seconds — know the number before you need it, and rehearse it.
+8. **Whether the host permits declarative partitioning and `DETACH PARTITION`**, which
+   the `audit_event` retention strategy depends on.
 
 ---
 
