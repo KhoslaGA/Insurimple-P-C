@@ -103,6 +103,80 @@ Keep auto-renew and the registrar lock on, and enable ownership protection —
 a lapse takes down the app, the marketing site and any email on the domain at
 once.
 
+---
+
+## Going live — the order that avoids rework
+
+Each step depends on the one before it. Doing them out of order mostly means
+re-issuing keys and re-pointing DNS.
+
+**Choose the database first** — see `docs/decisions/0002-database-and-hosting.md`.
+Everything else has an environment variable pointing at it, so changing it later
+means touching every surface.
+
+1. **Database.** Provision Postgres 16 in the chosen region. Create a
+   **non-owner login role** for the app; do not connect as the owner or RLS
+   will not apply to it. Then:
+   ```bash
+   DATABASE_URL="postgres://…" pnpm --filter @insurimple/db migrate
+   ```
+   Run the assertions against a scratch database on the same host *before*
+   trusting it — they prove tenant isolation actually holds with that host's
+   pooler:
+   ```bash
+   DATABASE_URL="postgres://…/scratch" pnpm --filter @insurimple/db test
+   ```
+   Leave `DB_SET_ROLE` **unset** in production (it exists for dev, where we
+   connect as a superuser and must drop to `app`).
+
+2. **API host.** Deploy `apps/api` (see the table above) in a region near the
+   database. Set `DATABASE_URL` and `CLERK_SECRET_KEY`. Confirm the boot log
+   says `AUTH MODE: CLERK-JWT` — if it says `DEV-HEADERS`, the API will trust
+   `x-tenant-id` headers from anyone, which is a full tenancy bypass. Check
+   `/health` responds.
+
+3. **API domain.** Point `api.insurimple.com` at the API host and let it issue
+   TLS. Do this before wiring the web app, so `API_URL` is set once to a stable
+   name rather than a vendor-generated hostname that may change.
+
+4. **Clerk production instance.** A Clerk *development* instance is not a
+   production one — the keys differ and the development instance is not meant
+   to face real users. Create the production instance, add the app domain to
+   it, and add whatever DNS records Clerk asks for.
+
+5. **Web app.** In Vercel set `API_URL=https://api.insurimple.com`,
+   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`. Setting
+   `API_URL` is what turns off preview mode, so the "Preview data" badges
+   disappear and the screens fetch live, RLS-scoped data. Set both Clerk keys
+   or neither.
+
+6. **CORS.** The API currently calls `app.enableCors()` with no allowlist,
+   which is fine while nothing but our own server-rendered pages calls it. If
+   the browser ever calls the API directly, restrict it to the app origin
+   before that ships.
+
+7. **Link each Clerk org to a tenant.** Auth resolves the tenant from
+   `tenant.clerk_org_id`; an org with no mapping is refused, by design.
+   ```bash
+   DATABASE_URL="postgres://…" node packages/db/scripts/link-clerk-org.mjs \
+     <tenant_uuid> <clerk_org_id>
+   ```
+
+8. **Provision the first principal.** A new user is auto-provisioned as staff
+   with **no role grant**, so they can read but not transact — that is the
+   licence boundary working as intended, not a bug. Record their licence and
+   grant a role, either through **Team & roles** in the app or, for the very
+   first principal (who cannot grant themselves), directly as the `system`
+   actor.
+
+9. **Verify tenancy end to end.** Create a second Clerk org, link it to
+   tenant `22222222-…`, switch to it and reload. It must show **zero
+   accounts**. Same user, same browser, different org claim. If it shows the
+   first org's book, stop — nothing else matters until that is fixed.
+
+10. **Rehearse a restore** to a scratch database before there is client data
+    to lose.
+
 ### Troubleshooting
 
 - **`MIDDLEWARE_INVOCATION_FAILED`** — Clerk keys are partially set. Set both
@@ -152,7 +226,7 @@ tenant comes from the org claim.
 Auth resolves the tenant from `tenant.clerk_org_id`. For each organization:
 ```bash
 DATABASE_URL="postgres://…" node packages/db/scripts/link-clerk-org.mjs \
-  <clerk_org_id> <tenant_uuid>
+  <tenant_uuid> <clerk_org_id>
 ```
 e.g. map your first org to `11111111-1111-1111-1111-111111111111`. This is also
 what proves tenant isolation end-to-end (T1.0): a second org linked to
