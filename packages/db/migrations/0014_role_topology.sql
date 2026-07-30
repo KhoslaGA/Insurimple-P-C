@@ -24,13 +24,18 @@ DO $$ BEGIN
     CREATE ROLE insurimple_migrator NOLOGIN;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+-- LOGIN, because this is the role in DATABASE_URL — but with no password. A
+-- LOGIN role without a password cannot authenticate under scram or md5, so the
+-- migration creates the identity and the deployment supplies the credential
+-- (RDS IAM auth, or ALTER ROLE ... PASSWORD from the secret store). A password
+-- must never appear in a migration; the migration set is checked in.
 DO $$ BEGIN
-    CREATE ROLE insurimple_app NOLOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+    CREATE ROLE insurimple_app LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- Belt and braces: if the role pre-existed with the wrong attributes, correct
 -- them rather than trusting how it was made.
-ALTER ROLE insurimple_app NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+ALTER ROLE insurimple_app LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
 
 -- The app may read and write tenant data. It may not own, alter or drop it.
 GRANT USAGE ON SCHEMA public TO insurimple_app;

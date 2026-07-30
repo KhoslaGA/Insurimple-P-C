@@ -46,6 +46,48 @@ jobs:
       - name: schema assertions (virgin Postgres 16)
         run: DATABASE_URL=postgres://postgres:dev@localhost:5433/insurimple pnpm --filter @insurimple/db test
 
+  # The tenant isolation gate. Runs on its own database because the suite
+  # requires a virgin schema and its own two-tenant fixture, and because a
+  # failure here should be unambiguous about what broke.
+  rls:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: insurimple_rls
+        ports:
+          - 5435:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.23.1"
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      # pgTAP is not in the postgres image. It is pure SQL/PL-pgSQL, so this is
+      # a package install into the service container, not a build.
+      - name: install pgTAP into the service container
+        run: |
+          set -euo pipefail
+          cid=$(docker ps --format '{{.ID}} {{.Image}}' | awk '/postgres:16/ {print $1; exit}')
+          test -n "$cid" || { echo "no postgres:16 service container found"; docker ps; exit 1; }
+          docker exec "$cid" bash -c "apt-get update -qq && apt-get install -y -qq postgresql-16-pgtap"
+          PGPASSWORD=dev psql -h localhost -p 5435 -U postgres -d insurimple_rls \
+            -c "SELECT 1 FROM pg_available_extensions WHERE name = 'pgtap'" | grep -q 1
+      - name: enable pg_trgm
+        run: PGPASSWORD=dev psql -h localhost -p 5435 -U postgres -d insurimple_rls -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+      - name: migrate
+        run: DATABASE_URL=postgres://postgres:dev@localhost:5435/insurimple_rls node packages/db/scripts/migrate.mjs
+      - name: tenant isolation suite (as insurimple_app — no superuser, no owner)
+        run: DATABASE_URL=postgres://postgres:dev@localhost:5435/insurimple_rls pnpm --filter @insurimple/db test:rls
+
   api:
     runs-on: ubuntu-latest
     services:
