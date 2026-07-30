@@ -12,7 +12,7 @@
 -- and make the *body* searchable (Epic only searches titles).
 -- ----------------------------------------------------------------------------
 CREATE TABLE activity (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid REFERENCES account(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),
@@ -44,7 +44,7 @@ CREATE INDEX ON activity USING gin (
 -- trail. Written on every quote and every renewal, automatically.
 -- ----------------------------------------------------------------------------
 CREATE TABLE quote_log (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     txn_id          uuid REFERENCES txn(id),
@@ -64,7 +64,7 @@ CREATE INDEX ON quote_log (tenant_id, account_id);
 -- delivery method + timestamp, per new-business transaction.
 -- ----------------------------------------------------------------------------
 CREATE TABLE disclosure_record (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     txn_id          uuid REFERENCES txn(id),
@@ -84,7 +84,7 @@ CREATE TABLE disclosure_record (
 -- is impossible.
 -- ----------------------------------------------------------------------------
 CREATE TABLE loss_history (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     party_id        uuid REFERENCES party(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),
@@ -106,7 +106,7 @@ CREATE INDEX ON loss_history (tenant_id, party_id);
 -- A claim is opened by a claim_fnol txn and tracked here.
 -- ----------------------------------------------------------------------------
 CREATE TABLE claim (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),

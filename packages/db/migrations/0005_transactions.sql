@@ -8,7 +8,7 @@
 -- ============================================================================
 
 CREATE TABLE txn (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     branch_id       uuid REFERENCES branch(id),
     reference       text,                            -- human ref 'TXN-3041'
@@ -38,7 +38,7 @@ CREATE INDEX ON txn (tenant_id, txn_type, state);
 -- Explicit state-transition log (in addition to the generic audit trail):
 -- gives a clean, queryable lifecycle history per transaction.
 CREATE TABLE txn_event (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     txn_id          uuid NOT NULL REFERENCES txn(id) ON DELETE CASCADE,
     from_state      text,
@@ -79,8 +79,11 @@ BEGIN
     IF NEW.state IN ('completed','rejected') AND NEW.closed_at IS NULL THEN
         NEW.closed_at := now();
     END IF;
-    INSERT INTO txn_event(tenant_id,txn_id,from_state,to_state,actor)
-    VALUES (NEW.tenant_id,NEW.id,OLD.state,NEW.state,current_actor());
+    -- The id is minted here rather than defaulted: the tables carry no default
+    -- so that a caller who stops supplying one is a loud error. This trigger IS
+    -- the caller for txn_event, so it uses the SQL generator.
+    INSERT INTO txn_event(id,tenant_id,txn_id,from_state,to_state,actor)
+    VALUES (uuidv7(),NEW.tenant_id,NEW.id,OLD.state,NEW.state,current_actor());
     RETURN NEW;
 END $$;
 CREATE TRIGGER trg_txn_guard BEFORE UPDATE OF state ON txn
@@ -91,7 +94,7 @@ CREATE TRIGGER trg_txn_guard BEFORE UPDATE OF state ON txn
 -- cancellation agreement, OPCF 47R, application, etc.). Versioned per tenant.
 -- ----------------------------------------------------------------------------
 CREATE TABLE document_template (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     code            text NOT NULL,                   -- 'LPV','CANCEL_AGREEMENT','OPCF_47R'
     name            text NOT NULL,
@@ -109,7 +112,7 @@ CREATE TABLE document_template (
 -- account/policy/txn, with a 6-year RIBO retention clock.
 -- ----------------------------------------------------------------------------
 CREATE TABLE document (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid REFERENCES account(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),
@@ -145,7 +148,7 @@ CREATE TRIGGER trg_doc_retention BEFORE INSERT ON document
 -- later) but the record — signer, timestamp, IP — is what makes it actionable.
 -- ----------------------------------------------------------------------------
 CREATE TABLE signature (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     document_id     uuid NOT NULL REFERENCES document(id) ON DELETE CASCADE,
     signer_party_id uuid REFERENCES party(id),
@@ -165,7 +168,7 @@ CREATE TABLE signature (
 -- in their inbox.
 -- ----------------------------------------------------------------------------
 CREATE TABLE carrier_submission (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     txn_id          uuid NOT NULL REFERENCES txn(id) ON DELETE CASCADE,
     carrier_id      uuid REFERENCES carrier(id),

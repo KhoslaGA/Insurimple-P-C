@@ -135,6 +135,39 @@ BEGIN
     END IF;
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- Backstop: no uuid primary key may carry a default.
+--
+-- The failure this catches is quiet. A table added with the habitual
+-- `DEFAULT gen_random_uuid()` keeps working, and nothing is visibly wrong until
+-- the table is large enough that random insert positions are hurting — by which
+-- point the fix is a rewrite of a live book. Any default at all is refused, not
+-- just gen_random_uuid(): a `DEFAULT uuidv7()` would produce good keys, but it
+-- would also hide application code that stopped supplying an id, and the point
+-- of removing the default is to hear about that immediately.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION assert_no_generated_keys() RETURNS void
+LANGUAGE plpgsql AS $$
+DECLARE
+    bad text;
+BEGIN
+    SELECT string_agg(c.relname || '.' || a.attname || ' = ' || pg_get_expr(d.adbin, d.adrelid),
+                      ', ' ORDER BY c.relname)
+      INTO bad
+      FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+      JOIN pg_attrdef d  ON d.adrelid = c.oid AND d.adnum = a.attnum
+     WHERE n.nspname = 'public'
+       AND c.relkind IN ('r','p')
+       AND format_type(a.atttypid, NULL) = 'uuid'
+       AND a.attname = 'id';
+    IF bad IS NOT NULL THEN
+        RAISE EXCEPTION
+            'uuid primary keys must be supplied by the caller as UUIDv7, not defaulted: %', bad;
+    END IF;
+END $$;
+
 CREATE OR REPLACE FUNCTION assert_app_role_unprivileged() RETURNS void
 LANGUAGE plpgsql AS $$
 DECLARE

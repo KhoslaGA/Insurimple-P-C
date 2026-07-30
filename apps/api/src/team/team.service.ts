@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from '../common/ctx';
 
 export interface RecordLicenceDto {
@@ -86,11 +87,11 @@ export class TeamService {
     return this.denied(
       this.db.withTenant(ctx.tenantId, ctx.actor, async (q) => {
         const r = await q(
-          `INSERT INTO licence (tenant_id, staff_id, licence_class, licence_number,
+          `INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number,
                                 regulator, issued_on, expires_on)
-           VALUES (current_tenant(), $1, $2, $3, $4, $5, $6)
+           VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, $7)
            RETURNING id, licence_class, licence_number, expires_on::text AS expires_on`,
-          [dto.staffId, dto.licenceClass, dto.licenceNumber ?? null,
+          [newId(), dto.staffId, dto.licenceClass, dto.licenceNumber ?? null,
            dto.regulator ?? null, dto.issuedOn ?? null, dto.expiresOn ?? null],
         );
         return r.rows[0];
@@ -102,12 +103,12 @@ export class TeamService {
     return this.denied(
       this.db.withTenant(ctx.tenantId, ctx.actor, async (q) => {
         const r = await q(
-          `INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-           VALUES (current_tenant(), $1, $2, $3)
+          `INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+           VALUES ($1, current_tenant(), $2, $3, $4)
            ON CONFLICT (staff_id, role_code)
              DO UPDATE SET revoked_at = NULL, licence_id = EXCLUDED.licence_id
            RETURNING id, staff_id, role_code, licence_id`,
-          [dto.staffId, dto.roleCode, dto.licenceId ?? null],
+          [newId(), dto.staffId, dto.roleCode, dto.licenceId ?? null],
         );
         return r.rows[0];
       }),

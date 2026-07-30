@@ -46,8 +46,8 @@ ON CONFLICT DO NOTHING;
 -- seeding). In production the equivalent path is tenant provisioning acting as
 -- `system`: the first principal cannot grant themselves authority.
 -- ----------------------------------------------------------------------------
-INSERT INTO tenant_module (tenant_id, module) VALUES
- ('11111111-1111-1111-1111-111111111111','pc')
+INSERT INTO tenant_module (id, tenant_id, module) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','pc')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, issued_on, expires_on) VALUES
@@ -55,8 +55,8 @@ INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, reg
   '50000000-0000-0000-0000-000000000001','ribo_l2','RIBO-100200','RIBO','2019-03-01', current_date + 300)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id) VALUES
- ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
+INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
   'admin_principal','11c00000-0000-0000-0000-000000000001')
 ON CONFLICT DO NOTHING;
 
@@ -71,13 +71,13 @@ INSERT INTO party (id, tenant_id, party_type, first_name, last_name, email, phon
   '{"line1":"Ph01-23 Oneida Cres","city":"Richmond Hill","prov":"ON","postal":"L4B 0A2"}')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO account_party (tenant_id, account_id, party_id, role, is_primary) VALUES
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
+INSERT INTO account_party (id, tenant_id, account_id, party_id, role, is_primary) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
   '40000000-0000-0000-0000-000000000001','named_insured',true)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO consent (tenant_id, party_id, channel, basis) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','phone','did_not_obtain')
+INSERT INTO consent (id, tenant_id, party_id, channel, basis) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','phone','did_not_obtain')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status, effective_date, expiry_date, billing_type, payment_plan, annual_premium) VALUES
@@ -91,14 +91,14 @@ UPDATE account SET servicing_broker='50000000-0000-0000-0000-000000000001'
  WHERE id='a0000000-0000-0000-0000-000000000001';
 
 -- Abtahi's remaining CASL consent channels (typed rows, not a comment blob).
-INSERT INTO consent (tenant_id, party_id, channel, basis, captured_at, source) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','email','express', now() - interval '400 days','signed application'),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','sms','did_not_obtain', NULL, NULL)
+INSERT INTO consent (id, tenant_id, party_id, channel, basis, captured_at, source) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','email','express', now() - interval '400 days','signed application'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','sms','did_not_obtain', NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- Abtahi as a driver on the auto policy.
-INSERT INTO driver_record (tenant_id, party_id, licence_number, licence_class, licence_date, autoplus_consent, autoplus_pulled_at, at_fault_count) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','A1234-56789-01234','G','2011-04-18',true, now() - interval '400 days',0)
+INSERT INTO driver_record (id, tenant_id, party_id, licence_number, licence_class, licence_date, autoplus_consent, autoplus_pulled_at, at_fault_count) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','A1234-56789-01234','G','2011-04-18',true, now() - interval '400 days',0)
 ON CONFLICT DO NOTHING;
 
 -- Lienholder (additional interest) as an organization party.
@@ -114,26 +114,26 @@ INSERT INTO vehicle (id, tenant_id, policy_id, vin, year, make, model, primary_u
 ON CONFLICT DO NOTHING;
 
 -- Structured coverages (never PDF-only).
-INSERT INTO coverage (tenant_id, policy_id, vehicle_id, csio_code, description, limit_amount, deductible, premium) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','TPL','Third Party Liability',2000000.00,NULL,980.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','DCPD','Direct Compensation — Property Damage',NULL,0.00,240.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','COLL','Collision',NULL,1000.00,520.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','COMP','Comprehensive',NULL,1000.00,400.00)
+INSERT INTO coverage (id, tenant_id, policy_id, vehicle_id, csio_code, description, limit_amount, deductible, premium) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','TPL','Third Party Liability',2000000.00,NULL,980.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','DCPD','Direct Compensation — Property Damage',NULL,0.00,240.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','COLL','Collision',NULL,1000.00,520.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','7e000000-0000-0000-0000-000000000001','COMP','Comprehensive',NULL,1000.00,400.00)
 ON CONFLICT DO NOTHING;
 
 -- Endorsements as first-class, premium-bearing rows (the Epic gap we beat).
-INSERT INTO policy_endorsement (tenant_id, policy_id, form_code, description, premium, effective_date) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','OPCF 20','Coverage for Transportation Replacement',48.00,'2025-06-24'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','OPCF 47R','Agreement Not to Rely on Certain Optional Benefits',0.00,'2025-06-24')
+INSERT INTO policy_endorsement (id, tenant_id, policy_id, form_code, description, premium, effective_date) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','OPCF 20','Coverage for Transportation Replacement',48.00,'2025-06-24'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','OPCF 47R','Agreement Not to Rely on Certain Optional Benefits',0.00,'2025-06-24')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO ontario_auto_election (tenant_id, policy_id, opcf_47r_signed, dcpd_opt_out) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001',true,false)
+INSERT INTO ontario_auto_election (id, tenant_id, policy_id, opcf_47r_signed, dcpd_opt_out) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001',true,false)
 ON CONFLICT DO NOTHING;
 
 -- Loss history / Letter of Experience — powers remarketing.
-INSERT INTO loss_history (tenant_id, party_id, policy_id, carrier_id, insured_from, insured_to, loss_date, loss_type, at_fault, amount) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','2020-06-24',NULL,'2023-02-11','Comprehensive — Windshield',false,780.00)
+INSERT INTO loss_history (id, tenant_id, party_id, policy_id, carrier_id, insured_from, insured_to, loss_date, loss_type, at_fault, amount) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','2020-06-24',NULL,'2023-02-11','Comprehensive — Windshield',false,780.00)
 ON CONFLICT DO NOTHING;
 
 -- ----------------------------------------------------------------------------
@@ -148,16 +148,16 @@ INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id, carr
   '50000000-0000-0000-0000-000000000001', now() - interval '9 days')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, at) VALUES
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001',NULL,'draft','Gautam Khosla', now() - interval '9 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','draft','doc_generated','Gautam Khosla', now() - interval '9 days' + interval '20 minutes'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','doc_generated','sig_pending','Gautam Khosla', now() - interval '8 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','sig_pending','signed','Gautam Khosla', now() - interval '6 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','signed','submitted','Gautam Khosla', now() - interval '5 days')
+INSERT INTO txn_event (id, tenant_id, txn_id, from_state, to_state, actor, at) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001',NULL,'draft','Gautam Khosla', now() - interval '9 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','draft','doc_generated','Gautam Khosla', now() - interval '9 days' + interval '20 minutes'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','doc_generated','sig_pending','Gautam Khosla', now() - interval '8 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','sig_pending','signed','Gautam Khosla', now() - interval '6 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','signed','submitted','Gautam Khosla', now() - interval '5 days')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, channel, status, submitted_at) VALUES
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','portal','sent', now() - interval '5 days')
+INSERT INTO carrier_submission (id, tenant_id, txn_id, carrier_id, channel, status, submitted_at) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001','portal','sent', now() - interval '5 days')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -180,20 +180,20 @@ INSERT INTO party (id, tenant_id, party_type, first_name, last_name, email, phon
  ('40000000-0000-0000-0000-000000000006','11111111-1111-1111-1111-111111111111','person','Nikolai','Petrov','n.petrov@email.ca','(905) 555-0466','{"line1":"47 Vodden St","city":"Brampton","prov":"ON","postal":"L6V 1M9"}')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO account_party (tenant_id, account_id, party_id, role, is_primary) VALUES
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000002','named_insured',true),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000003','40000000-0000-0000-0000-000000000003','named_insured',true),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000004','named_insured',true),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000014','co_insured',false),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','named_insured',true),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','named_insured',true)
+INSERT INTO account_party (id, tenant_id, account_id, party_id, role, is_primary) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000002','40000000-0000-0000-0000-000000000002','named_insured',true),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000003','40000000-0000-0000-0000-000000000003','named_insured',true),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000004','named_insured',true),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','40000000-0000-0000-0000-000000000014','co_insured',false),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005','40000000-0000-0000-0000-000000000005','named_insured',true),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000006','40000000-0000-0000-0000-000000000006','named_insured',true)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO consent (tenant_id, party_id, channel, basis, captured_at, source) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000002','email','express', now() - interval '200 days','signed application'),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000003','email','implied', now() - interval '90 days','existing client'),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000004','email','express', now() - interval '300 days','signed application'),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000005','phone','express', now() - interval '10 days','quote intake call')
+INSERT INTO consent (id, tenant_id, party_id, channel, basis, captured_at, source) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000002','email','express', now() - interval '200 days','signed application'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000003','email','implied', now() - interval '90 days','existing client'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000004','email','express', now() - interval '300 days','signed application'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000005','phone','express', now() - interval '10 days','quote intake call')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status, effective_date, expiry_date, billing_type, payment_plan, annual_premium) VALUES
@@ -222,30 +222,30 @@ INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id, carr
   '50000000-0000-0000-0000-000000000001', now() - interval '1 day', NULL)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, at) VALUES
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002',NULL,'draft','Gautam Khosla', now() - interval '35 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','draft','doc_generated','Gautam Khosla', now() - interval '34 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','doc_generated','sig_pending','Gautam Khosla', now() - interval '33 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','sig_pending','signed','Gautam Khosla', now() - interval '32 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','signed','submitted','Gautam Khosla', now() - interval '31 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','submitted','carrier_ack','Gautam Khosla', now() - interval '29 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','carrier_ack','completed','Gautam Khosla', now() - interval '28 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000003',NULL,'draft','Gautam Khosla', now() - interval '1 day')
+INSERT INTO txn_event (id, tenant_id, txn_id, from_state, to_state, actor, at) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002',NULL,'draft','Gautam Khosla', now() - interval '35 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','draft','doc_generated','Gautam Khosla', now() - interval '34 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','doc_generated','sig_pending','Gautam Khosla', now() - interval '33 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','sig_pending','signed','Gautam Khosla', now() - interval '32 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','signed','submitted','Gautam Khosla', now() - interval '31 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','submitted','carrier_ack','Gautam Khosla', now() - interval '29 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','carrier_ack','completed','Gautam Khosla', now() - interval '28 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000003',NULL,'draft','Gautam Khosla', now() - interval '1 day')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, channel, status, submitted_at, acknowledged_at, carrier_ref) VALUES
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002','portal','acknowledged', now() - interval '31 days', now() - interval '29 days','GM-771204')
+INSERT INTO carrier_submission (id, tenant_id, txn_id, carrier_id, channel, status, submitted_at, acknowledged_at, carrier_ref) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002','portal','acknowledged', now() - interval '31 days', now() - interval '29 days','GM-771204')
 ON CONFLICT DO NOTHING;
 
 -- ----------------------------------------------------------------------------
 -- Diary / abeyances so the CSR "My day" queue has real content. Owner = Gautam.
 -- ----------------------------------------------------------------------------
-INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, title, body, owner_id, priority, status, due_at, sla_breached) VALUES
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','d0000000-0000-0000-0000-000000000001','follow_up','Chase Pembridge — cancellation acknowledgement','Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '2 days', false),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000002','90000000-0000-0000-0000-000000000002',NULL,'renew','Renewal review — Amrit Gill (expires Sep 1)','Auto renewal at Gore Mutual. Check for premium increase before offer goes out.','50000000-0000-0000-0000-000000000001','medium','open', now() + interval '9 days', false),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000013',NULL,'edoc_received','eDoc received — tenant policy confirmation','Auto-filed from CSIOnet. Review and close.','50000000-0000-0000-0000-000000000001','low','open', now() + interval '1 day', false),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','90000000-0000-0000-0000-000000000004',NULL,'compliance_note','Verify OPCF 47R on file — Kapoor auto','SABS optionality: confirm signed 47R before the reform effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '3 days', false),
- ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005',NULL,NULL,'follow_up','Prospect follow-up — Gurpreet Sandhu quote','Quoted auto at $2,010. Follow up on bind decision.','50000000-0000-0000-0000-000000000001','high','open', now() - interval '2 days', true)
+INSERT INTO activity (id, tenant_id, account_id, policy_id, txn_id, activity_type, title, body, owner_id, priority, status, due_at, sla_breached) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','d0000000-0000-0000-0000-000000000001','follow_up','Chase Pembridge — cancellation acknowledgement','Submitted 5 days ago, no ack yet. Confirm flat-rate effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '2 days', false),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000002','90000000-0000-0000-0000-000000000002',NULL,'renew','Renewal review — Amrit Gill (expires Sep 1)','Auto renewal at Gore Mutual. Check for premium increase before offer goes out.','50000000-0000-0000-0000-000000000001','medium','open', now() + interval '9 days', false),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000003','90000000-0000-0000-0000-000000000013',NULL,'edoc_received','eDoc received — tenant policy confirmation','Auto-filed from CSIOnet. Review and close.','50000000-0000-0000-0000-000000000001','low','open', now() + interval '1 day', false),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000004','90000000-0000-0000-0000-000000000004',NULL,'compliance_note','Verify OPCF 47R on file — Kapoor auto','SABS optionality: confirm signed 47R before the reform effective date.','50000000-0000-0000-0000-000000000001','high','open', now() + interval '3 days', false),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000005',NULL,NULL,'follow_up','Prospect follow-up — Gurpreet Sandhu quote','Quoted auto at $2,010. Follow up on bind decision.','50000000-0000-0000-0000-000000000001','high','open', now() - interval '2 days', true)
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -287,20 +287,20 @@ INSERT INTO dwelling (id, tenant_id, policy_id, address, year_built, constructio
   2005,'Concrete high-rise',NULL,'Electric baseboard',false,false,NULL,'tenant',NULL)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO coverage (tenant_id, policy_id, dwelling_id, csio_code, description, limit_amount, deductible, premium) VALUES
- -- Homeowner (Kapoor)
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','DWELL','Dwelling — guaranteed replacement cost',780000.00,1000.00,910.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','CONT','Contents',546000.00,1000.00,320.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','PLIA','Personal liability',2000000.00,NULL,180.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','SEWER','Sewer backup',25000.00,2500.00,240.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','OVLND','Overland water',25000.00,2500.00,190.00),
+INSERT INTO coverage (id, tenant_id, policy_id, dwelling_id, csio_code, description, limit_amount, deductible, premium) VALUES
+ -- Homeowner (uuidv7(), Kapoor)
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','DWELL','Dwelling — guaranteed replacement cost',780000.00,1000.00,910.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','CONT','Contents',546000.00,1000.00,320.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','PLIA','Personal liability',2000000.00,NULL,180.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','SEWER','Sewer backup',25000.00,2500.00,240.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','da000000-0000-0000-0000-000000000001','OVLND','Overland water',25000.00,2500.00,190.00),
  -- Mehta tenant
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','CONT','Contents',60000.00,500.00,190.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','PLIA','Personal liability',1000000.00,NULL,90.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','SEWER','Sewer backup',15000.00,1000.00,40.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','CONT','Contents',60000.00,500.00,190.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','PLIA','Personal liability',1000000.00,NULL,90.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','da000000-0000-0000-0000-000000000003','SEWER','Sewer backup',15000.00,1000.00,40.00),
  -- Kapoor tenant unit
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','CONT','Contents',45000.00,500.00,210.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','PLIA','Personal liability',1000000.00,NULL,90.00)
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','CONT','Contents',45000.00,500.00,210.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000014','da000000-0000-0000-0000-000000000002','PLIA','Personal liability',1000000.00,NULL,90.00)
 ON CONFLICT DO NOTHING;
 
 -- Vehicles and coverages on the rest of the auto book, so every line in the
@@ -311,28 +311,28 @@ INSERT INTO vehicle (id, tenant_id, policy_id, vin, year, make, model, primary_u
  ('7e000000-0000-0000-0000-000000000004','11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','2T3H1RFV8LC100004',2020,'Toyota','RAV4','pleasure',12000,'owned',true)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO coverage (tenant_id, policy_id, vehicle_id, csio_code, description, limit_amount, deductible, premium) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','TPL','Third Party Liability',1000000.00,NULL,760.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','DCPD','Direct Compensation — Property Damage',NULL,0.00,210.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','COLL','Collision',NULL,1000.00,470.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','TPL','Third Party Liability',2000000.00,NULL,880.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COLL','Collision',NULL,500.00,640.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COMP','Comprehensive',NULL,500.00,460.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','TPL','Third Party Liability',2000000.00,NULL,1020.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COLL','Collision',NULL,1000.00,720.00),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COMP','Comprehensive',NULL,1000.00,520.00)
+INSERT INTO coverage (id, tenant_id, policy_id, vehicle_id, csio_code, description, limit_amount, deductible, premium) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','TPL','Third Party Liability',1000000.00,NULL,760.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','DCPD','Direct Compensation — Property Damage',NULL,0.00,210.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','7e000000-0000-0000-0000-000000000002','COLL','Collision',NULL,1000.00,470.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','TPL','Third Party Liability',2000000.00,NULL,880.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COLL','Collision',NULL,500.00,640.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000003','7e000000-0000-0000-0000-000000000003','COMP','Comprehensive',NULL,500.00,460.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','TPL','Third Party Liability',2000000.00,NULL,1020.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COLL','Collision',NULL,1000.00,720.00),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','7e000000-0000-0000-0000-000000000004','COMP','Comprehensive',NULL,1000.00,520.00)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO driver_record (tenant_id, party_id, licence_number, licence_class, licence_date, autoplus_consent, at_fault_count) VALUES
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000002','G2100-11111-22222','G','2014-08-02',true,0),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000003','M3300-33333-44444','G','2009-11-19',true,1),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000004','K4400-55555-66666','G','2008-05-30',true,0),
- ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000014','K4400-77777-88888','G','2012-09-14',true,0)
+INSERT INTO driver_record (id, tenant_id, party_id, licence_number, licence_class, licence_date, autoplus_consent, at_fault_count) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000002','G2100-11111-22222','G','2014-08-02',true,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000003','M3300-33333-44444','G','2009-11-19',true,1),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000004','K4400-55555-66666','G','2008-05-30',true,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000014','K4400-77777-88888','G','2012-09-14',true,0)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO policy_endorsement (tenant_id, policy_id, form_code, description, premium, effective_date) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','SEF/HOM 43','Guaranteed replacement cost on the dwelling',0.00,'2026-01-10'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','WATER PKG','Combined sewer backup + overland water package',430.00,'2026-01-10')
+INSERT INTO policy_endorsement (id, tenant_id, policy_id, form_code, description, premium, effective_date) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','SEF/HOM 43','Guaranteed replacement cost on the dwelling',0.00,'2026-01-10'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','WATER PKG','Combined sewer backup + overland water package',430.00,'2026-01-10')
 ON CONFLICT DO NOTHING;
 
 -- ----------------------------------------------------------------------------
@@ -402,9 +402,9 @@ ON CONFLICT DO NOTHING;
 INSERT INTO journal_entry (id, tenant_id, book, reference, description, entry_date) VALUES
  ('1e000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','trust','RCP-4401','Premium receipt — Kapoor home + auto', current_date - 21)
 ON CONFLICT DO NOTHING;
-INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000004',4300.00,0),
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',0,4300.00)
+INSERT INTO journal_line (id, tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000004',4300.00,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',0,4300.00)
 ON CONFLICT DO NOTHING;
 UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000001';
 
@@ -416,9 +416,9 @@ ON CONFLICT DO NOTHING;
 -- back to the control account. An unattributed remittance would leave "held
 -- for each client" out of balance with total premiums payable — precisely
 -- what a RIBO spot check looks for.
-INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',3100.00,0),
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000001',NULL,0,3100.00)
+INSERT INTO journal_line (id, tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000004',3100.00,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000001',NULL,0,3100.00)
 ON CONFLICT DO NOTHING;
 UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000002';
 
@@ -426,19 +426,19 @@ UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000
 INSERT INTO journal_entry (id, tenant_id, book, reference, description, entry_date) VALUES
  ('1e000000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111','trust','RCP-4408','Premium receipt — Mehta auto + tenant', current_date - 5)
 ON CONFLICT DO NOTHING;
-INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000003',2300.00,0),
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000003',0,2300.00)
+INSERT INTO journal_line (id, tenant_id, entry_id, account_id, party_account_id, debit, credit) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000001','a0000000-0000-0000-0000-000000000003',2300.00,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000003','1a000000-0000-0000-0000-000000000002','a0000000-0000-0000-0000-000000000003',0,2300.00)
 ON CONFLICT DO NOTHING;
 UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000003';
 
 -- Commission reconciliation: expected vs received per carrier statement.
-INSERT INTO commission_entry (tenant_id, policy_id, carrier_id, period, expected, received, status) VALUES
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 267.50, 267.50,'matched'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 307.50, 246.00,'variance'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 368.00, NULL,'open'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 215.00, 215.00,'matched'),
- ('11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 48.00, NULL,'open')
+INSERT INTO commission_entry (id, tenant_id, policy_id, carrier_id, period, expected, received, status) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 267.50, 267.50,'matched'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000004','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 307.50, 246.00,'variance'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000024','c0000000-0000-0000-0000-000000000001', date_trunc('month', current_date - interval '1 month')::date, 368.00, NULL,'open'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000002','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 215.00, 215.00,'matched'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','90000000-0000-0000-0000-000000000013','c0000000-0000-0000-0000-000000000002', date_trunc('month', current_date - interval '1 month')::date, 48.00, NULL,'open')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================================
@@ -453,12 +453,12 @@ INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id, carr
   '50000000-0000-0000-0000-000000000001', now() - interval '11 days')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, at) VALUES
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004',NULL,'draft','Gautam Khosla', now() - interval '11 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','draft','doc_generated','Gautam Khosla', now() - interval '11 days' + interval '15 minutes'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','doc_generated','sig_pending','Gautam Khosla', now() - interval '11 days' + interval '30 minutes'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','sig_pending','signed','Gautam Khosla', now() - interval '10 days'),
- ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','signed','submitted','Gautam Khosla', now() - interval '10 days')
+INSERT INTO txn_event (id, tenant_id, txn_id, from_state, to_state, actor, at) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004',NULL,'draft','Gautam Khosla', now() - interval '11 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','draft','doc_generated','Gautam Khosla', now() - interval '11 days' + interval '15 minutes'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','doc_generated','sig_pending','Gautam Khosla', now() - interval '11 days' + interval '30 minutes'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','sig_pending','signed','Gautam Khosla', now() - interval '10 days'),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000004','signed','submitted','Gautam Khosla', now() - interval '10 days')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO claim (id, tenant_id, account_id, policy_id, txn_id, carrier_id, claim_number,
@@ -475,15 +475,15 @@ ON CONFLICT DO NOTHING;
 -- These are PENDING appointments (active=false) until real contracts land; the
 -- CarrierAdapter runs on deterministic mock data until then (invariant 7).
 -- ============================================================================
-INSERT INTO market_availability (tenant_id, carrier_id, line, broker_code, commission_rate,
+INSERT INTO market_availability (id, tenant_id, carrier_id, line, broker_code, commission_rate,
                                  quote_channel, submit_channel, download_channel, fnol_routing, active) VALUES
- ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','auto','INS-PEMB-01',0.1250,
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','auto','INS-PEMB-01',0.1250,
   'rater','portal','csio_edocs','{"phone":"1-800-555-0110","email":"claims@pembridge.example"}',false),
- ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','property','INS-PEMB-01',0.2000,
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000001','property','INS-PEMB-01',0.2000,
   'rater','portal','csio_edocs','{"phone":"1-800-555-0110"}',false),
- ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','auto','INS-GORE-04',0.1250,
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','auto','INS-GORE-04',0.1250,
   'portal','secure_delivery','csio_edocs','{"phone":"1-800-555-0220"}',false),
- ('11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','tenant','INS-GORE-04',0.2000,
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','c0000000-0000-0000-0000-000000000002','tenant','INS-GORE-04',0.2000,
   'portal','email','none','{"phone":"1-800-555-0220"}',false)
 ON CONFLICT DO NOTHING;
 

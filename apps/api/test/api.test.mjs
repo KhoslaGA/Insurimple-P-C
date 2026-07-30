@@ -109,8 +109,8 @@ before(async () => {
     [LIFE_LICENCE, TENANT_A, LIFE_ONLY],
   );
   await client.query(
-    `INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-     VALUES ($1,$2,'life_only',$3) ON CONFLICT DO NOTHING`,
+    `INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+     VALUES (uuidv7(),$1,$2,'life_only',$3) ON CONFLICT DO NOTHING`,
     [TENANT_A, LIFE_ONLY, LIFE_LICENCE],
   );
 
@@ -252,8 +252,8 @@ describe('licence is the security boundary (invariant 3)', () => {
 describe('entitlement is the commercial boundary (invariant 4)', () => {
   it('refuses a module the tenant is not subscribed to', async () => {
     const p = await client.query(
-      `INSERT INTO policy (tenant_id, account_id, policy_number, line, status)
-       VALUES ($1,$2,'LIFE-TEST-1','life','in_force') RETURNING id`,
+      `INSERT INTO policy (id, tenant_id, account_id, policy_number, line, status)
+       VALUES (uuidv7(),$1,$2,'LIFE-TEST-1','life','in_force') RETURNING id`,
       [TENANT_A, ABTAHI],
     );
     const r = await call('/txns', {

@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from '../common/ctx';
 import {
   adapterFor,
@@ -79,10 +80,10 @@ export class CarriersService {
         quotes.push(quote);
 
         await q(
-          `INSERT INTO quote_log (tenant_id, account_id, carrier_id, line,
+          `INSERT INTO quote_log (id, tenant_id, account_id, carrier_id, line,
                                   quoted_premium, outcome, rationale)
-           VALUES (current_tenant(), $1, $2, $3, $4, $5, $6)`,
-          [policy.account_id, m.carrier_id, policy.line,
+           VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, $7)`,
+          [newId(), policy.account_id, m.carrier_id, policy.line,
            quote.declined ? null : quote.annualPremium,
            quote.declined ? 'declined_by_carrier' : 'not_selected',
            quote.declined ? quote.declineReason : quote.factors.join('; ')],

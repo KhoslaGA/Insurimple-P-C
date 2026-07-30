@@ -1,5 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from '../common/ctx';
 
 export interface FnolDto {
@@ -55,29 +56,30 @@ export class ClaimsService {
     return this.db
       .withTenant(ctx.tenantId, ctx.actor, async (q) => {
         const txn = await q(
-          `INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, carrier_id,
+          `INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, carrier_id,
                             reason, effective_date)
-           VALUES (current_tenant(), 'claim_fnol', $1, $2, $3, $4, $5)
+           VALUES ($1, current_tenant(), 'claim_fnol', $2, $3, $4, $5, $6)
            RETURNING id, reference, state`,
-          [dto.accountId, dto.policyId, dto.carrierId ?? null, dto.description, dto.lossDate],
+          [newId(), dto.accountId, dto.policyId, dto.carrierId ?? null,
+           dto.description, dto.lossDate],
         );
         const claim = await q(
-          `INSERT INTO claim (tenant_id, account_id, policy_id, txn_id, carrier_id,
+          `INSERT INTO claim (id, tenant_id, account_id, policy_id, txn_id, carrier_id,
                               loss_date, reported_date, status, reserve)
-           VALUES (current_tenant(), $1, $2, $3, $4, $5, current_date, 'open', $6)
+           VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, current_date, 'open', $7)
            RETURNING id, status, loss_date::text AS loss_date,
                      reported_date::text AS reported_date, reserve`,
-          [dto.accountId, dto.policyId, txn.rows[0].id, dto.carrierId ?? null,
+          [newId(), dto.accountId, dto.policyId, txn.rows[0].id, dto.carrierId ?? null,
            dto.lossDate, dto.reserve ?? null],
         );
         // The E&O diary entry — a reported loss must be chased.
         await q(
-          `INSERT INTO activity (tenant_id, account_id, policy_id, txn_id,
+          `INSERT INTO activity (id, tenant_id, account_id, policy_id, txn_id,
                                  activity_type, title, body, priority, due_at)
-           VALUES (current_tenant(), $1, $2, $3, 'claim_fnol',
-                   'Refer claim to carrier and confirm claim number', $4, 'high',
+           VALUES ($1, current_tenant(), $2, $3, $4, 'claim_fnol',
+                   'Refer claim to carrier and confirm claim number', $5, 'high',
                    now() + interval '1 day')`,
-          [dto.accountId, dto.policyId, txn.rows[0].id, dto.description],
+          [newId(), dto.accountId, dto.policyId, txn.rows[0].id, dto.description],
         );
         return { claim: claim.rows[0], txn: txn.rows[0] };
       })

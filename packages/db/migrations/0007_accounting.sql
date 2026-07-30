@@ -7,7 +7,7 @@
 
 -- Chart of accounts. Each account belongs to a book: trust or general.
 CREATE TABLE ledger_account (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     book            text NOT NULL CHECK (book IN ('trust','general')),
     code            text NOT NULL,                   -- '1000','2000', ...
@@ -20,7 +20,7 @@ CREATE TABLE ledger_account (
 
 -- Journal entry header. Immutable once posted.
 CREATE TABLE journal_entry (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     book            text NOT NULL CHECK (book IN ('trust','general')),
     reference       text,                            -- 'RCP-2211','DIS-1190'
@@ -37,7 +37,7 @@ CREATE INDEX ON journal_entry (tenant_id, book, entry_date);
 
 -- Journal lines. Debits and credits; each line hits one ledger account.
 CREATE TABLE journal_line (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     entry_id        uuid NOT NULL REFERENCES journal_entry(id) ON DELETE CASCADE,
     account_id      uuid NOT NULL REFERENCES ledger_account(id),
@@ -130,7 +130,7 @@ GROUP BY je.tenant_id;
 -- statements. Variance queue is expected - received beyond a threshold.
 -- ----------------------------------------------------------------------------
 CREATE TABLE commission_entry (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),
     carrier_id      uuid REFERENCES carrier(id),

@@ -52,7 +52,14 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     external consumer of the migration set. A corrective migration stacked on top is a
     permanent archaeological layer for zero benefit. This holds only until the first real
     client record exists; after that, migrations are append-only forever.
-13. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `ai_action` are range-partitioned by
+13. PRIMARY KEYS ARE UUIDv7, SUPPLIED BY THE CALLER. No table declares a default on `id`.
+    Application code mints ids with `newId()` (`apps/api/src/db/id.ts`, the `uuidv7` npm
+    package); SQL-side callers — the state-machine trigger, seeds, fixtures — use the
+    `uuidv7()` function from 0001. UUIDv4 scatters inserts across the index and is the one
+    scale decision that is not cheaply reversible. The default is removed rather than
+    changed so that code which stops supplying an id fails loudly instead of quietly
+    diverging. Test-asserted: `assert_no_generated_keys()` plus TEST10a–d.
+14. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `ai_action` are range-partitioned by
     month. `txn` is NOT partitioned: Postgres requires the partition key in the primary key,
     so partitioning `txn` would force a composite `(id, created_at)` PK and propagate a
     composite FK into every table that hangs off it — documents, signatures, carrier

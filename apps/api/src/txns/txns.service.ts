@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DbService, Q } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from '../common/ctx';
 
 export interface OpenTxnDto {
@@ -45,19 +46,19 @@ export class TxnsService {
 
   private async insertTxn(q: Q, dto: OpenTxnDto) {
     const r = await q(
-      `INSERT INTO txn (tenant_id, reference, txn_type, account_id, policy_id,
+      `INSERT INTO txn (id, tenant_id, reference, txn_type, account_id, policy_id,
                         carrier_id, reason, effective_date)
-       VALUES (current_tenant(), $1, $2, $3, $4, $5, $6, $7)
+       VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, $7, $8)
        RETURNING id, reference, txn_type, state, module, opened_at`,
-      [dto.reference ?? null, dto.txnType, dto.accountId, dto.policyId ?? null,
+      [newId(), dto.reference ?? null, dto.txnType, dto.accountId, dto.policyId ?? null,
        dto.carrierId ?? null, dto.reason ?? null, dto.effectiveDate ?? null],
     );
     const txn = r.rows[0];
     await q(
-      `INSERT INTO activity (tenant_id, account_id, policy_id, txn_id,
+      `INSERT INTO activity (id, tenant_id, account_id, policy_id, txn_id,
                              activity_type, title, body)
-       VALUES (current_tenant(), $1, $2, $3, $4, $5, $6)`,
-      [dto.accountId, dto.policyId ?? null, txn.id,
+       VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, $7)`,
+      [newId(), dto.accountId, dto.policyId ?? null, txn.id,
        dto.txnType === 'claim_fnol' ? 'claim_fnol' : 'follow_up',
        `${dto.txnType} opened`, dto.reason ?? null],
     );
@@ -69,10 +70,10 @@ export class TxnsService {
     return this.db.withTenant(ctx.tenantId, ctx.actor, async (q) => {
       const t = await this.mustGet(q, txnId);
       const doc = await q(
-        `INSERT INTO document (tenant_id, account_id, policy_id, txn_id, doc_type, filename, source)
-         VALUES (current_tenant(), $1, $2, $3, $4, $5, 'generated')
+        `INSERT INTO document (id, tenant_id, account_id, policy_id, txn_id, doc_type, filename, source)
+         VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, 'generated')
          RETURNING id, filename, retention_until`,
-        [t.account_id, t.policy_id, txnId, docType, filename],
+        [newId(), t.account_id, t.policy_id, txnId, docType, filename],
       );
       await q(`UPDATE txn SET state='doc_generated' WHERE id=$1`, [txnId]);
       return { txnId, state: 'doc_generated', document: doc.rows[0] };
@@ -92,10 +93,10 @@ export class TxnsService {
       );
       if (d.rowCount === 0) throw new BadRequestException('no document to sign');
       await q(
-        `INSERT INTO signature (tenant_id, document_id, signer_party_id, method,
+        `INSERT INTO signature (id, tenant_id, document_id, signer_party_id, method,
                                 signed_at, signer_ip, verified)
-         VALUES (current_tenant(), $1, $2, 'esign', now(), $3, true)`,
-        [d.rows[0].id, signerPartyId ?? null, signerIp ?? null],
+         VALUES ($1, current_tenant(), $2, $3, 'esign', now(), $4, true)`,
+        [newId(), d.rows[0].id, signerPartyId ?? null, signerIp ?? null],
       );
       await q(`UPDATE txn SET state='signed' WHERE id=$1`, [txnId]);
       return { txnId, state: 'signed', documentId: d.rows[0].id };
@@ -111,21 +112,21 @@ export class TxnsService {
         [txnId],
       );
       const sub = await q(
-        `INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, document_id,
+        `INSERT INTO carrier_submission (id, tenant_id, txn_id, carrier_id, document_id,
                                          channel, status, submitted_at, payload)
-         VALUES (current_tenant(), $1, $2, $3, $4, 'sent', now(), $5)
+         VALUES ($1, current_tenant(), $2, $3, $4, $5, 'sent', now(), $6)
          RETURNING id, channel, status, submitted_at`,
-        [txnId, t.carrier_id, d.rows[0]?.id ?? null, channel,
+        [newId(), txnId, t.carrier_id, d.rows[0]?.id ?? null, channel,
          JSON.stringify(payload ?? {})],
       );
       await q(`UPDATE txn SET state='submitted' WHERE id=$1`, [txnId]);
       // follow-up diary task so the acknowledgement is chased, never lost
       await q(
-        `INSERT INTO activity (tenant_id, account_id, policy_id, txn_id,
+        `INSERT INTO activity (id, tenant_id, account_id, policy_id, txn_id,
                                activity_type, title, due_at)
-         VALUES (current_tenant(), $1, $2, $3, 'follow_up',
+         VALUES ($1, current_tenant(), $2, $3, $4, 'follow_up',
                  'Chase carrier acknowledgement', now() + interval '3 days')`,
-        [t.account_id, t.policy_id, txnId],
+        [newId(), t.account_id, t.policy_id, txnId],
       );
       return { txnId, state: 'submitted', submission: sub.rows[0] };
     });

@@ -1,5 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { DbService, Q } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from '../common/ctx';
 
 export interface IssueProofDto {
@@ -91,13 +92,13 @@ export class DocumentsService {
         const filename = `${fields.lookup_code ?? 'DOC'}-${dto.templateCode}-${stamp}.pdf`;
 
         const doc = await q(
-          `INSERT INTO document (tenant_id, account_id, policy_id, template_id,
+          `INSERT INTO document (id, tenant_id, account_id, policy_id, template_id,
                                  doc_type, filename, source, issued_to, rendered_body)
-           VALUES (current_tenant(), $1, $2, $3, $4, $5, 'generated', $6, $7)
+           VALUES ($1, current_tenant(), $2, $3, $4, $5, $6, 'generated', $7, $8)
            RETURNING id, doc_type, filename, issued_to,
                      retention_until::text AS retention_until,
                      created_at::text AS created_at`,
-          [fields._account_id, dto.policyId, tpl.rows[0].id, docType, filename,
+          [newId(), fields._account_id, dto.policyId, tpl.rows[0].id, docType, filename,
            dto.issuedTo ?? null, body],
         );
         return { ...doc.rows[0], rendered_body: body, template_name: tpl.rows[0].name };

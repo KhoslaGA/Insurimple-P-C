@@ -8,6 +8,7 @@ import {
 import { verifyToken, createClerkClient } from '@clerk/backend';
 import type { Request } from 'express';
 import { DbService } from '../db/db.module';
+import { newId } from '../db/id';
 import { Ctx } from './ctx';
 
 const UUID_RE =
@@ -123,11 +124,11 @@ export class AuthGuard implements CanActivate {
       }
       const role = /admin/i.test(orgRole) ? 'principal_broker' : 'csr';
       const ins = await q(
-        `INSERT INTO staff (tenant_id, full_name, email, role, external_auth_id)
-         VALUES (current_tenant(), $1, $2, $3, $4)
-         ON CONFLICT (tenant_id, email) DO UPDATE SET external_auth_id=$4, active=true
+        `INSERT INTO staff (id, tenant_id, full_name, email, role, external_auth_id)
+         VALUES ($1, current_tenant(), $2, $3, $4, $5)
+         ON CONFLICT (tenant_id, email) DO UPDATE SET external_auth_id=$5, active=true
          RETURNING id`,
-        [fullName, email, role, sub],
+        [newId(), fullName, email, role, sub],
       );
       this.log.log(`provisioned staff ${ins.rows[0].id} (${email}, ${role}) for ${sub}`);
       return ins.rows[0].id as string;

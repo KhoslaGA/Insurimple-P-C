@@ -6,7 +6,7 @@
 -- ============================================================================
 
 CREATE TABLE policy (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     branch_id       uuid REFERENCES branch(id),      -- re-taggable, not locked
     account_id      uuid NOT NULL REFERENCES account(id) ON DELETE CASCADE,
@@ -33,7 +33,7 @@ CREATE INDEX ON policy (tenant_id, expiry_date);      -- renewal queue
 -- Risk: vehicle. VIN, use, garaging, telematics consent.
 -- ----------------------------------------------------------------------------
 CREATE TABLE vehicle (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
     vin             text,
@@ -56,7 +56,7 @@ CREATE TABLE vehicle (
 -- Risk: dwelling (home / tenant / condo).
 -- ----------------------------------------------------------------------------
 CREATE TABLE dwelling (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
     address         jsonb,
@@ -78,7 +78,7 @@ CREATE TABLE dwelling (
 -- limits, deductibles, premium component, and attached OPCF/SEF endorsements.
 -- ----------------------------------------------------------------------------
 CREATE TABLE coverage (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
     vehicle_id      uuid REFERENCES vehicle(id) ON DELETE CASCADE,
@@ -95,7 +95,7 @@ CREATE TABLE coverage (
 -- Endorsements attached to an auto policy: OPCF 20, 27, 43R, 44R, 47R, etc.
 -- Modelled as first-class, premium-bearing rows — the gap Epic leaves open.
 CREATE TABLE policy_endorsement (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
     form_code       text NOT NULL,                   -- 'OPCF 47R','OPCF 20', ...
@@ -111,7 +111,7 @@ CREATE TABLE policy_endorsement (
 -- optional and must be captured per person; plus DCPD opt-out and OPCF 47R.
 -- ----------------------------------------------------------------------------
 CREATE TABLE ontario_auto_election (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     policy_id       uuid NOT NULL REFERENCES policy(id) ON DELETE CASCADE,
     opcf_47r_signed boolean NOT NULL DEFAULT false,
@@ -128,7 +128,7 @@ CREATE TABLE ontario_auto_election (
 -- Driver record. Abstract/AutoPlus pulls with consent logging (Ontario).
 -- ----------------------------------------------------------------------------
 CREATE TABLE driver_record (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     party_id        uuid NOT NULL REFERENCES party(id) ON DELETE CASCADE,
     licence_number  text,

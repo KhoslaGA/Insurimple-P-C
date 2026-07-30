@@ -6,7 +6,7 @@
 -- ============================================================================
 
 CREATE TABLE carrier (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     name            text NOT NULL,               -- 'Intact', 'Gore Mutual', 'Pembridge'
     csio_code       text,                        -- IBC / CSIO company code
@@ -18,7 +18,7 @@ CREATE TABLE carrier (
 
 -- What the brokerage can place, and how it connects, per carrier + line.
 CREATE TABLE market_availability (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     carrier_id      uuid NOT NULL REFERENCES carrier(id) ON DELETE CASCADE,
     line            text NOT NULL CHECK (line IN

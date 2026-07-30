@@ -4,7 +4,6 @@
 -- Everything else in the schema depends on this file.
 -- ============================================================================
 
--- gen_random_uuid() is in core PostgreSQL (13+); no pgcrypto needed.
 -- pg_trgm powers fuzzy search on names/VINs; created when available.
 DO $$ BEGIN
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -13,12 +12,52 @@ EXCEPTION WHEN OTHERS THEN
 END $$;
 
 -- ----------------------------------------------------------------------------
+-- Primary keys are UUIDv7 — time-ordered — and NO table declares a default.
+--
+-- UUIDv4 is random, so every insert lands in a random leaf of the B-tree. At
+-- 30M rows that means a cache miss per insert, write amplification in WAL, and
+-- an index that bloats faster than the table. It is also the one scale decision
+-- that is not cheaply reversible: changing key format later is a full table
+-- rewrite of a live book. UUIDv7 puts a millisecond timestamp in the high bits,
+-- so inserts append.
+--
+-- The default is removed rather than changed to uuidv7(). A default is a
+-- silent fallback, and the thing we most want to hear about is application code
+-- that stopped supplying an id. With no default, that is a NOT NULL violation
+-- on the first insert; with one, it is a working system that quietly diverges
+-- from whatever the application thinks the id is.
+--
+-- Application code generates ids with the `uuidv7` npm package, which keeps a
+-- counter so two ids minted in the same millisecond still order correctly. This
+-- function is for SQL-side fixtures, seeds and data migrations, which have no
+-- other way to mint one. PG16 has no native uuidv7() — that is PG18 — and
+-- pg_uuidv7 is not on the RDS supported-extensions list, so both generators are
+-- written rather than installed.
+--
+-- Layout (RFC 9562): 48 bits unix_ts_ms | ver 0111 | 12 bits sub-ms | var 10 |
+-- 62 bits random. The sub-millisecond field is the clock's microsecond
+-- remainder rather than random, which keeps ids ordered within a millisecond
+-- too — the same property the npm package's counter provides.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION uuidv7() RETURNS uuid
+LANGUAGE sql VOLATILE AS $$
+    SELECT (
+        lpad(to_hex((v.us / 1000)::bigint), 12, '0')                 -- unix_ts_ms
+     || '7'                                                          -- version
+     || lpad(to_hex((((v.us % 1000) * 4096) / 1000)::int), 3, '0')   -- sub-ms
+     || to_hex(8 + (random() * 3)::int)                              -- variant 10xx
+     || substr(replace(gen_random_uuid()::text, '-', ''), 1, 15)     -- rand_b
+    )::uuid
+    FROM (SELECT (extract(epoch from clock_timestamp()) * 1000000)::bigint AS us) v
+$$;
+
+-- ----------------------------------------------------------------------------
 -- Tenancy. Every business row carries tenant_id and is isolated by RLS.
 -- A tenant is a brokerage. Branch is the Agency/Branch hierarchy Epic exposes,
 -- but — unlike Epic — branch is a re-taggable pointer, never a cancel/rewrite.
 -- ----------------------------------------------------------------------------
 CREATE TABLE tenant (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     legal_name      text NOT NULL,
     trade_name      text,
     ribo_licence    text,                       -- brokerage RIBO registration #
@@ -29,7 +68,7 @@ CREATE TABLE tenant (
 );
 
 CREATE TABLE branch (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     code            text NOT NULL,               -- e.g. 'SOU'
     name            text NOT NULL,
@@ -42,7 +81,7 @@ CREATE TABLE branch (
 
 -- Staff / users. Kept minimal here; auth (Clerk) lives outside the DB.
 CREATE TABLE staff (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     full_name       text NOT NULL,
     email           text NOT NULL,

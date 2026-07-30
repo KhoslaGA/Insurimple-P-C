@@ -10,7 +10,7 @@
 -- "1.3 policies per account" is measured.
 -- ----------------------------------------------------------------------------
 CREATE TABLE account (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     branch_id       uuid REFERENCES branch(id),
     lookup_code     text,                        -- Epic-style, e.g. 'ABTAHISE01'
@@ -35,7 +35,7 @@ CREATE TABLE account (
 -- so one person is never duplicated.
 -- ----------------------------------------------------------------------------
 CREATE TABLE party (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     party_type      text NOT NULL CHECK (party_type IN ('person','organization')),
     -- person fields
@@ -68,7 +68,7 @@ END $$;
 
 -- A party's link to an account, with the role it plays there.
 CREATE TABLE account_party (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid NOT NULL REFERENCES account(id) ON DELETE CASCADE,
     party_id        uuid NOT NULL REFERENCES party(id),
@@ -85,7 +85,7 @@ CREATE TABLE account_party (
 -- edges between parties: director_of, spouse_of, parent_company_of, etc.
 -- ----------------------------------------------------------------------------
 CREATE TABLE party_relationship (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     from_party_id   uuid NOT NULL REFERENCES party(id) ON DELETE CASCADE,
     to_party_id     uuid NOT NULL REFERENCES party(id) ON DELETE CASCADE,
@@ -104,7 +104,7 @@ CREATE TABLE party_relationship (
 -- and absent from a records-only model. Consent rides on the party.
 -- ----------------------------------------------------------------------------
 CREATE TABLE consent (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     party_id        uuid NOT NULL REFERENCES party(id) ON DELETE CASCADE,
     channel         text NOT NULL CHECK (channel IN ('email','phone','sms','mail')),

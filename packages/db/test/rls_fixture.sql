@@ -50,7 +50,7 @@ BEGIN
     INSERT INTO tenant (id, legal_name, trade_name, ribo_licence)
     VALUES (p_tenant, tag||' Brokerage Inc.', tag, 'RIBO-'||upper(tag));
 
-    INSERT INTO tenant_module (tenant_id, module) VALUES (p_tenant, 'pc');
+    INSERT INTO tenant_module (id, tenant_id, module) VALUES (uuidv7(), p_tenant, 'pc');
 
     INSERT INTO branch (id, tenant_id, code, name, is_default)
     VALUES (v_branch, p_tenant, upper(tag)||'-HQ', tag||' Head Office', true);
@@ -63,37 +63,37 @@ BEGIN
     VALUES (v_licence, p_tenant, v_staff, 'ribo_l2', 'RIBO-'||upper(tag)||'-1',
             'RIBO', current_date - 365, current_date + 365, 'active');
 
-    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-    VALUES (p_tenant, v_staff, 'admin_principal', v_licence);
+    INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+    VALUES (uuidv7(), p_tenant, v_staff, 'admin_principal', v_licence);
 
     INSERT INTO party (id, tenant_id, party_type, first_name, last_name, email, language)
     VALUES (v_party, p_tenant, 'person', 'Ada', tag||'son', 'ada.'||tag||'@example.test', 'en');
     INSERT INTO party (id, tenant_id, party_type, first_name, last_name, language)
     VALUES (v_party2, p_tenant, 'person', 'Grace', tag||'ford', 'en');
 
-    INSERT INTO party_relationship (tenant_id, from_party_id, to_party_id, relationship)
-    VALUES (p_tenant, v_party, v_party2, 'spouse_of');
+    INSERT INTO party_relationship (id, tenant_id, from_party_id, to_party_id, relationship)
+    VALUES (uuidv7(), p_tenant, v_party, v_party2, 'spouse_of');
 
-    INSERT INTO consent (tenant_id, party_id, channel, basis, captured_at)
-    VALUES (p_tenant, v_party, 'email', 'express', now());
+    INSERT INTO consent (id, tenant_id, party_id, channel, basis, captured_at)
+    VALUES (uuidv7(), p_tenant, v_party, 'email', 'express', now());
 
-    INSERT INTO driver_record (tenant_id, party_id, licence_number, licence_class, licence_date)
-    VALUES (p_tenant, v_party, 'D'||upper(tag)||'1234567', 'G', current_date - 3650);
+    INSERT INTO driver_record (id, tenant_id, party_id, licence_number, licence_class, licence_date)
+    VALUES (uuidv7(), p_tenant, v_party, 'D'||upper(tag)||'1234567', 'G', current_date - 3650);
 
     INSERT INTO carrier (id, tenant_id, name, csio_code)
     VALUES (v_carrier, p_tenant, tag||' Mutual', upper(left(tag,4)));
 
-    INSERT INTO market_availability (tenant_id, carrier_id, line, broker_code,
+    INSERT INTO market_availability (id, tenant_id, carrier_id, line, broker_code,
                                      quote_channel, submit_channel, download_channel)
-    VALUES (p_tenant, v_carrier, 'auto', upper(tag)||'-BRK', 'rater', 'portal', 'csio_edocs');
+    VALUES (uuidv7(), p_tenant, v_carrier, 'auto', upper(tag)||'-BRK', 'rater', 'portal', 'csio_edocs');
 
     INSERT INTO account (id, tenant_id, branch_id, lookup_code, display_name, kind, status,
                          servicing_broker)
     VALUES (v_account, p_tenant, v_branch, upper(tag)||'ADA01', 'Ada '||tag||'son',
             'personal', 'active', v_staff);
 
-    INSERT INTO account_party (tenant_id, account_id, party_id, role, is_primary)
-    VALUES (p_tenant, v_account, v_party, 'named_insured', true);
+    INSERT INTO account_party (id, tenant_id, account_id, party_id, role, is_primary)
+    VALUES (uuidv7(), p_tenant, v_account, v_party, 'named_insured', true);
 
     INSERT INTO policy (id, tenant_id, branch_id, account_id, carrier_id, policy_number,
                         line, status, effective_date, expiry_date, billing_type, annual_premium)
@@ -108,28 +108,28 @@ BEGIN
                           replacement_cost)
     VALUES (v_dwelling, p_tenant, v_policy, 1998, 'frame', 'owner', 650000.00);
 
-    INSERT INTO coverage (tenant_id, policy_id, vehicle_id, csio_code, description,
+    INSERT INTO coverage (id, tenant_id, policy_id, vehicle_id, csio_code, description,
                           limit_amount, deductible, premium)
-    VALUES (p_tenant, v_policy, v_vehicle, 'TPL', 'Third party liability',
+    VALUES (uuidv7(), p_tenant, v_policy, v_vehicle, 'TPL', 'Third party liability',
             1000000.00, 1000.00, 900.00);
 
-    INSERT INTO policy_endorsement (tenant_id, policy_id, form_code, description, effective_date)
-    VALUES (p_tenant, v_policy, 'OPCF20', 'Loss of use', current_date - 30);
+    INSERT INTO policy_endorsement (id, tenant_id, policy_id, form_code, description, effective_date)
+    VALUES (uuidv7(), p_tenant, v_policy, 'OPCF20', 'Loss of use', current_date - 30);
 
-    INSERT INTO ontario_auto_election (tenant_id, policy_id, opcf_47r_signed, dcpd_opt_out)
-    VALUES (p_tenant, v_policy, true, false);
+    INSERT INTO ontario_auto_election (id, tenant_id, policy_id, opcf_47r_signed, dcpd_opt_out)
+    VALUES (uuidv7(), p_tenant, v_policy, true, false);
 
-    INSERT INTO loss_history (tenant_id, party_id, policy_id, carrier_id, loss_date,
+    INSERT INTO loss_history (id, tenant_id, party_id, policy_id, carrier_id, loss_date,
                               loss_type, at_fault, amount)
-    VALUES (p_tenant, v_party, v_policy, v_carrier, current_date - 900, 'collision', false, 4200.00);
+    VALUES (uuidv7(), p_tenant, v_party, v_policy, v_carrier, current_date - 900, 'collision', false, 4200.00);
 
     INSERT INTO txn (id, tenant_id, branch_id, reference, txn_type, account_id, policy_id,
                      carrier_id, owner_id, effective_date)
     VALUES (v_txn, p_tenant, v_branch, upper(tag)||'-TXN-1', 'endorsement', v_account, v_policy,
             v_carrier, v_staff, current_date);
 
-    INSERT INTO txn_event (tenant_id, txn_id, from_state, to_state, actor, note)
-    VALUES (p_tenant, v_txn, NULL, 'draft', 'system', 'fixture');
+    INSERT INTO txn_event (id, tenant_id, txn_id, from_state, to_state, actor, note)
+    VALUES (uuidv7(), p_tenant, v_txn, NULL, 'draft', 'system', 'fixture');
 
     INSERT INTO document_template (id, tenant_id, code, name, body, version)
     VALUES (v_tmpl, p_tenant, 'FIXTURE', tag||' template', 'Hello {{name}}', 1);
@@ -139,28 +139,28 @@ BEGIN
     VALUES (v_doc, p_tenant, v_account, v_policy, v_txn, v_tmpl,
             'application', tag||'-application.pdf', 'generated', current_date + 2555);
 
-    INSERT INTO signature (tenant_id, document_id, signer_party_id, method, signed_at, verified)
-    VALUES (p_tenant, v_doc, v_party, 'esign', now(), true);
+    INSERT INTO signature (id, tenant_id, document_id, signer_party_id, method, signed_at, verified)
+    VALUES (uuidv7(), p_tenant, v_doc, v_party, 'esign', now(), true);
 
-    INSERT INTO disclosure_record (tenant_id, account_id, txn_id, disclosure_type,
+    INSERT INTO disclosure_record (id, tenant_id, account_id, txn_id, disclosure_type,
                                    delivery_method, delivered_at, document_id)
-    VALUES (p_tenant, v_account, v_txn, 'compensation', 'email', now(), v_doc);
+    VALUES (uuidv7(), p_tenant, v_account, v_txn, 'compensation', 'email', now(), v_doc);
 
-    INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, document_id, channel, status)
-    VALUES (p_tenant, v_txn, v_carrier, v_doc, 'portal', 'queued');
+    INSERT INTO carrier_submission (id, tenant_id, txn_id, carrier_id, document_id, channel, status)
+    VALUES (uuidv7(), p_tenant, v_txn, v_carrier, v_doc, 'portal', 'queued');
 
-    INSERT INTO quote_log (tenant_id, account_id, txn_id, carrier_id, line, quoted_premium,
+    INSERT INTO quote_log (id, tenant_id, account_id, txn_id, carrier_id, line, quoted_premium,
                            outcome, quoted_at)
-    VALUES (p_tenant, v_account, v_txn, v_carrier, 'auto', 1755.00, 'selected', now());
+    VALUES (uuidv7(), p_tenant, v_account, v_txn, v_carrier, 'auto', 1755.00, 'selected', now());
 
-    INSERT INTO claim (tenant_id, account_id, policy_id, txn_id, carrier_id, claim_number,
+    INSERT INTO claim (id, tenant_id, account_id, policy_id, txn_id, carrier_id, claim_number,
                        loss_date, reported_date, status, reserve)
-    VALUES (p_tenant, v_account, v_policy, v_txn, v_carrier, upper(tag)||'-CLM-1',
+    VALUES (uuidv7(), p_tenant, v_account, v_policy, v_txn, v_carrier, upper(tag)||'-CLM-1',
             current_date - 10, current_date - 9, 'open', 5000.00);
 
-    INSERT INTO activity (tenant_id, account_id, policy_id, txn_id, activity_type, title,
+    INSERT INTO activity (id, tenant_id, account_id, policy_id, txn_id, activity_type, title,
                           owner_id, priority, status, due_at)
-    VALUES (p_tenant, v_account, v_policy, v_txn, 'follow_up', 'Fixture follow-up',
+    VALUES (uuidv7(), p_tenant, v_account, v_policy, v_txn, 'follow_up', 'Fixture follow-up',
             v_staff, 'medium', 'open', now() + interval '2 days');
 
     INSERT INTO ledger_account (id, tenant_id, book, code, name, type)
@@ -178,13 +178,13 @@ BEGIN
 
     -- The balanced pair the journal_line check constraint requires: exactly one
     -- of debit/credit non-zero per line.
-    INSERT INTO journal_line (tenant_id, entry_id, account_id, party_account_id, debit, credit)
-    VALUES (p_tenant, v_entry, v_ledger, v_account, 1800.00, 0),
-           (p_tenant, v_entry, v_ledger, v_account, 0, 1800.00);
+    INSERT INTO journal_line (id, tenant_id, entry_id, account_id, party_account_id, debit, credit)
+    VALUES (uuidv7(), p_tenant, v_entry, v_ledger, v_account, 1800.00, 0),
+           (uuidv7(), p_tenant, v_entry, v_ledger, v_account, 0, 1800.00);
 
-    INSERT INTO commission_entry (tenant_id, policy_id, carrier_id, period, expected,
+    INSERT INTO commission_entry (id, tenant_id, policy_id, carrier_id, period, expected,
                                   received, status)
-    VALUES (p_tenant, v_policy, v_carrier, date_trunc('month', current_date)::date,
+    VALUES (uuidv7(), p_tenant, v_policy, v_carrier, date_trunc('month', current_date)::date,
             225.00, 225.00, 'matched');
 END $fn$;
 

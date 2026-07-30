@@ -46,15 +46,15 @@ VALUES ('c0000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-11111111
 -- team.manage), so bootstrap is a privileged path by construction.
 SELECT set_config('app.current_actor','system', false);
 
-INSERT INTO tenant_module (tenant_id, module)
-VALUES ('11111111-1111-1111-1111-111111111111','pc');
+INSERT INTO tenant_module (id, tenant_id, module)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','pc');
 
 INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, expires_on)
 VALUES ('11c00000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111',
         '50000000-0000-0000-0000-000000000001','ribo_l2','RIBO-100200','RIBO', current_date + 365);
 
-INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-VALUES ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
+INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000001',
         'admin_principal','11c00000-0000-0000-0000-000000000001');
 
 -- A Life-only colleague: LLQP licence, life_only role — no P&C authority.
@@ -66,8 +66,8 @@ INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, reg
 VALUES ('11c00000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111',
         '50000000-0000-0000-0000-000000000002','llqp','LLQP-55501','FSRA', current_date + 365);
 
-INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-VALUES ('11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000002',
+INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','50000000-0000-0000-0000-000000000002',
         'life_only','11c00000-0000-0000-0000-000000000002');
 
 -- Provisioning done — back to acting as the principal broker.
@@ -83,13 +83,13 @@ VALUES ('40000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-11111111
         'Seyed Moein','Abtahi','abtmoien@gmail.com','(647) 553-7656',
         '{"line1":"Ph01-23 Oneida Cres","city":"Richmond Hill","prov":"ON","postal":"L4B 0A2"}');
 
-INSERT INTO account_party (tenant_id, account_id, party_id, role, is_primary)
-VALUES ('11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
+INSERT INTO account_party (id, tenant_id, account_id, party_id, role, is_primary)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
         '40000000-0000-0000-0000-000000000001','named_insured',true);
 
 -- CASL: "Did Not Obtain" from the Epic screen, captured properly per channel
-INSERT INTO consent (tenant_id, party_id, channel, basis)
-VALUES ('11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','phone','did_not_obtain');
+INSERT INTO consent (id, tenant_id, party_id, channel, basis)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','40000000-0000-0000-0000-000000000001','phone','did_not_obtain');
 
 -- ---- policy ----------------------------------------------------------------
 INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status, effective_date, annual_premium)
@@ -117,15 +117,15 @@ UPDATE txn SET state='doc_generated' WHERE id='70000000-0000-0000-0000-000000000
 UPDATE txn SET state='sig_pending'   WHERE id='70000000-0000-0000-0000-000000000001';
 
 -- capture signature
-INSERT INTO signature (tenant_id, document_id, signer_party_id, method, signed_at, signer_ip, verified)
-VALUES ('11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001',
+INSERT INTO signature (id, tenant_id, document_id, signer_party_id, method, signed_at, signer_ip, verified)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','d0000000-0000-0000-0000-000000000001',
         '40000000-0000-0000-0000-000000000001','esign','2026-06-05 10:56:33-04','99.245.0.0',true);
 
 UPDATE txn SET state='signed' WHERE id='70000000-0000-0000-0000-000000000001';
 
 -- submit to carrier via Secure Delivery portal (the out-of-band step)
-INSERT INTO carrier_submission (tenant_id, txn_id, carrier_id, document_id, channel, status, submitted_at, payload)
-VALUES ('11111111-1111-1111-1111-111111111111','70000000-0000-0000-0000-000000000001',
+INSERT INTO carrier_submission (id, tenant_id, txn_id, carrier_id, document_id, channel, status, submitted_at, payload)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','70000000-0000-0000-0000-000000000001',
         'c0000000-0000-0000-0000-000000000001','d0000000-0000-0000-0000-000000000001',
         'secure_delivery','sent','now()','{"to":"Underwriting","subject":"Cancel Policy"}');
 
@@ -171,18 +171,18 @@ INSERT INTO ledger_account (id, tenant_id, book, code, name, type) VALUES
 -- balanced receipt: DR bank 2760 / CR payable 2760
 INSERT INTO journal_entry (id, tenant_id, book, reference, description)
 VALUES ('1e000000-0000-0000-0000-000000000001','11111111-1111-1111-1111-111111111111','trust','RCP-2211','Premium receipt');
-INSERT INTO journal_line (tenant_id, entry_id, account_id, debit, credit) VALUES
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000001',2760.00,0),
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000002',0,2760.00);
+INSERT INTO journal_line (id, tenant_id, entry_id, account_id, debit, credit) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000001',2760.00,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000001','1a000000-0000-0000-0000-000000000002',0,2760.00);
 UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000001';
 DO $$ BEGIN RAISE NOTICE 'TEST3a PASS: balanced trust entry posted'; END $$;
 
 -- unbalanced entry must be rejected on post
 INSERT INTO journal_entry (id, tenant_id, book, reference)
 VALUES ('1e000000-0000-0000-0000-000000000002','11111111-1111-1111-1111-111111111111','trust','BAD-1');
-INSERT INTO journal_line (tenant_id, entry_id, account_id, debit, credit) VALUES
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000001',100,0),
- ('11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000002',0,90);
+INSERT INTO journal_line (id, tenant_id, entry_id, account_id, debit, credit) VALUES
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000001',100,0),
+ (uuidv7(), '11111111-1111-1111-1111-111111111111','1e000000-0000-0000-0000-000000000002','1a000000-0000-0000-0000-000000000002',0,90);
 DO $$
 BEGIN
     UPDATE journal_entry SET posted=true WHERE id='1e000000-0000-0000-0000-000000000002';
@@ -270,8 +270,8 @@ SELECT set_config('app.current_tenant','11111111-1111-1111-1111-111111111111', f
 SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
 DO $$
 BEGIN
-    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
-    VALUES ('11111111-1111-1111-1111-111111111111','endorsement',
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','endorsement',
             'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
     RAISE EXCEPTION 'TEST6a FAIL: a Life-only user created a P&C transaction';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -290,8 +290,8 @@ UPDATE licence SET expires_on = current_date - 1
  WHERE id = '11c00000-0000-0000-0000-000000000001';
 DO $$
 BEGIN
-    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
-    VALUES ('11111111-1111-1111-1111-111111111111','endorsement',
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','endorsement',
             'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-000000000001','draft');
     RAISE EXCEPTION 'TEST6c FAIL: an expired licence still granted P&C authority';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -332,8 +332,8 @@ VALUES ('90000000-0000-0000-0000-0000000000ff',
         'c0000000-0000-0000-0000-000000000001','LIFE-1','life','in_force');
 DO $$
 BEGIN
-    INSERT INTO txn (tenant_id, txn_type, account_id, policy_id, state)
-    VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','new_business',
             'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-0000000000ff','draft');
     RAISE EXCEPTION 'TEST6d FAIL: a Life txn was created without the Life entitlement';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -350,8 +350,8 @@ END $$;
 SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000002', false);
 DO $$
 BEGIN
-    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
-    VALUES ('11111111-1111-1111-1111-111111111111',
+    INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
             '50000000-0000-0000-0000-000000000002','pc_sales');
     RAISE EXCEPTION 'TEST7a FAIL: a Life-only user granted themselves a P&C role';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -361,8 +361,8 @@ END $$;
 -- 7b — nor can they extend their own licence, or record a new one.
 DO $$
 BEGIN
-    INSERT INTO licence (tenant_id, staff_id, licence_class, licence_number, expires_on)
-    VALUES ('11111111-1111-1111-1111-111111111111',
+    INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, expires_on)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
             '50000000-0000-0000-0000-000000000002','ribo_l2','SELF-ISSUED', current_date + 365);
     RAISE EXCEPTION 'TEST7b FAIL: a Life-only user issued themselves a RIBO licence';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -373,8 +373,8 @@ END $$;
 SELECT set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 DO $$
 BEGIN
-    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
-    VALUES ('11111111-1111-1111-1111-111111111111',
+    INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
             '50000000-0000-0000-0000-000000000002','pc_service');
     RAISE EXCEPTION 'TEST7c FAIL: a licensed role was granted with no licence';
 EXCEPTION WHEN insufficient_privilege THEN
@@ -386,8 +386,8 @@ END $$;
 --      a life licence, bypassing invariant 3 through the admin path.
 DO $$
 BEGIN
-    INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-    VALUES ('11111111-1111-1111-1111-111111111111',
+    INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
             '50000000-0000-0000-0000-000000000002','pc_service',
             '11c00000-0000-0000-0000-000000000002');
     RAISE EXCEPTION 'TEST7d FAIL: an LLQP licence carried a P&C role';
@@ -399,8 +399,8 @@ END $$;
 INSERT INTO licence (id, tenant_id, staff_id, licence_class, licence_number, regulator, expires_on)
 VALUES ('11c00000-0000-0000-0000-000000000003','11111111-1111-1111-1111-111111111111',
         '50000000-0000-0000-0000-000000000002','ribo_l1','RIBO-204411','RIBO', current_date + 365);
-INSERT INTO staff_role_grant (tenant_id, staff_id, role_code, licence_id)
-VALUES ('11111111-1111-1111-1111-111111111111',
+INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code, licence_id)
+VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
         '50000000-0000-0000-0000-000000000002','pc_service',
         '11c00000-0000-0000-0000-000000000003');
 DO $$
@@ -529,8 +529,8 @@ BEGIN
         RAISE EXCEPTION 'TEST9a FAIL: unset actor resolved to %, not anonymous', current_actor();
     END IF;
     BEGIN
-        INSERT INTO txn (tenant_id, txn_type, account_id)
-        VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+        INSERT INTO txn (id, tenant_id, txn_type, account_id)
+        VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','new_business',
                 (SELECT id FROM account WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1));
         RAISE EXCEPTION 'TEST9a FAIL: a caller with no actor created a transaction';
     EXCEPTION WHEN insufficient_privilege THEN
@@ -543,8 +543,8 @@ DO $$
 BEGIN
     PERFORM set_config('app.current_actor', '', false);
     BEGIN
-        INSERT INTO staff_role_grant (tenant_id, staff_id, role_code)
-        VALUES ('11111111-1111-1111-1111-111111111111',
+        INSERT INTO staff_role_grant (id, tenant_id, staff_id, role_code)
+        VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
                 '50000000-0000-0000-0000-000000000001','admin_principal');
         RAISE EXCEPTION 'TEST9b FAIL: a caller with no actor granted itself a role';
     EXCEPTION WHEN insufficient_privilege THEN
@@ -557,12 +557,84 @@ DO $$
 DECLARE v_id uuid;
 BEGIN
     PERFORM set_config('app.current_actor', 'system', false);
-    INSERT INTO txn (tenant_id, txn_type, account_id)
-    VALUES ('11111111-1111-1111-1111-111111111111','new_business',
+    INSERT INTO txn (id, tenant_id, txn_type, account_id)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','new_business',
             (SELECT id FROM account WHERE tenant_id = '11111111-1111-1111-1111-111111111111' LIMIT 1))
     RETURNING id INTO v_id;
     DELETE FROM txn WHERE id = v_id;
     RAISE NOTICE 'TEST9c PASS: system remains privileged when named explicitly';
+END $$;
+
+-- ============================================================================
+-- TEST10 — primary keys are supplied, not defaulted, and they are UUIDv7.
+-- ============================================================================
+
+-- 10a — no uuid id column carries a default
+DO $$
+BEGIN
+    PERFORM assert_no_generated_keys();
+    RAISE NOTICE 'TEST10a PASS: no uuid primary key carries a default';
+END $$;
+
+-- 10b — the backstop bites, and names the offending column
+DO $$
+BEGIN
+    RESET ROLE;
+    ALTER TABLE claim ALTER COLUMN id SET DEFAULT gen_random_uuid();
+    BEGIN
+        PERFORM assert_no_generated_keys();
+        ALTER TABLE claim ALTER COLUMN id DROP DEFAULT;
+        RAISE EXCEPTION 'TEST10b FAIL: a defaulted uuid key went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        ALTER TABLE claim ALTER COLUMN id DROP DEFAULT;
+        IF SQLERRM NOT LIKE '%claim.id%' THEN
+            RAISE EXCEPTION 'TEST10b FAIL: the assertion did not name claim.id — %', SQLERRM;
+        END IF;
+        RAISE NOTICE 'TEST10b PASS: the key backstop bites, and names the offending column';
+    END;
+    SET ROLE app;
+END $$;
+
+-- 10c — the SQL generator produces well-formed, ordered UUIDv7
+DO $$
+DECLARE
+    ids uuid[];
+    n   int := 5000;
+BEGIN
+    SELECT array_agg(id ORDER BY ord) INTO ids
+      FROM (SELECT uuidv7() AS id, generate_series(1, n) AS ord) g;
+
+    IF EXISTS (SELECT 1 FROM unnest(ids) u WHERE substr(u::text, 15, 1) <> '7') THEN
+        RAISE EXCEPTION 'TEST10c FAIL: uuidv7() produced an id whose version nibble is not 7';
+    END IF;
+    IF EXISTS (SELECT 1 FROM unnest(ids) u WHERE substr(u::text, 20, 1) NOT IN ('8','9','a','b')) THEN
+        RAISE EXCEPTION 'TEST10c FAIL: uuidv7() produced an id with the wrong variant bits';
+    END IF;
+    IF EXISTS (
+        SELECT 1 FROM (SELECT u, lag(u) OVER () AS prev FROM unnest(ids) u) s
+         WHERE prev IS NOT NULL AND u <= prev
+    ) THEN
+        RAISE EXCEPTION
+            'TEST10c FAIL: uuidv7() is not monotonic — the whole point of the key format '
+            'is that inserts append rather than scatter across the index';
+    END IF;
+    RAISE NOTICE 'TEST10c PASS: % uuidv7() ids, version 7, correct variant, strictly increasing', n;
+END $$;
+
+-- 10d — the keys already in this database are v7, not v4. Proves the fixtures
+--       and the state-machine trigger actually use the generator.
+DO $$
+DECLARE bad int;
+BEGIN
+    SELECT count(*) INTO bad FROM txn_event WHERE substr(id::text, 15, 1) <> '7';
+    IF bad > 0 THEN
+        RAISE EXCEPTION 'TEST10d FAIL: % txn_event rows carry a non-v7 key', bad;
+    END IF;
+    SELECT count(*) INTO bad FROM signature WHERE substr(id::text, 15, 1) <> '7';
+    IF bad > 0 THEN
+        RAISE EXCEPTION 'TEST10d FAIL: % signature rows carry a non-v7 key', bad;
+    END IF;
+    RAISE NOTICE 'TEST10d PASS: trigger-written and fixture-written rows both carry v7 keys';
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

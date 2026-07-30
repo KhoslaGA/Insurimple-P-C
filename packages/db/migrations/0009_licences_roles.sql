@@ -19,7 +19,7 @@
 -- Modules. The three subscription products on the shared spine.
 -- ----------------------------------------------------------------------------
 CREATE TABLE tenant_module (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     module          text NOT NULL CHECK (module IN ('pc','life','mortgage')),
     active          boolean NOT NULL DEFAULT true,
@@ -59,7 +59,7 @@ CREATE TABLE role_capability (
 -- licence silently removes the capabilities it carried (see actor_capabilities).
 -- ----------------------------------------------------------------------------
 CREATE TABLE licence (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     staff_id        uuid NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
     licence_class   text NOT NULL CHECK (licence_class IN
@@ -81,7 +81,7 @@ CREATE INDEX ON licence (tenant_id, staff_id);
 -- live, the grant carries nothing. That is what makes licence the boundary.
 -- ----------------------------------------------------------------------------
 CREATE TABLE staff_role_grant (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     staff_id        uuid NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
     role_code       text NOT NULL REFERENCES app_role(code),
