@@ -108,6 +108,12 @@ CREATE POLICY audit_tenant_write ON audit_event
 -- permissive policy for those commands, they are refused for every row. That
 -- is a second lock on append-only, independent of the existing trigger.
 
+-- Partitions inherit neither the policies above nor row security itself, and
+-- ensure_month_partitions() runs in 0001 before these policies exist. Re-run it
+-- so every audit partition carries ENABLE + FORCE.
+SELECT ensure_month_partitions('audit_event',
+    (date_trunc('month', now()) - interval '2 months')::date, 14);
+
 -- ----------------------------------------------------------------------------
 -- Backstop: every table carrying tenant_id must have RLS both ENABLED and
 -- FORCED. enable_tenant_table() does this, but a table added without calling it
@@ -166,6 +172,35 @@ BEGIN
         RAISE EXCEPTION
             'uuid primary keys must be supplied by the caller as UUIDv7, not defaulted: %', bad;
     END IF;
+END $$;
+
+-- ----------------------------------------------------------------------------
+-- Backstop: the app role's session guard rails are still attached.
+--
+-- These are set on the ROLE rather than in the connection string, so they apply
+-- however the application connects — including a psql session someone opens
+-- with the app credentials. That also makes them easy to drop by accident: a
+-- single `ALTER ROLE insurimple_app RESET ALL` while debugging removes both and
+-- leaves nothing behind to notice. An abandoned transaction then holds tenant
+-- context open and blocks vacuum on audit_event, which is 70% of the database.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION assert_app_role_timeouts() RETURNS void
+LANGUAGE plpgsql AS $$
+DECLARE
+    r    record;
+    cfg  text[];
+BEGIN
+    FOR r IN SELECT rolname FROM pg_roles WHERE rolname IN ('insurimple_app','app') LOOP
+        SELECT rolconfig INTO cfg FROM pg_roles WHERE rolname = r.rolname;
+        IF cfg IS NULL
+        OR NOT (cfg::text LIKE '%statement_timeout%')
+        OR NOT (cfg::text LIKE '%idle_in_transaction_session_timeout%') THEN
+            RAISE EXCEPTION
+                'role % has lost statement_timeout or idle_in_transaction_session_timeout — '
+                'an abandoned open transaction holds tenant context and blocks vacuum on the '
+                'largest tables in the database', r.rolname;
+        END IF;
+    END LOOP;
 END $$;
 
 CREATE OR REPLACE FUNCTION assert_app_role_unprivileged() RETURNS void

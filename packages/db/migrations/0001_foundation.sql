@@ -133,8 +133,19 @@ END $$;
 -- audited table as a before/after JSON diff, with actor + timestamp. This is
 -- the RIBO Spot Check / E&O backbone. No UPDATE or DELETE is ever permitted.
 -- ----------------------------------------------------------------------------
+--
+-- Range-partitioned by month, and the most valuable partitioning in the schema.
+-- At ~3M rows a year carrying two jsonb row images each, this is the largest
+-- object in the database — roughly 70% of it. As one heap, autovacuum and index
+-- maintenance get steadily worse, and the six-year retention sweep is a DELETE
+-- that walks every row. Partitioned, retention is DETACH plus DROP, and vacuum
+-- works a month at a time.
+--
+-- Nothing holds a foreign key to audit_event, so the composite primary key that
+-- partitioning forces — PostgreSQL requires the partition key in the PK — stops
+-- here. That is the same test `txn` fails (invariant 14).
 CREATE TABLE audit_event (
-    id              bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id              bigint GENERATED ALWAYS AS IDENTITY,
     tenant_id       uuid,
     actor           text NOT NULL,
     action          text NOT NULL,               -- INSERT | UPDATE | DELETE
@@ -142,8 +153,9 @@ CREATE TABLE audit_event (
     entity_id       uuid,
     before          jsonb,
     after           jsonb,
-    at              timestamptz NOT NULL DEFAULT now()
-);
+    at              timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (id, at)
+) PARTITION BY RANGE (at);
 CREATE INDEX ON audit_event (tenant_id, entity, entity_id, at);
 
 -- Block edits/deletes to the audit log itself — even by the tenant owner.
@@ -281,6 +293,9 @@ BEGIN
         END IF;
     END LOOP;
 END $$;
+
+SELECT ensure_month_partitions('audit_event',
+    (date_trunc('month', now()) - interval '2 months')::date, 14);
 
 -- tenant + branch + staff get audit + updated_at (tenant itself is not tenant-scoped)
 CREATE TRIGGER trg_touch BEFORE UPDATE ON tenant FOR EACH ROW EXECUTE FUNCTION touch_updated_at();

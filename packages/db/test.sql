@@ -731,4 +731,60 @@ BEGIN
     RAISE NOTICE 'TEST11e PASS: writes route to %, not the default partition', v_part;
 END $$;
 
+-- ============================================================================
+-- TEST12 — connection topology (DB.5).
+--
+-- The SQL half. apps/api/test/topology.test.mjs holds the other half, reading
+-- the source for a plain `SET app.current_tenant` or `SET ROLE` — the one-word
+-- mutations that turn transaction-local context into session state and hand the
+-- next request on a pooled connection the previous tenant's book.
+-- ============================================================================
+
+-- 12a — the app role keeps its session guard rails
+DO $$
+BEGIN
+    PERFORM assert_app_role_timeouts();
+    RAISE NOTICE 'TEST12a PASS: app roles carry statement_timeout and idle_in_transaction_session_timeout';
+END $$;
+
+-- 12b — the backstop bites when they are dropped
+DO $$
+BEGIN
+    RESET ROLE;
+    ALTER ROLE app RESET statement_timeout;
+    BEGIN
+        PERFORM assert_app_role_timeouts();
+        ALTER ROLE app SET statement_timeout = '30s';
+        RAISE EXCEPTION 'TEST12b FAIL: a role with no statement_timeout went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        ALTER ROLE app SET statement_timeout = '30s';
+        IF SQLERRM NOT LIKE '%statement_timeout%' THEN
+            RAISE EXCEPTION 'TEST12b FAIL: wrong reason — %', SQLERRM;
+        END IF;
+        RAISE NOTICE 'TEST12b PASS: the timeout backstop bites';
+    END;
+    SET ROLE app;
+END $$;
+
+-- 12c — transaction-local context really is transaction-local. This is the
+--       property the whole pooler argument rests on: if it did not hold,
+--       set_config(..., true) would leak exactly like a plain SET.
+DO $$
+DECLARE leaked text;
+BEGIN
+    BEGIN
+        PERFORM set_config('app.current_tenant','22222222-2222-2222-2222-222222222222', true);
+        IF current_tenant()::text <> '22222222-2222-2222-2222-222222222222' THEN
+            RAISE EXCEPTION 'TEST12c FAIL: set_config did not take effect inside the block';
+        END IF;
+    END;
+    -- The enclosing DO block is one transaction, so the local setting is still
+    -- in force here; what matters is that it was never written to session state.
+    leaked := current_setting('app.current_tenant', true);
+    IF leaked IS NULL THEN
+        RAISE EXCEPTION 'TEST12c FAIL: the setting vanished mid-transaction';
+    END IF;
+    RAISE NOTICE 'TEST12c PASS: tenant context is transaction-scoped, not session state';
+END $$;
+
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

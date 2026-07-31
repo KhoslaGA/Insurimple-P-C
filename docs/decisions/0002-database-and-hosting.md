@@ -102,9 +102,13 @@ Three consequences:
 
 **Test that survives the choice:** after provisioning anywhere, run
 `pnpm --filter @insurimple/db test` against it. It asserts the isolation properties on a
-virgin database (21 assertions, including "tenant B sees zero of tenant A's rows"). If
-those pass on the real host with the real pooler, the topology is sound. If the host
-cannot run them, that is the answer.
+virgin database. Then run `pnpm --filter @insurimple/db test:rls`, which connects as
+`insurimple_app` — refusing to start if that role turns out to be a superuser, hold
+`BYPASSRLS`, or own the tables — and asserts, for every table carrying `tenant_id`, that a
+cross-tenant read returns nothing, a cross-tenant write touches nothing, a planted row is
+refused by that table's own `WITH CHECK`, and a query with no tenant context returns zero
+rather than everything. If those pass on the real host with the real pooler, the topology
+is sound. If the host cannot run them, that is the answer.
 
 ### 2a-bis. RLS and the query planner — a scale-specific trap
 
@@ -130,6 +134,19 @@ Reading the queries the app actually runs surfaced two real gaps, now closed in
 `current_tenant()` is declared `STABLE`, which is what allows the planner to treat it as
 a constant within a statement and use these indexes at all. **Do not make it `VOLATILE`.**
 
+**Measured 2026-07-31, and the trap is deeper than index order.** Under RLS a qual the
+caller wrote sits at a higher security level than the policy's own, and PostgreSQL will
+only promote it into an index condition if it is `LEAKPROOF`. `similarity_op` (`%`) is
+not — so the trigram index on party names was **never used by `insurimple_app`**, only by
+the owner, whose plan is the one a developer captures and the one that means nothing.
+Neither is `lower()`, `upper()`, `btrim()`, `to_tsvector` or even `||`, which makes *any*
+expression index on a tenant table unusable. `btree_gin` over `(tenant_id, expr)` does not
+rescue it; `ALTER FUNCTION … LEAKPROOF` would and needs real superuser, which RDS does not
+grant. The schema now normalises on write (`party.search_name`, `account.search_name`,
+maintained by trigger) and compares raw on read, which is indexable. Full detail and the
+measurements are in `packages/db/README.md`; `assert_tenant_leading_indexes()` and four
+`EXPLAIN`-as-app-role assertions in the RLS suite hold the line.
+
 ### 2a-ter. `audit_event` should be partitioned before it is large
 
 At ~3M rows a year with two `jsonb` images each, `audit_event` becomes the largest object
@@ -140,10 +157,12 @@ worth is a long, bloating operation.
 **Range-partition it by month.** Then the retention sweep is a `DETACH`/`DROP` of a
 partition — effectively instant — and vacuum works on tranches rather than one huge heap.
 
-This is deliberately **not** done yet: partitioning is cheap to introduce while the table
-is small and expensive afterwards, but it also changes the shape of the audit spine, so it
-warrants its own ticket rather than being folded into an index migration. **Do it before
-the first live book, not after.**
+**Done, 2026-07-31**, in `0001_foundation.sql` — rewritten in place per invariant 12,
+alongside `activity`. `audit_event` now declares `PRIMARY KEY (id, at) PARTITION BY RANGE
+(at)`, which is affordable only because nothing holds a foreign key to it; that is the
+same test `txn` fails. `ensure_month_partitions()` is idempotent, so the migration and the
+maintenance job are one code path, and `assert_partitions_current()` fails the build if
+this month or next has no partition, or if anything has accumulated in the default.
 
 ### 2b. The API is a long-lived process, not serverless functions
 
@@ -280,7 +299,48 @@ For the record, since this document was first drafted against a 5,000-policy boo
 
 ---
 
-## 5. Verify before committing (do not take these on trust)
+## 5. Connection topology — decided, and why (DB.5)
+
+**Direct connection. No RDS Proxy. Decided 2026-07-31.**
+
+RDS Proxy pins a client connection to a backend the moment the session issues any
+session-altering statement, and `set_config()` is one. There is no session-pinning filter
+for PostgreSQL the way there is for MySQL, so there is no exemption to configure. This
+application calls `set_config('app.current_tenant', …)` on **every** transaction, by
+design — that is invariant 2. The proxy would therefore pin every connection it ever
+hands out, which is a pooler that pools nothing, billed per hour.
+
+`apps/api` is one long-lived NestJS process with a small `pg.Pool`. It does not need an
+external pooler, and adding one buys a failure mode instead of a capability.
+
+**If this is ever revisited, the mode is the whole question.** A transaction-mode pooler
+in front of transaction-local settings is safe — `set_config(…, is_local => true)` reverts
+at COMMIT, so the next borrower of that backend starts clean. A **session-mode** pooler is
+also safe. What is *not* safe is any arrangement where the setting outlives the
+transaction: then the connection carries the previous request's tenant into the next one,
+every policy evaluates correctly against the wrong tenant, and the result is a plausible
+page showing another brokerage's book. There is no error to alert on.
+
+The mutation that produces it is one word: `SET app.current_tenant` instead of
+`set_config(..., true)`, or `SET ROLE` instead of `SET LOCAL ROLE`. Both are natural
+things for a refactor to write. `apps/api/test/topology.test.mjs` reads the source and
+fails the build on either, on `adminQuery` being called from anywhere but the auth guard,
+and on a second `pg.Pool` being constructed outside `DbService`. It was mutation-checked
+by introducing both forms and confirming the suite goes red.
+
+**Session guard rails** (`0014_role_topology.sql`), on `insurimple_app`:
+
+| setting | value | why |
+|---|---|---|
+| `statement_timeout` | `30s` | a runaway query on a 100k-policy table should be killed, not survive to be retried |
+| `idle_in_transaction_session_timeout` | `60s` | an abandoned open transaction holds tenant context and blocks vacuum on the largest tables in the database |
+
+Both are set on the role rather than in the connection string, so they apply however the
+application connects — including a psql session someone opens with the app credentials.
+
+---
+
+## 5b. Verify before committing (do not take these on trust)
 
 Vendor facts change and my knowledge has a cutoff. Confirm each **first-hand**:
 
@@ -289,9 +349,9 @@ Vendor facts change and my knowledge has a cutoff. Confirm each **first-hand**:
 2. **You can create a non-owner login role** and `REVOKE`/`GRANT` freely, so RLS applies.
    The proof is not the docs; it is `pnpm --filter @insurimple/db test` passing against
    the real host.
-3. **Pooler mode is transaction mode** (or the pooler is bypassed). Record which, and
-   why, in this file — a future migration to session pooling would silently break tenant
-   isolation.
+3. **Pooler mode is transaction mode** (or the pooler is bypassed) — **settled in §5:
+   bypassed, no RDS Proxy.** What remains to verify first-hand is that the chosen host
+   does not interpose a pooler of its own on the connection string you are given.
 4. **PITR window and a rehearsed restore.** Actually restore once, to a scratch database,
    before there is client data to lose.
 5. **Whether any carrier appointment package imposes data-residency or subprocessor
