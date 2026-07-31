@@ -637,4 +637,98 @@ BEGIN
     RAISE NOTICE 'TEST10d PASS: trigger-written and fixture-written rows both carry v7 keys';
 END $$;
 
+-- ============================================================================
+-- TEST11 — index shape and partitions.
+--
+-- RLS filters every query in the platform on tenant_id. An index that leads
+-- with anything else scans across tenants, so its cost grows with the number of
+-- brokerages on the platform rather than with the size of the one asking.
+-- ============================================================================
+
+-- 11a — every index on a tenant table leads with tenant_id, or with a uuid key
+DO $$
+BEGIN
+    RESET ROLE;
+    PERFORM assert_tenant_leading_indexes();
+    SET ROLE app;
+    RAISE NOTICE 'TEST11a PASS: no index on a tenant table leads with a scan-oriented column';
+END $$;
+
+-- 11b — the assertion bites on a plain column AND on an expression index.
+--       The second case is the one that got away: an expression index has no
+--       leading column, so the message string went NULL and string_agg dropped
+--       it, and the assertion passed on exactly the shape it exists to catch.
+DO $$
+BEGIN
+    RESET ROLE;
+    CREATE INDEX t11_col_idx ON claim (status, loss_date);
+    BEGIN
+        PERFORM assert_tenant_leading_indexes();
+        DROP INDEX t11_col_idx;
+        RAISE EXCEPTION 'TEST11b FAIL: an index leading with claim.status went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        DROP INDEX IF EXISTS t11_col_idx;
+        IF SQLERRM NOT LIKE '%leads with status%' THEN
+            RAISE EXCEPTION 'TEST11b FAIL: wrong reason — %', SQLERRM;
+        END IF;
+    END;
+
+    CREATE INDEX t11_expr_idx ON policy ((lower(policy_number)));
+    BEGIN
+        PERFORM assert_tenant_leading_indexes();
+        DROP INDEX t11_expr_idx;
+        RAISE EXCEPTION 'TEST11b FAIL: an expression index with no tenant_id went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        DROP INDEX IF EXISTS t11_expr_idx;
+        IF SQLERRM NOT LIKE '%an expression, not a column%' THEN
+            RAISE EXCEPTION 'TEST11b FAIL: wrong reason — %', SQLERRM;
+        END IF;
+    END;
+    SET ROLE app;
+    RAISE NOTICE 'TEST11b PASS: the index assertion bites on both a column and an expression';
+END $$;
+
+-- 11c — partitions exist for this month and next, and nothing is in a default
+DO $$
+BEGIN
+    PERFORM assert_partitions_current();
+    RAISE NOTICE 'TEST11c PASS: % partitioned table(s) current, default partitions empty',
+        (SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+          WHERE n.nspname='public' AND c.relkind='p');
+END $$;
+
+-- 11d — every partition carries its own ENABLE + FORCE. Policies are inherited
+--       through the parent, but insurimple_app can name a partition directly,
+--       and a partition without row security is an open door with a date on it.
+DO $$
+DECLARE bad text;
+BEGIN
+    SELECT string_agg(c.relname, ', ' ORDER BY c.relname) INTO bad
+      FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+     WHERE n.nspname='public' AND c.relkind='r' AND c.relispartition
+       AND NOT (c.relrowsecurity AND c.relforcerowsecurity);
+    IF bad IS NOT NULL THEN
+        RAISE EXCEPTION 'TEST11d FAIL: partitions without ENABLE+FORCE row security: %', bad;
+    END IF;
+    RAISE NOTICE 'TEST11d PASS: all % partitions carry their own ENABLE + FORCE',
+        (SELECT count(*) FROM pg_class WHERE relkind='r' AND relispartition);
+END $$;
+
+-- 11e — a row written through the parent lands in the right month's partition
+DO $$
+DECLARE v_part text;
+BEGIN
+    INSERT INTO activity (id, tenant_id, account_id, activity_type, title)
+    VALUES (uuidv7(),'11111111-1111-1111-1111-111111111111',
+            'a0000000-0000-0000-0000-000000000001','follow_up','partition routing probe');
+    SELECT c.relname INTO v_part
+      FROM activity a JOIN pg_class c ON c.oid = a.tableoid
+     WHERE a.title = 'partition routing probe';
+    IF v_part <> 'activity_' || to_char(now(), 'YYYYMM') THEN
+        RAISE EXCEPTION 'TEST11e FAIL: the row landed in % rather than this month''s partition', v_part;
+    END IF;
+    DELETE FROM activity WHERE title = 'partition routing probe';
+    RAISE NOTICE 'TEST11e PASS: writes route to %, not the default partition', v_part;
+END $$;
+
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

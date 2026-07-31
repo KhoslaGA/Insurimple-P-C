@@ -81,6 +81,78 @@ would still be reporting green:
   indication of which table caused it. `rls_update_count` now returns `-1` so the
   failure stays inside the assertion.
 
+### What RLS does to the planner
+
+Under row level security a qual the caller wrote sits at a **higher security
+level** than the policy's own qual, and PostgreSQL will only promote such a qual
+into an index condition if it is `LEAKPROOF` — otherwise it could observe rows
+the policy is meant to hide before the policy has run. Measured on 60,000
+parties across two tenants, PostgreSQL 16:
+
+| connected as | query | plan |
+|---|---|---|
+| owner | `name % 'Surname4242'` | Bitmap Index Scan on the GIN index |
+| `insurimple_app` | `name % 'Surname4242'` | `Index Cond: tenant_id` only, `Filter: %` — **51.8 ms** |
+| `insurimple_app` | `lower(last_name) >= 'surname42'` | `Index Cond: tenant_id` only, range demoted |
+| `insurimple_app` | `last_name >= 'Surname42'` | `Index Cond: (tenant_id, last_name)` — **0.256 ms** |
+
+The owner's plan is the one a developer captures, and it is meaningless: a
+superuser or an unforced owner never had the policy applied.
+
+Nothing rescues the trigram index. A composite GIN over `(tenant_id, expr)`
+using `btree_gin` was tried — the tenant equality becomes the index condition
+and `%` stays a filter. `ALTER FUNCTION similarity_op(text,text) LEAKPROOF`
+would fix it and requires actual superuser, which RDS does not grant.
+
+And it is not only the trigram operator, which is the part that generalises:
+
+```
+proleakproof = false   similarity_op (%)  textlike (~~)  texticlike (~~*)
+                       textregexeq (~)    ts_match_vq (@@)  to_tsvector
+                       textcat (||)       lower  upper  btrim
+proleakproof = true    texteq (=)  text_lt/le/ge/gt  bttextcmp
+```
+
+`lower(last_name) >= 'x'` is demoted even though `>=` is leakproof — the
+`lower()` wrapper poisons it. **Any expression index on a tenant table is dead
+under RLS unless every function in the expression is leakproof.**
+
+So: **normalise on write, compare raw on read.** `party.search_name` and
+`account.search_name` are folded by trigger (where leakproofness is irrelevant
+because nothing is being planned) and indexed `(tenant_id, search_name)`. A
+prefix search then touches a plain text column with plain comparison operators
+and both halves become index conditions. Four assertions in the RLS suite pin
+this in both directions — the path that works must keep working, and the one
+that does not must stay documented rather than quietly reappear as an index
+nobody notices is dead.
+
+Fuzzy and full-text matching still **work**; they run as a filter over the
+caller's own tenant, bounded by one brokerage's book rather than the platform's.
+If that ever needs accelerating, the answer is a search service outside the RLS
+boundary, not an index the planner has already refused.
+
+### Partitions
+
+`activity` is range-partitioned by month. It is an append-only leaf — nothing
+holds a foreign key to it — so the composite primary key that partitioning
+forces (`PRIMARY KEY (id, created_at)`, because PostgreSQL requires the
+partition key in the PK) stops there. That is exactly why `txn` is **not**
+partitioned: documents, signatures, carrier submissions, activities and ledger
+entries all reference it, and each would have to carry `(txn_id, created_at)`
+forever.
+
+`ensure_month_partitions(table, from, months)` is idempotent, so the migration
+and the maintenance job are the same code path. Every partition gets its **own**
+`ENABLE` + `FORCE ROW LEVEL SECURITY`: policies are inherited through the
+parent, but `insurimple_app` can name a partition directly, and a partition
+without row security is an open door with a date in its name.
+
+A `DEFAULT` partition exists so a row outside every declared range is filed
+rather than refused — losing the ability to write diary entries because
+maintenance fell behind is the worse failure. The cost is that a non-empty
+default blocks creating the partition those rows belong to, so
+`assert_partitions_current()` fails the build if anything is in there.
+
 ### pgTAP
 
 Not present in the `postgres:16` image. It is pure SQL and PL/pgSQL, so

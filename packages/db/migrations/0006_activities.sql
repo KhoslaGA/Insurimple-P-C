@@ -11,8 +11,21 @@
 -- Design lesson from Epic: gate activities to stages that need documentation,
 -- and make the *body* searchable (Epic only searches titles).
 -- ----------------------------------------------------------------------------
+--
+-- Range-partitioned by month. `activity` is an append-only leaf: nothing holds
+-- a foreign key to it, so the composite primary key partitioning forces —
+-- PostgreSQL requires the partition key in the PK — stops here instead of
+-- propagating into every table that hangs off it. That is precisely why `txn`
+-- is NOT partitioned (invariant 14): documents, signatures, carrier
+-- submissions, activities and ledger entries all reference it, and each would
+-- have to carry (txn_id, created_at) forever.
+--
+-- Declared now rather than later because converting a populated table means
+-- rewriting it, and the value is not raw size — it is being able to detach and
+-- archive a month of diary entries once the retention clock expires, without a
+-- DELETE that has to walk the audit trigger row by row.
 CREATE TABLE activity (
-    id              uuid PRIMARY KEY,
+    id              uuid NOT NULL,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
     account_id      uuid REFERENCES account(id) ON DELETE CASCADE,
     policy_id       uuid REFERENCES policy(id),
@@ -30,14 +43,12 @@ CREATE TABLE activity (
     sla_breached    boolean NOT NULL DEFAULT false,
     completed_at    timestamptz,
     created_at      timestamptz NOT NULL DEFAULT now(),
-    updated_at      timestamptz NOT NULL DEFAULT now()
-);
+    updated_at      timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (id, created_at)
+) PARTITION BY RANGE (created_at);
 CREATE INDEX ON activity (tenant_id, status, due_at);
 CREATE INDEX ON activity (tenant_id, account_id);
--- full-text over title + body (the thing Epic can't do)
-CREATE INDEX ON activity USING gin (
-    to_tsvector('english', coalesce(title,'') || ' ' || coalesce(body,''))
-);
+CREATE INDEX ON activity (tenant_id, created_at DESC);
 
 -- ----------------------------------------------------------------------------
 -- Quote log. Every market quoted, with rationale — the Take-All-Comers audit
@@ -131,6 +142,10 @@ CREATE TRIGGER trg_touch BEFORE UPDATE ON loss_history      FOR EACH ROW EXECUTE
 CREATE TRIGGER trg_touch BEFORE UPDATE ON claim             FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 
 SELECT enable_tenant_table('activity');
+-- Partitions come after the parent's policies exist, so each child inherits a
+-- table that is already protected. Twelve months ahead: long enough that a
+-- lapsed maintenance job is a warning rather than an outage.
+SELECT ensure_month_partitions('activity', (date_trunc('month', now()) - interval '2 months')::date, 14);
 SELECT enable_tenant_table('quote_log');
 SELECT enable_tenant_table('disclosure_record');
 SELECT enable_tenant_table('loss_history');

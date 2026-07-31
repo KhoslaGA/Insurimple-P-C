@@ -200,6 +200,88 @@ BEGIN
         FOR EACH ROW EXECUTE FUNCTION audit_capture()', t);
 END $$;
 
+-- ----------------------------------------------------------------------------
+-- Monthly partitions for the append-only leaves.
+--
+-- Idempotent, so the migration and the maintenance job are the same code path
+-- and there is no second implementation to drift.
+--
+-- Each partition gets its own ENABLE + FORCE ROW LEVEL SECURITY. Policies are
+-- inherited from the parent for queries that go through the parent, but
+-- insurimple_app can name a partition directly — and a partition without its
+-- own row security is an open door with a date in its name.
+--
+-- A DEFAULT partition exists so a row outside every declared range is filed
+-- rather than refused: the alternative is the application losing its ability to
+-- write diary entries the moment maintenance falls behind. The cost is that a
+-- non-empty default blocks creating the partition that should have held those
+-- rows, so assert_partitions_current() fails the build if anything is in there.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION ensure_month_partitions(
+    p_table text, p_from date DEFAULT date_trunc('month', now())::date, p_months int DEFAULT 6
+) RETURNS int
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_start date;
+    v_name  text;
+    v_made  int := 0;
+BEGIN
+    FOR i IN 0 .. p_months - 1 LOOP
+        v_start := (date_trunc('month', p_from) + make_interval(months => i))::date;
+        v_name  := format('%s_%s', p_table, to_char(v_start, 'YYYYMM'));
+        IF to_regclass('public.' || quote_ident(v_name)) IS NULL THEN
+            EXECUTE format(
+                'CREATE TABLE %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
+                v_name, p_table, v_start, (v_start + interval '1 month')::date);
+            v_made := v_made + 1;
+        END IF;
+        EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', v_name);
+        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', v_name);
+    END LOOP;
+
+    v_name := p_table || '_default';
+    IF to_regclass('public.' || quote_ident(v_name)) IS NULL THEN
+        EXECUTE format('CREATE TABLE %I PARTITION OF %I DEFAULT', v_name, p_table);
+        v_made := v_made + 1;
+    END IF;
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', v_name);
+    EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', v_name);
+
+    RETURN v_made;
+END $$;
+
+-- Every partitioned table must have a partition for this month and the next,
+-- and nothing may be sitting in a default partition.
+CREATE OR REPLACE FUNCTION assert_partitions_current() RETURNS void
+LANGUAGE plpgsql AS $$
+DECLARE
+    r      record;
+    v_next date := (date_trunc('month', now()) + interval '1 month')::date;
+    n      bigint;
+BEGIN
+    FOR r IN SELECT c.relname FROM pg_class c
+              JOIN pg_namespace n2 ON n2.oid = c.relnamespace
+             WHERE n2.nspname = 'public' AND c.relkind = 'p'
+    LOOP
+        IF to_regclass('public.' || quote_ident(r.relname || '_' || to_char(now(), 'YYYYMM'))) IS NULL
+        OR to_regclass('public.' || quote_ident(r.relname || '_' || to_char(v_next, 'YYYYMM'))) IS NULL THEN
+            RAISE EXCEPTION
+                'partitioned table % has no partition for this month or next — writes are '
+                'about to land in the default partition, which then blocks creating the '
+                'partition that should have held them', r.relname;
+        END IF;
+        IF to_regclass('public.' || quote_ident(r.relname || '_default')) IS NOT NULL THEN
+            EXECUTE format('SELECT count(*) FROM %I', r.relname || '_default') INTO n;
+            IF n > 0 THEN
+                RAISE EXCEPTION
+                    '% rows are sitting in %_default — maintenance fell behind, and those '
+                    'rows now block creating the month partition they belong to',
+                    n, r.relname;
+            END IF;
+        END IF;
+    END LOOP;
+END $$;
+
 -- tenant + branch + staff get audit + updated_at (tenant itself is not tenant-scoped)
 CREATE TRIGGER trg_touch BEFORE UPDATE ON tenant FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 CREATE TRIGGER trg_touch BEFORE UPDATE ON branch FOR EACH ROW EXECUTE FUNCTION touch_updated_at();

@@ -13,18 +13,12 @@
 -- remembers to add a test for it.
 -- ============================================================================
 
--- Every table carrying tenant_id. The suite's coverage is defined by this, not
--- by a hand-maintained list.
-CREATE OR REPLACE FUNCTION tenant_tables() RETURNS text[]
-LANGUAGE sql STABLE AS $$
-    SELECT array_agg(c.relname ORDER BY c.relname)
-      FROM pg_class c
-      JOIN pg_namespace n ON n.oid = c.relnamespace
-     WHERE n.nspname = 'public'
-       AND c.relkind IN ('r','p')
-       AND EXISTS (SELECT 1 FROM pg_attribute a
-                    WHERE a.attrelid = c.oid AND a.attname = 'tenant_id' AND NOT a.attisdropped)
-$$;
+-- tenant_tables() — the suite's coverage — is defined by the migration set, in
+-- 0015. It was defined here too until a partitioned table appeared: the probes
+-- load after the migrations, so this copy silently replaced the real one, and
+-- the census started counting `activity` fourteen more times under its monthly
+-- partition names. Two definitions of the same function is exactly the drift an
+-- isolation suite must not have. There is one, and the schema owns it.
 
 -- How many of `p_tenant`'s rows the CALLER can see right now.
 CREATE OR REPLACE FUNCTION rls_select_count(p_table text, p_tenant uuid) RETURNS bigint
@@ -112,6 +106,30 @@ EXCEPTION WHEN OTHERS THEN
     RETURN SQLSTATE || ' ' || SQLERRM;
 END $$;
 
+-- The plan, as the CALLER sees it.
+--
+-- The only plan worth asserting on. Captured as the owner — or as any superuser
+-- — the policy was never applied, so every qual is promotable and the plan
+-- looks fine whether or not the index is reachable in production.
+--
+-- enable_seqscan is off for the duration: with a two-tenant fixture the planner
+-- would pick a sequential scan on cost regardless, and the question here is not
+-- what it chooses but what it CAN choose. A qual that cannot become an index
+-- condition under RLS never will, at any table size.
+CREATE OR REPLACE FUNCTION rls_explain(p_sql text) RETURNS text
+LANGUAGE plpgsql SECURITY INVOKER AS $$
+DECLARE
+    line text;
+    out  text := '';
+BEGIN
+    SET LOCAL enable_seqscan = off;
+    FOR line IN EXECUTE 'EXPLAIN (COSTS OFF) ' || p_sql LOOP
+        out := out || line || E'\n';
+    END LOOP;
+    RETURN out;
+END $$;
+
+GRANT EXECUTE ON FUNCTION rls_explain(text)                      TO insurimple_app;
 GRANT EXECUTE ON FUNCTION tenant_tables()                        TO insurimple_app;
 GRANT EXECUTE ON FUNCTION rls_select_count(text, uuid)           TO insurimple_app;
 GRANT EXECUTE ON FUNCTION rls_select_all(text)                   TO insurimple_app;
