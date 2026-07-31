@@ -59,12 +59,20 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     scale decision that is not cheaply reversible. The default is removed rather than
     changed so that code which stops supplying an id fails loudly instead of quietly
     diverging. Test-asserted: `assert_no_generated_keys()` plus TEST10a–d.
-14. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `ai_action` are range-partitioned by
-    month. `txn` is NOT partitioned: Postgres requires the partition key in the primary key,
+14. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `audit_event` are range-partitioned
+    by month (`ai_action` joins them when DB.6 creates it, born partitioned). `txn` is NOT
+    partitioned: Postgres requires the partition key in the primary key,
     so partitioning `txn` would force a composite `(id, created_at)` PK and propagate a
     composite FK into every table that hangs off it — documents, signatures, carrier
     submissions, activities, ledger entries — forever, to solve a problem a 30M-row table
-    does not have.
+    does not have. Partitions carry their own `ENABLE` + `FORCE` row security: policies are
+    inherited through the parent, but the app role can name a partition directly.
+15. NO EXPRESSION INDEX ON A TENANT TABLE. Under RLS, a qual becomes an index condition only
+    if it is `LEAKPROOF`, and `lower`, `upper`, `btrim`, `||`, `to_tsvector`, `LIKE`, regex
+    and the pg_trgm operators are all non-leakproof — so such an index is used by the owner,
+    never by the app, and a plan captured as owner will hide that. Normalise on WRITE
+    (`search_name`, by trigger) and compare the raw column on read. Test-asserted:
+    `assert_tenant_leading_indexes()` plus four `EXPLAIN`-as-`insurimple_app` assertions.
 
 ## Design system source of truth
 `Insurimple-P_C/_ds/insurimple-design-system-*/` — seven token files + `_ds_manifest.json`
