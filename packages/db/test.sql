@@ -324,20 +324,94 @@ BEGIN
     RAISE NOTICE 'TEST6f PASS: renewed licence restores pc.txn.create';
 END $$;
 
--- 6d — entitlement: the tenant has no Life module, so even the principal
---      (who holds life.txn.create) cannot open a Life transaction.
-INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
-VALUES ('90000000-0000-0000-0000-0000000000ff',
-        '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
-        'c0000000-0000-0000-0000-000000000001','LIFE-1','life','in_force');
+-- 6d — entitlement gates the POLICY, not only the transaction (0016).
+--      The tenant has no Life module, so a Life policy cannot be written at
+--      all — the WITH CHECK refuses it before any txn is attempted. Before
+--      0016 this insert succeeded and only the txn was refused, which meant a
+--      tenant could accumulate a book in a module it had never bought.
+DO $$
+BEGIN
+    INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
+            'a0000000-0000-0000-0000-000000000001',
+            'c0000000-0000-0000-0000-000000000001','LIFE-1','life','in_force');
+    RAISE EXCEPTION 'TEST6d FAIL: a Life policy was written without the Life entitlement';
+EXCEPTION WHEN insufficient_privilege THEN
+    RAISE NOTICE 'TEST6d PASS: Life module not entitled — policy write denied';
+END $$;
+
+-- 6g — the read/write split, which is the whole reason entitlement is not one
+--      predicate. Buy Life, write the policy, cancel Life: the record must stay
+--      READABLE (six-year RIBO retention survives a cancelled subscription) and
+--      must stop accepting WRITES (no new business without a live one).
+DO $$
+DECLARE n int;
+BEGIN
+    PERFORM set_config('app.current_actor','system', false);
+    INSERT INTO tenant_module (id, tenant_id, module)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','life');
+
+    INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
+    VALUES ('90000000-0000-0000-0000-0000000000ff',
+            '11111111-1111-1111-1111-111111111111','a0000000-0000-0000-0000-000000000001',
+            'c0000000-0000-0000-0000-000000000001','LIFE-1','life','in_force');
+
+    -- Subscription lapses.
+    UPDATE tenant_module SET active = false
+     WHERE tenant_id = '11111111-1111-1111-1111-111111111111' AND module = 'life';
+
+    SELECT count(*) INTO n FROM policy WHERE id = '90000000-0000-0000-0000-0000000000ff';
+    IF n <> 1 THEN
+        RAISE EXCEPTION
+            'TEST6g FAIL: cancelling the Life module hid an existing policy. The brokerage '
+            'still owes six years of retention on it and must produce it on a spot check';
+    END IF;
+
+    BEGIN
+        INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
+        VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
+                'a0000000-0000-0000-0000-000000000001',
+                'c0000000-0000-0000-0000-000000000001','LIFE-2','life','in_force');
+        RAISE EXCEPTION 'TEST6g FAIL: a cancelled module still accepted new business';
+    EXCEPTION WHEN insufficient_privilege THEN
+        NULL;
+    END;
+
+    RAISE NOTICE 'TEST6g PASS: a cancelled module keeps its history readable and refuses new writes';
+    PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+END $$;
+
+-- 6h — and the transaction is still refused on the cancelled module
 DO $$
 BEGIN
     INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
     VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','new_business',
             'a0000000-0000-0000-0000-000000000001','90000000-0000-0000-0000-0000000000ff','draft');
-    RAISE EXCEPTION 'TEST6d FAIL: a Life txn was created without the Life entitlement';
+    RAISE EXCEPTION 'TEST6h FAIL: a Life txn was created on a cancelled entitlement';
 EXCEPTION WHEN insufficient_privilege THEN
-    RAISE NOTICE 'TEST6d PASS: Life module not entitled — txn denied (%)', SQLERRM;
+    RAISE NOTICE 'TEST6h PASS: Life module cancelled — txn denied (%)', SQLERRM;
+END $$;
+
+-- 6i — a tenant that NEVER bought the module reads nothing of it. This is the
+--      commercial boundary the module split exists to draw: it is about a
+--      module never purchased, not a subscription that lapsed.
+DO $$
+DECLARE n int;
+BEGIN
+    PERFORM set_config('app.current_actor','system', false);
+    DELETE FROM tenant_module
+     WHERE tenant_id = '11111111-1111-1111-1111-111111111111' AND module = 'life';
+    SELECT count(*) INTO n FROM policy WHERE line = 'life';
+    IF n <> 0 THEN
+        RAISE EXCEPTION 'TEST6i FAIL: % life policies visible with no Life entitlement at all', n;
+    END IF;
+    SELECT count(*) INTO n FROM coverage
+     WHERE policy_id = '90000000-0000-0000-0000-0000000000ff';
+    IF n <> 0 THEN
+        RAISE EXCEPTION 'TEST6i FAIL: child rows of an ungated policy are still reachable';
+    END IF;
+    RAISE NOTICE 'TEST6i PASS: an unbought module is invisible, including its child rows';
+    PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
 END $$;
 
 -- ============================================================================
@@ -785,6 +859,106 @@ BEGIN
         RAISE EXCEPTION 'TEST12c FAIL: the setting vanished mid-transaction';
     END IF;
     RAISE NOTICE 'TEST12c PASS: tenant context is transaction-scoped, not session state';
+END $$;
+
+-- ============================================================================
+-- TEST13 — entitlement is a property of the rows, not one check on one INSERT.
+-- ============================================================================
+
+-- 13a — every module-scoped table gates both reads and writes
+DO $$
+BEGIN
+    PERFORM assert_module_gated();
+    RAISE NOTICE 'TEST13a PASS: module-scoped tables gate reads on entitlement and writes on an active subscription';
+END $$;
+
+-- 13b — the assertion bites on all three ways to get the gate wrong
+DO $$
+BEGIN
+    RESET ROLE;
+
+    -- tenant-scoped but not module-scoped
+    DROP POLICY tenant_isolation ON policy;
+    CREATE POLICY tenant_isolation ON policy USING (tenant_id = current_tenant())
+        WITH CHECK (tenant_id = current_tenant() AND line_module(line) = ANY (active_modules()));
+    BEGIN
+        PERFORM assert_module_gated();
+        RAISE EXCEPTION 'TEST13b FAIL: an ungated read predicate went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%not module-scoped%' THEN
+            RAISE EXCEPTION 'TEST13b FAIL: wrong reason (read) — %', SQLERRM;
+        END IF;
+    END;
+
+    -- reads gated, writes not: the failure mode every read-only test passes
+    DROP POLICY tenant_isolation ON policy;
+    CREATE POLICY tenant_isolation ON policy
+        USING (tenant_id = current_tenant() AND line_module(line) = ANY (entitled_modules()));
+    BEGIN
+        PERFORM assert_module_gated();
+        RAISE EXCEPTION 'TEST13b FAIL: a policy with no WITH CHECK went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%gates reads but not writes%' THEN
+            RAISE EXCEPTION 'TEST13b FAIL: wrong reason (write) — %', SQLERRM;
+        END IF;
+    END;
+
+    -- writes gated on entitled rather than active: a cancelled module still sells
+    DROP POLICY tenant_isolation ON policy;
+    CREATE POLICY tenant_isolation ON policy
+        USING (tenant_id = current_tenant() AND line_module(line) = ANY (entitled_modules()))
+        WITH CHECK (tenant_id = current_tenant());
+    BEGIN
+        PERFORM assert_module_gated();
+        RAISE EXCEPTION 'TEST13b FAIL: a write predicate ignoring the subscription went unnoticed';
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%has not bought%' THEN
+            RAISE EXCEPTION 'TEST13b FAIL: wrong reason (active) — %', SQLERRM;
+        END IF;
+    END;
+
+    -- restore
+    DROP POLICY tenant_isolation ON policy;
+    CREATE POLICY tenant_isolation ON policy
+        USING      (tenant_id = current_tenant() AND line_module(line) = ANY (entitled_modules()))
+        WITH CHECK (tenant_id = current_tenant() AND line_module(line) = ANY (active_modules()));
+    PERFORM assert_module_gated();
+    SET ROLE app;
+    RAISE NOTICE 'TEST13b PASS: the entitlement assertion bites on ungated reads, ungated writes and stale writes';
+END $$;
+
+-- 13c — an invisible policy must DENY a transaction, not silently downgrade it.
+--       Before 0016 hardened txn_set_module(), an unentitled policy read as
+--       NULL, the coalesce defaulted the module to 'pc' — which the tenant DOES
+--       have — and the transaction was created. The gate downgraded instead of
+--       denying, and the API returned 201.
+DO $$
+DECLARE v_ghost uuid;
+BEGIN
+    RESET ROLE;
+    -- A policy in a module this tenant has never bought, planted privileged so
+    -- the caller below can name an id it cannot see.
+    INSERT INTO tenant_module (id, tenant_id, module)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','life');
+    INSERT INTO policy (id, tenant_id, account_id, carrier_id, policy_number, line, status)
+    VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111',
+            'a0000000-0000-0000-0000-000000000001',
+            'c0000000-0000-0000-0000-000000000001','GHOST-1','life','in_force')
+    RETURNING id INTO v_ghost;
+    DELETE FROM tenant_module
+     WHERE tenant_id = '11111111-1111-1111-1111-111111111111' AND module = 'life';
+    SET ROLE app;
+
+    BEGIN
+        INSERT INTO txn (id, tenant_id, txn_type, account_id, policy_id, state)
+        VALUES (uuidv7(), '11111111-1111-1111-1111-111111111111','new_business',
+                'a0000000-0000-0000-0000-000000000001', v_ghost, 'draft');
+        RAISE EXCEPTION
+            'TEST13c FAIL: a transaction was created against a policy the caller cannot see — '
+            'the module was almost certainly defaulted rather than derived';
+    EXCEPTION WHEN insufficient_privilege THEN
+        RAISE NOTICE 'TEST13c PASS: an invisible policy denies the transaction rather than downgrading it';
+    END;
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;

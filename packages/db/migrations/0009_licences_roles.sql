@@ -21,7 +21,7 @@
 CREATE TABLE tenant_module (
     id              uuid PRIMARY KEY,
     tenant_id       uuid NOT NULL REFERENCES tenant(id) ON DELETE CASCADE,
-    module          text NOT NULL CHECK (module IN ('pc','life','mortgage')),
+    module          text NOT NULL CHECK (module IN ('pc','life','mortgage','marketing')),
     active          boolean NOT NULL DEFAULT true,
     subscribed_at   timestamptz NOT NULL DEFAULT now(),
     cancelled_at    timestamptz,
@@ -37,7 +37,7 @@ CREATE TABLE tenant_module (
 -- ----------------------------------------------------------------------------
 CREATE TABLE capability (
     code            text PRIMARY KEY,            -- 'pc.txn.create'
-    module          text CHECK (module IN ('pc','life','mortgage')),  -- null = core
+    module          text CHECK (module IN ('pc','life','mortgage','marketing')),  -- null = core
     description     text NOT NULL
 );
 

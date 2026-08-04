@@ -1,7 +1,7 @@
 # CLAUDE.md — Insurimple Platform
 
 You are building Insurimple: a standalone multi-tenant B2B SaaS for Canadian brokerages.
-One platform, three subscription modules (P&C, Life/LLQP, Mortgage) on one shared spine.
+One platform, four subscription modules (P&C, Life/LLQP, Mortgage, Marketing/CRM) on one shared spine.
 This file is a contract. Violating an invariant fails the task regardless of feature completeness.
 
 ## Repo shape (do not deviate)
@@ -11,8 +11,8 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 - `packages/design-system` — tokens + typed components. THE ONLY source of UI primitives.
 - `packages/contracts` — shared types/zod schemas + API client. New shared types land here FIRST.
 - `packages/config` — eslint, tsconfig, tailwind preset, adherence lint.
-- Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (40 tables,
-  15 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
+- Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (41 tables,
+  16 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
   ledger) go through the NestJS API. Run the schema locally with
   `pnpm --filter @insurimple/db migrate` (+ `seed` for dev fixtures, `test` for the CI gate).
 
@@ -29,8 +29,13 @@ This file is a contract. Violating an invariant fails the task regardless of fea
    `current_actor()` defaults to `anonymous`, which holds no capability. `system` — the actor
    every authority guard bypasses — must be named explicitly; it is never inherited by a
    caller that forgot to set one.
-4. ENTITLEMENT IS THE COMMERCIAL BOUNDARY. `tenant_modules` gates every module-scoped
-   capability server-side. UI hiding is not enforcement.
+4. ENTITLEMENT IS THE COMMERCIAL BOUNDARY. `tenant_module` (`pc`, `life`, `mortgage`,
+   `marketing`) gates every module-scoped capability server-side; UI hiding is not
+   enforcement. READS are gated on the entitlement EXISTING, writes on it being `active` —
+   a brokerage that cancels a module keeps six years of RIBO retention on what it already
+   wrote and must produce it on a spot check, but writes no new business. Enforced in RLS
+   on `txn` and `policy` and inherited by their children through the parent's own policy.
+   Test-asserted: `assert_module_gated()` plus TEST6d/g/h/i and TEST13a–c.
 5. INDEPENDENCE FROM RATE FAMILY. No imports, no shared DB, no runtime dependency on any
    Rate Family code or data. If you find `operator-os` or Rate Family remnants, flag and remove.
 6. CONTRACTS PACKAGE IS THE SINGLE TYPE SOURCE.
