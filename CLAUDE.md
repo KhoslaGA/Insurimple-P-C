@@ -11,8 +11,8 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 - `packages/design-system` — tokens + typed components. THE ONLY source of UI primitives.
 - `packages/contracts` — shared types/zod schemas + API client. New shared types land here FIRST.
 - `packages/config` — eslint, tsconfig, tailwind preset, adherence lint.
-- Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (41 tables,
-  17 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
+- Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (42 tables,
+  18 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
   ledger) go through the NestJS API. Run the schema locally with
   `pnpm --filter @insurimple/db migrate` (+ `seed` for dev fixtures, `test` for the CI gate).
 
@@ -68,14 +68,24 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     scale decision that is not cheaply reversible. The default is removed rather than
     changed so that code which stops supplying an id fails loudly instead of quietly
     diverging. Test-asserted: `assert_no_generated_keys()` plus TEST10a–d.
-14. PARTITION APPEND-ONLY LEAVES ONLY. `activity` and `audit_event` are range-partitioned
-    by month (`ai_action` joins them when DB.6 creates it, born partitioned). `txn` is NOT
+14. PARTITION APPEND-ONLY LEAVES ONLY. `activity`, `audit_event` and `ai_action` are
+    range-partitioned by month. `txn` is NOT
     partitioned: Postgres requires the partition key in the primary key,
     so partitioning `txn` would force a composite `(id, created_at)` PK and propagate a
     composite FK into every table that hangs off it — documents, signatures, carrier
     submissions, activities, ledger entries — forever, to solve a problem a 30M-row table
     does not have. Partitions carry their own `ENABLE` + `FORCE` row security: policies are
     inherited through the parent, but the app role can name a partition directly.
+16. TRAINING DATA IS NOT A CLIENT RECORD. `ai_action.retain_until` is set independently of
+    `document.retention_until`, and neither is derived from the other. Client records carry
+    a six-year RIBO obligation the brokerage MUST meet; training data is an asset decision
+    and a privacy exposure that grows with time. Letting the stricter govern both keeps
+    client context long past its purpose; letting the looser govern both destroys evidence
+    a regulator is entitled to. Only `system` may delete an `ai_action` row, and only
+    through `sweep_ai_action_retention()`. What leaves for the training lake is
+    `ai_action_export` — labels and identifiers, never `context`, `suggestion` or
+    `amendment`, because a copy in object storage is outside RLS, the audit trigger and the
+    sweep. Test-asserted: TEST15a–e plus the export round trip in CI.
 15. NO EXPRESSION INDEX ON A TENANT TABLE. Under RLS, a qual becomes an index condition only
     if it is `LEAKPROOF`, and `lower`, `upper`, `btrim`, `||`, `to_tsvector`, `LIKE`, regex
     and the pg_trgm operators are all non-leakproof — so such an index is used by the owner,

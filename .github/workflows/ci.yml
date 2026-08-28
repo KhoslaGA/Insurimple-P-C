@@ -45,6 +45,11 @@ jobs:
         run: PGPASSWORD=dev psql -h localhost -p 5433 -U postgres -d insurimple -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
       - name: schema assertions (virgin Postgres 16)
         run: DATABASE_URL=postgres://postgres:dev@localhost:5433/insurimple pnpm --filter @insurimple/db test
+      # The training-set export leaves the database, so "it ran" is not the
+      # check — a writer can emit a file no reader accepts, and that surfaces on
+      # the first training run against months of files. This writes and reads back.
+      - name: ai_action export round trip
+        run: DATABASE_URL=postgres://postgres:dev@localhost:5433/insurimple pnpm --filter @insurimple/db test:export
 
   # The tenant isolation gate. Runs on its own database because the suite
   # requires a virgin schema and its own two-tenant fixture, and because a

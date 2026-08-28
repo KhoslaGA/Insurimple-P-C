@@ -9,9 +9,13 @@
     "seed": "node scripts/migrate.mjs --seed",
     "test": "node scripts/migrate.mjs --test",
     "test:rls": "node scripts/rls-test.mjs",
-    "link-org": "node scripts/link-clerk-org.mjs"
+    "link-org": "node scripts/link-clerk-org.mjs",
+    "test:export": "node scripts/test-export.mjs",
+    "export:ai": "node scripts/export-ai-actions.mjs"
   },
   "dependencies": {
+    "hyparquet": "^1.29.2",
+    "hyparquet-writer": "^0.16.8",
     "pg": "^8.22.0"
   }
 }

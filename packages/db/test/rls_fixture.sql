@@ -197,6 +197,14 @@ BEGIN
     VALUES (uuidv7(), p_tenant, v_entry, v_ledger, v_account, 1800.00, 0),
            (uuidv7(), p_tenant, v_entry, v_ledger, v_account, 0, 1800.00);
 
+    INSERT INTO ai_action (id, tenant_id, txn_id, account_id, policy_id, action_type,
+                           model, suggestion, context, confidence,
+                           decision, decided_by, decided_at)
+    VALUES (uuidv7(), p_tenant, v_txn, v_account, v_policy, 'summarise',
+            'claude-fixture', '{"text":"a summary"}'::jsonb,
+            jsonb_build_object('insured', 'Ada ' || tag || 'son'), 0.87,
+            'accepted', v_staff, now());
+
     INSERT INTO commission_entry (id, tenant_id, policy_id, carrier_id, period, expected,
                                   received, status)
     VALUES (uuidv7(), p_tenant, v_policy, v_carrier, date_trunc('month', current_date)::date,

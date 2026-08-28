@@ -843,20 +843,32 @@ END $$;
 -- 12c — transaction-local context really is transaction-local. This is the
 --       property the whole pooler argument rests on: if it did not hold,
 --       set_config(..., true) would leak exactly like a plain SET.
+--
+--       The restore at the end is not tidiness. An is_local setting reverts at
+--       the end of the TRANSACTION, not the end of the block — and this file is
+--       run two ways: psql gives every statement its own transaction, while the
+--       migration runner sends the whole file as one. Under the second, the
+--       tenant switched here stayed switched for every test below, and TEST14
+--       failed with a row-level security violation forty assertions later. The
+--       symptom named the wrong test entirely.
 DO $$
-DECLARE leaked text;
+DECLARE
+    v_before text := current_setting('app.current_tenant', true);
+    leaked   text;
 BEGIN
-    BEGIN
-        PERFORM set_config('app.current_tenant','22222222-2222-2222-2222-222222222222', true);
-        IF current_tenant()::text <> '22222222-2222-2222-2222-222222222222' THEN
-            RAISE EXCEPTION 'TEST12c FAIL: set_config did not take effect inside the block';
-        END IF;
-    END;
-    -- The enclosing DO block is one transaction, so the local setting is still
-    -- in force here; what matters is that it was never written to session state.
+    PERFORM set_config('app.current_tenant','22222222-2222-2222-2222-222222222222', true);
+    IF current_tenant()::text <> '22222222-2222-2222-2222-222222222222' THEN
+        RAISE EXCEPTION 'TEST12c FAIL: set_config did not take effect';
+    END IF;
+
     leaked := current_setting('app.current_tenant', true);
     IF leaked IS NULL THEN
         RAISE EXCEPTION 'TEST12c FAIL: the setting vanished mid-transaction';
+    END IF;
+
+    PERFORM set_config('app.current_tenant', v_before, true);
+    IF current_tenant()::text IS DISTINCT FROM v_before THEN
+        RAISE EXCEPTION 'TEST12c FAIL: the tenant context was not restored';
     END IF;
     RAISE NOTICE 'TEST12c PASS: tenant context is transaction-scoped, not session state';
 END $$;
@@ -959,6 +971,258 @@ BEGIN
     EXCEPTION WHEN insufficient_privilege THEN
         RAISE NOTICE 'TEST13c PASS: an invisible policy denies the transaction rather than downgrading it';
     END;
+END $$;
+
+-- ============================================================================
+-- TEST14 — every edge of the state machine, not one of them (DB.6).
+--
+-- TEST2 proves that draft -> completed raises. That is one of forty-seven
+-- illegal edges, and a guard that got any of the other forty-six wrong would
+-- pass it. The failure mode is not a wrong error message: it is a transition
+-- that silently succeeds, moving a transaction to `submitted` without a
+-- signature on file, which is the exact thing a RIBO spot check looks for.
+--
+-- Eight states means sixty-four ordered pairs. Nine are legal, eight are
+-- same-state no-ops, and the remaining forty-seven must raise. This walks all
+-- sixty-four and reports every disagreement at once, rather than stopping at
+-- the first — a guard that is wrong is usually wrong in a pattern, and seeing
+-- the pattern is the whole diagnosis.
+-- ============================================================================
+DO $$
+DECLARE
+    states  text[] := ARRAY['draft','doc_generated','sig_pending','signed',
+                            'submitted','carrier_ack','completed','rejected'];
+    legal   text[] := ARRAY['draft>doc_generated','doc_generated>sig_pending',
+                            'sig_pending>signed','signed>submitted',
+                            'submitted>carrier_ack','carrier_ack>completed',
+                            'submitted>rejected','carrier_ack>rejected',
+                            'rejected>draft'];
+    s_from  text;
+    s_to    text;
+    v_id    uuid;
+    edge    text;
+    raised  boolean;
+    wrong   text[] := ARRAY[]::text[];
+    n_legal int := 0;
+    n_block int := 0;
+BEGIN
+    FOREACH s_from IN ARRAY states LOOP
+        FOREACH s_to IN ARRAY states LOOP
+            edge := s_from || '>' || s_to;
+
+            -- A fresh txn planted directly in the from-state. INSERT carries no
+            -- transition guard — only UPDATE OF state does — which is what makes
+            -- every starting point reachable without walking the legal path to it.
+            v_id := uuidv7();
+            INSERT INTO txn (id, tenant_id, txn_type, account_id, state)
+            VALUES (v_id, '11111111-1111-1111-1111-111111111111','endorsement',
+                    'a0000000-0000-0000-0000-000000000001', s_from);
+
+            raised := false;
+            BEGIN
+                UPDATE txn SET state = s_to WHERE id = v_id;
+            EXCEPTION WHEN OTHERS THEN
+                raised := true;
+                IF SQLERRM NOT LIKE '%illegal txn transition%' THEN
+                    wrong := wrong || (edge || ' raised the wrong error: ' || SQLERRM);
+                END IF;
+            END;
+
+            IF s_from = s_to THEN
+                -- A same-state write is a no-op by design, not an edge.
+                IF raised THEN
+                    wrong := wrong || (edge || ' raised on a same-state write');
+                END IF;
+            ELSIF edge = ANY (legal) THEN
+                n_legal := n_legal + 1;
+                IF raised THEN
+                    wrong := wrong || (edge || ' is legal but was refused');
+                END IF;
+            ELSE
+                n_block := n_block + 1;
+                IF NOT raised THEN
+                    wrong := wrong || (edge || ' is illegal but SUCCEEDED');
+                END IF;
+            END IF;
+        END LOOP;
+    END LOOP;
+
+    IF array_length(wrong, 1) IS NOT NULL THEN
+        RAISE EXCEPTION 'TEST14 FAIL: % edge(s) behaved wrongly: %',
+            array_length(wrong, 1), array_to_string(wrong, '; ');
+    END IF;
+    IF n_legal <> array_length(legal, 1) THEN
+        RAISE EXCEPTION 'TEST14 FAIL: expected % legal edges, exercised %',
+            array_length(legal, 1), n_legal;
+    END IF;
+    RAISE NOTICE 'TEST14 PASS: % legal edges allowed, % illegal edges refused, 8 no-ops',
+        n_legal, n_block;
+END $$;
+
+-- 14b — a closed transaction records when it closed, on both terminal states
+DO $$
+DECLARE v_id uuid; v_closed timestamptz;
+BEGIN
+    v_id := uuidv7();
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, state)
+    VALUES (v_id, '11111111-1111-1111-1111-111111111111','endorsement',
+            'a0000000-0000-0000-0000-000000000001','carrier_ack');
+    UPDATE txn SET state = 'completed' WHERE id = v_id;
+    SELECT closed_at INTO v_closed FROM txn WHERE id = v_id;
+    IF v_closed IS NULL THEN
+        RAISE EXCEPTION 'TEST14b FAIL: a completed txn has no closed_at';
+    END IF;
+
+    v_id := uuidv7();
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, state)
+    VALUES (v_id, '11111111-1111-1111-1111-111111111111','endorsement',
+            'a0000000-0000-0000-0000-000000000001','submitted');
+    UPDATE txn SET state = 'rejected' WHERE id = v_id;
+    SELECT closed_at INTO v_closed FROM txn WHERE id = v_id;
+    IF v_closed IS NULL THEN
+        RAISE EXCEPTION 'TEST14b FAIL: a rejected txn has no closed_at';
+    END IF;
+    RAISE NOTICE 'TEST14b PASS: both terminal states stamp closed_at';
+END $$;
+
+-- 14c — every legal transition leaves an event behind. The audit trail is the
+--       point of the state machine; a transition that moves the row without
+--       writing txn_event is a gap in the RIBO record with no symptom.
+DO $$
+DECLARE v_id uuid; n int;
+BEGIN
+    v_id := uuidv7();
+    INSERT INTO txn (id, tenant_id, txn_type, account_id, state)
+    VALUES (v_id, '11111111-1111-1111-1111-111111111111','endorsement',
+            'a0000000-0000-0000-0000-000000000001','draft');
+    UPDATE txn SET state='doc_generated' WHERE id=v_id;
+    UPDATE txn SET state='sig_pending'   WHERE id=v_id;
+    UPDATE txn SET state='signed'        WHERE id=v_id;
+    UPDATE txn SET state='signed'        WHERE id=v_id;   -- no-op, no event
+    SELECT count(*) INTO n FROM txn_event WHERE txn_id = v_id;
+    IF n <> 3 THEN
+        RAISE EXCEPTION 'TEST14c FAIL: 3 transitions produced % events', n;
+    END IF;
+    RAISE NOTICE 'TEST14c PASS: each transition writes one event, a no-op writes none';
+END $$;
+
+-- ============================================================================
+-- TEST15 — ai_action, and the lifecycle that is deliberately not the records
+--          lifecycle (DB.7).
+-- ============================================================================
+
+-- 15a — the human gate. A decision with no decider is an unsigned approval,
+--       which is the thing the gate exists to prevent.
+DO $$
+BEGIN
+    BEGIN
+        INSERT INTO ai_action (id, tenant_id, action_type, model, suggestion, decision)
+        VALUES (uuidv7(),'11111111-1111-1111-1111-111111111111',
+                'summarise','claude-x','{}'::jsonb,'accepted');
+        RAISE EXCEPTION 'TEST15a FAIL: an accepted suggestion was recorded with no decider';
+    EXCEPTION WHEN check_violation THEN
+        RAISE NOTICE 'TEST15a PASS: a decision without a decider is refused';
+    END;
+END $$;
+
+-- 15b — retention is a SEPARATE policy from the six-year records obligation.
+--       The sweep must delete an expired ai_action row and touch nothing that
+--       carries the regulatory clock.
+DO $$
+DECLARE v_id uuid := uuidv7(); n_docs_before bigint; n_docs_after bigint; n_swept bigint;
+BEGIN
+    INSERT INTO ai_action (id, tenant_id, action_type, model, suggestion,
+                           decision, decided_by, decided_at, retain_until)
+    VALUES (v_id,'11111111-1111-1111-1111-111111111111','summarise','claude-x','{}'::jsonb,
+            'accepted','50000000-0000-0000-0000-000000000001', now(), current_date - 1);
+
+    SELECT count(*) INTO n_docs_before FROM document;
+    RESET ROLE;
+    PERFORM set_config('app.current_actor','system', false);
+    SELECT sweep_ai_action_retention() INTO n_swept;
+    PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+    SET ROLE app;
+    SELECT count(*) INTO n_docs_after FROM document;
+
+    IF EXISTS (SELECT 1 FROM ai_action WHERE id = v_id) THEN
+        RAISE EXCEPTION 'TEST15b FAIL: an expired ai_action row survived its own retention';
+    END IF;
+    IF n_docs_after <> n_docs_before THEN
+        RAISE EXCEPTION
+            'TEST15b FAIL: the training-data sweep removed % document(s). Client records '
+            'carry a six-year RIBO obligation and are not governed by an asset decision '
+            'about training data', n_docs_before - n_docs_after;
+    END IF;
+    RAISE NOTICE 'TEST15b PASS: the sweep removes expired training rows and no records';
+END $$;
+
+-- 15c — a row whose retain_until has NOT passed, and one with no retention set
+--       at all, both survive. An unset clock must not read as "expired".
+DO $$
+DECLARE v_keep uuid := uuidv7(); v_null uuid := uuidv7();
+BEGIN
+    INSERT INTO ai_action (id, tenant_id, action_type, model, suggestion,
+                           decision, decided_by, decided_at, retain_until)
+    VALUES (v_keep,'11111111-1111-1111-1111-111111111111','summarise','claude-x','{}'::jsonb,
+            'accepted','50000000-0000-0000-0000-000000000001', now(), current_date + 365),
+           (v_null,'11111111-1111-1111-1111-111111111111','summarise','claude-x','{}'::jsonb,
+            'rejected','50000000-0000-0000-0000-000000000001', now(), NULL);
+    RESET ROLE;
+    PERFORM set_config('app.current_actor','system', false);
+    PERFORM sweep_ai_action_retention();
+    PERFORM set_config('app.current_actor','50000000-0000-0000-0000-000000000001', false);
+    SET ROLE app;
+    IF NOT EXISTS (SELECT 1 FROM ai_action WHERE id = v_keep)
+    OR NOT EXISTS (SELECT 1 FROM ai_action WHERE id = v_null) THEN
+        RAISE EXCEPTION 'TEST15c FAIL: the sweep removed a row that had not expired';
+    END IF;
+    RAISE NOTICE 'TEST15c PASS: unexpired and unset retention both survive the sweep';
+END $$;
+
+-- 15d — the export view carries a label and nothing that identifies a client.
+DO $$
+DECLARE bad text;
+BEGIN
+    INSERT INTO ai_action (id, tenant_id, action_type, model, suggestion, context)
+    VALUES (uuidv7(),'11111111-1111-1111-1111-111111111111','summarise','claude-x',
+            '{"text":"hi"}'::jsonb, '{"insured":"Seyed Moein Abtahi"}'::jsonb);
+
+    IF EXISTS (SELECT 1 FROM ai_action_export WHERE decision = 'pending') THEN
+        RAISE EXCEPTION 'TEST15d FAIL: a pending suggestion reached the export — it has no label';
+    END IF;
+
+    SELECT string_agg(column_name, ', ') INTO bad
+      FROM information_schema.columns
+     WHERE table_name = 'ai_action_export'
+       AND column_name IN ('context','suggestion','amendment');
+    IF bad IS NOT NULL THEN
+        RAISE EXCEPTION
+            'TEST15d FAIL: the export view exposes %. Once a copy is in object storage it '
+            'is outside RLS, the audit trigger and the retention sweep', bad;
+    END IF;
+    RAISE NOTICE 'TEST15d PASS: the export carries labels, not client context';
+END $$;
+
+-- 15e — append-only, and routed to this month's partition
+DO $$
+DECLARE v_id uuid := uuidv7(); v_part text;
+BEGIN
+    INSERT INTO ai_action (id, tenant_id, action_type, model, suggestion)
+    VALUES (v_id,'11111111-1111-1111-1111-111111111111','flag_risk','claude-x','{}'::jsonb);
+    SELECT c.relname INTO v_part
+      FROM ai_action a JOIN pg_class c ON c.oid = a.tableoid WHERE a.id = v_id;
+    IF v_part <> 'ai_action_' || to_char(now(),'YYYYMM') THEN
+        RAISE EXCEPTION 'TEST15e FAIL: the row landed in % rather than this month''s partition', v_part;
+    END IF;
+    BEGIN
+        DELETE FROM ai_action WHERE id = v_id;
+        RAISE EXCEPTION 'TEST15e FAIL: an ai_action row was deleted by the app role';
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%ai_action is append-only%' THEN
+            RAISE EXCEPTION 'TEST15e FAIL: wrong reason — %', SQLERRM;
+        END IF;
+    END;
+    RAISE NOTICE 'TEST15e PASS: append-only for the app role, routed to %', v_part;
 END $$;
 
 SELECT 'ALL FUNCTIONAL TESTS PASSED' AS result;
