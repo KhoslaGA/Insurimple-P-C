@@ -1,0 +1,5 @@
+# Copy to prod.tfvars. Nothing secret belongs here — credentials are generated
+# by Terraform into Secrets Manager and never written to state as plaintext
+# outputs.
+environment = "prod"
+region      = "ca-central-1"

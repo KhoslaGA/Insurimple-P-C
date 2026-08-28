@@ -157,6 +157,16 @@ worth is a long, bloating operation.
 **Range-partition it by month.** Then the retention sweep is a `DETACH`/`DROP` of a
 partition — effectively instant — and vacuum works on tranches rather than one huge heap.
 
+### `document` — evaluated, stays unpartitioned
+
+The correction said to evaluate `document` on one question: does anything hold a foreign
+key to it? Measured against the live schema — **five tables do**: `signature`,
+`carrier_submission`, `disclosure_record`, `loss_history` and `licence`. Partitioning it
+would force a composite `(id, created_at)` primary key and push that pair into all five,
+which is the same cascade that rules out partitioning `txn`. **`document` stays
+unpartitioned with tenant-leading indexes.**
+
+
 **Done, 2026-07-31**, in `0001_foundation.sql` — rewritten in place per invariant 12,
 alongside `activity`. `audit_event` now declares `PRIMARY KEY (id, at) PARTITION BY RANGE
 (at)`, which is affordable only because nothing holds a foreign key to it; that is the

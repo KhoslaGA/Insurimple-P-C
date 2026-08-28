@@ -19,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 import pg from 'pg';
 import { CASES } from '../../../packages/contracts/src/client-code.test.ts';
 import { normalizeNameToStem } from '../../../packages/contracts/src/client-code.ts';
+import { newId } from '../dist/db/id.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const DB_PKG = join(HERE, '..', '..', '..', 'packages', 'db');
@@ -168,5 +169,36 @@ describe('client code: issuance', () => {
     await pool.end();
     assert.equal(new Set(codes).size, 10, `duplicate codes issued: ${codes.join(', ')}`);
     for (const code of codes) assert.match(code, /^RACEMACO\d{2}$/);
+  });
+});
+
+describe('keys are ordered in the database, not just in the generator', () => {
+  it('inserts 10,000 rows and finds them in insertion order by id', async () => {
+    // DB.3's acceptance, literally: the generator being monotonic is necessary
+    // but not sufficient — what matters is that Postgres, sorting the uuid
+    // column with its own comparator, agrees. A generator could be monotonic as
+    // a STRING and not as the 16 bytes the index actually orders.
+    const ids = Array.from({ length: 10_000 }, () => newId());
+    await client.query(
+      `INSERT INTO party (id, tenant_id, party_type, last_name)
+       SELECT u.id, $2, 'person', 'Ordered' || u.ord
+         FROM unnest($1::uuid[]) WITH ORDINALITY AS u(id, ord)`,
+      [ids, TENANT],
+    );
+
+    const back = await client.query(
+      `SELECT id::text FROM party WHERE last_name LIKE 'Ordered%' ORDER BY id`);
+    assert.equal(back.rows.length, 10_000);
+    assert.deepEqual(
+      back.rows.map((r) => r.id), ids,
+      'Postgres ordering by id does not match insertion order — inserts are landing in ' +
+      'random leaves of the B-tree, which is the whole thing UUIDv7 exists to prevent',
+    );
+
+    // And the index agrees: ordering by id needs no sort step.
+    const plan = await client.query(
+      `EXPLAIN (COSTS OFF) SELECT id FROM party ORDER BY id LIMIT 10`);
+    const text = plan.rows.map((r) => r['QUERY PLAN']).join('\n');
+    assert.ok(!/Sort/.test(text), `ordering by the primary key required a sort:\n${text}`);
   });
 });
