@@ -69,13 +69,19 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     changed so that code which stops supplying an id fails loudly instead of quietly
     diverging. Test-asserted: `assert_no_generated_keys()` plus TEST10a–d.
 14. PARTITION APPEND-ONLY LEAVES ONLY. `activity`, `audit_event` and `ai_action` are
-    range-partitioned by month. `txn` is NOT
-    partitioned: Postgres requires the partition key in the primary key,
+    range-partitioned by month. `txn` is NOT partitioned: Postgres requires the partition
+    key in the primary key,
     so partitioning `txn` would force a composite `(id, created_at)` PK and propagate a
     composite FK into every table that hangs off it — documents, signatures, carrier
     submissions, activities, ledger entries — forever, to solve a problem a 30M-row table
     does not have. Partitions carry their own `ENABLE` + `FORCE` row security: policies are
     inherited through the parent, but the app role can name a partition directly.
+15. NO EXPRESSION INDEX ON A TENANT TABLE. Under RLS, a qual becomes an index condition only
+    if it is `LEAKPROOF`, and `lower`, `upper`, `btrim`, `||`, `to_tsvector`, `LIKE`, regex
+    and the pg_trgm operators are all non-leakproof — so such an index is used by the owner,
+    never by the app, and a plan captured as owner will hide that. Normalise on WRITE
+    (`search_name`, by trigger) and compare the raw column on read. Test-asserted:
+    `assert_tenant_leading_indexes()` plus four `EXPLAIN`-as-`insurimple_app` assertions.
 16. TRAINING DATA IS NOT A CLIENT RECORD. `ai_action.retain_until` is set independently of
     `document.retention_until`, and neither is derived from the other. Client records carry
     a six-year RIBO obligation the brokerage MUST meet; training data is an asset decision
@@ -86,12 +92,6 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     `ai_action_export` — labels and identifiers, never `context`, `suggestion` or
     `amendment`, because a copy in object storage is outside RLS, the audit trigger and the
     sweep. Test-asserted: TEST15a–e plus the export round trip in CI.
-15. NO EXPRESSION INDEX ON A TENANT TABLE. Under RLS, a qual becomes an index condition only
-    if it is `LEAKPROOF`, and `lower`, `upper`, `btrim`, `||`, `to_tsvector`, `LIKE`, regex
-    and the pg_trgm operators are all non-leakproof — so such an index is used by the owner,
-    never by the app, and a plan captured as owner will hide that. Normalise on WRITE
-    (`search_name`, by trigger) and compare the raw column on read. Test-asserted:
-    `assert_tenant_leading_indexes()` plus four `EXPLAIN`-as-`insurimple_app` assertions.
 
 ## Design system source of truth
 `Insurimple-P_C/_ds/insurimple-design-system-*/` — seven token files + `_ds_manifest.json`
