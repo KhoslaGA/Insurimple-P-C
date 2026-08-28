@@ -21,9 +21,9 @@ building. Never build against inferred shapes."*
 
 | Master spec says | Reality | Action |
 |---|---|---|
-| §3 "Phase 0 kickoff" — run `create-turbo` / `create-next-app`, bootstrap the monorepo | Phase 0 is built and committed; the design system, shell, Locate, auth, API and 16 migrations all exist | Treat §3 as **historical**. Never bootstrap. |
+| §3 "Phase 0 kickoff" — run `create-turbo` / `create-next-app`, bootstrap the monorepo | Phase 0 is built and committed; the design system, shell, Locate, auth, API and 17 migrations all exist | Treat §3 as **historical**. Never bootstrap. |
 | "Next.js 15" | `apps/bms` runs **Next.js 16**, React 19 | Guidance holds directionally; the version number is stale |
-| "7 migrations, 33 tables" | **16 migrations, 40 tables**, validated on virgin Postgres 16 | Update the count before quoting it |
+| "7 migrations, 33 tables" | **17 migrations, 40 tables**, validated on virgin Postgres 16 | Update the count before quoting it |
 | "Six custom roles" (T0.5) | The six roles now exist as data (`app_role`), with capabilities, licence anchoring and licence-class validity — see `0009`–`0011` | Built. |
 | "NestJS backend does not exist" (ADR 0001) | `apps/api` exists — NestJS 11, Clerk auth guard, tenant-scoped services, 25 endpoints | Enforcement = NestJS + Postgres RLS |
 | **Database is undecided** | **Decided 2026-07-29: AWS RDS PostgreSQL 16, `ca-central-1`, direct connection, non-owner app role.** See `docs/decisions/0002-database-and-hosting.md` (Accepted) | **RDS `ca-central-1` is repo truth.** Any spec text implying Neon, Supabase, a US region, or an undecided database is superseded. Staging/preview may run anywhere; provisioning is deferred until the first real client record. |

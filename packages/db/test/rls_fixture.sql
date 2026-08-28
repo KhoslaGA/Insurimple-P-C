@@ -92,6 +92,21 @@ BEGIN
     VALUES (v_account, p_tenant, v_branch, upper(tag)||'ADA01', 'Ada '||tag||'son',
             'personal', 'active', v_staff);
 
+    -- Volume, so the planner's index choice means something.
+    --
+    -- With one account per tenant every plan costs the same and EXPLAIN picks
+    -- by tie-break, which made the search-index assertion flip the moment a
+    -- second tenant-leading index appeared on `account`. Two hundred rows makes
+    -- a range predicate genuinely selective, so a plan that has to scan the
+    -- tenant and filter is measurably worse than one that seeks — which is the
+    -- difference the assertion is trying to observe.
+    INSERT INTO account (id, tenant_id, branch_id, lookup_code, display_name, kind, status)
+    SELECT uuidv7(), p_tenant, v_branch,
+           upper(tag) || 'BULK' || lpad(i::text, 4, '0'),
+           'Bulk ' || tag || ' ' || chr(65 + (i % 26)) || lpad(i::text, 4, '0'),
+           'personal', 'active'
+      FROM generate_series(1, 200) i;
+
     INSERT INTO account_party (id, tenant_id, account_id, party_id, role, is_primary)
     VALUES (uuidv7(), p_tenant, v_account, v_party, 'named_insured', true);
 
@@ -190,6 +205,12 @@ END $fn$;
 
 SELECT rls_seed_tenant('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'alpha');
 SELECT rls_seed_tenant('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'bravo');
+
+-- Without this the planner has no statistics for anything the fixture just
+-- wrote, falls back to its default estimates, and picks between two
+-- tenant-leading indexes by tie-break. The plan assertions would then be
+-- measuring a coin flip rather than what RLS does to qual promotion.
+ANALYZE;
 
 -- ----------------------------------------------------------------------------
 -- Census, taken as owner. The suite reads it to prove that when it asserts

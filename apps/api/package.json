@@ -8,7 +8,7 @@
     "dev": "tsc -p tsconfig.json && node --env-file-if-exists=.env dist/main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo 'lint: configured in packages/config (T0.1)'",
-    "test": "tsc -p tsconfig.json && node --test test/*.test.mjs"
+    "test": "tsc -p tsconfig.json && node --test --test-concurrency=1 test/*.test.mjs"
   },
   "dependencies": {
     "@clerk/backend": "^3.11.7",

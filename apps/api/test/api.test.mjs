@@ -67,6 +67,11 @@ async function call(path, { actor = PRINCIPAL, tenant = TENANT_A, method = 'GET'
   return { status: res.status, body: json };
 }
 
+// NOTE: `node --test --test-concurrency=1` in package.json is load-bearing.
+// This file and client-code.test.mjs each DROP SCHEMA and re-migrate the SAME
+// database in their before() hook; run in parallel they tear the schema out
+// from under each other, and the failures land on whichever file lost the race
+// rather than on anything real.
 before(async () => {
   // Drop and rebuild the schema so the suite is hermetic. Migrating a dirty
   // database is not enough: these tests grant roles and open transactions, so

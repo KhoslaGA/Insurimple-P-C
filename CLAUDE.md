@@ -12,7 +12,7 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 - `packages/contracts` — shared types/zod schemas + API client. New shared types land here FIRST.
 - `packages/config` — eslint, tsconfig, tailwind preset, adherence lint.
 - Backend is the NestJS + PostgreSQL 16 BMS in `apps/api` + `packages/db` (41 tables,
-  16 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
+  17 migrations, validated). Do not reinvent it. Domain-critical writes (transactions, trust
   ledger) go through the NestJS API. Run the schema locally with
   `pnpm --filter @insurimple/db migrate` (+ `seed` for dev fixtures, `test` for the CI gate).
 
@@ -53,6 +53,10 @@ This file is a contract. Violating an invariant fails the task regardless of fea
     tenant-scoped uniqueness, immutability (a name change updates display name only), and the
     two-function contract (`normalizeNameToStem` / `issueClientCode`) are all as specified.
     Only the slice lengths differ from the original spec. Decided 2026-07-29 (tickets-DB gate 1).
+    Issued by a BEFORE INSERT trigger (0017) so no import path can skip it, serialised on
+    `pg_advisory_xact_lock(tenant || stem)` because the counter is a read-then-write.
+    The fold handles stroke and ligature letters (Đ Ø Ł Þ Æ ß) that NFKD leaves intact —
+    dropping one loses the first letter of a surname in a code that is immutable forever.
 12. MIGRATIONS ARE REWRITTEN IN PLACE, NOT LAYERED. There is no production data and no
     external consumer of the migration set. A corrective migration stacked on top is a
     permanent archaeological layer for zero benefit. This holds only until the first real
