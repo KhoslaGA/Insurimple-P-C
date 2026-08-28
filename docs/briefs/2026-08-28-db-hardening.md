@@ -1,18 +1,18 @@
 # Brief for chat — `tickets-DB` DB.0 → DB.8 complete
 
-**Date:** 2026-08-28 · **Branch:** `claude/vscode-claude-chat-continue-2xx3p9` · **11 commits, pushed**
+**Date:** 2026-08-28 · **Branch:** `claude/vscode-claude-chat-continue-2xx3p9` · **14 commits, pushed**
 **Repo state:** 18 migrations · 42 tables · 5 test suites green on virgin databases · `infra/` written, **nothing applied**
 
 | suite | assertions | what it proves |
 |---|---|---|
 | schema (`db test`) | 61 | constraints, triggers, state machine, entitlement, keys, partitions |
 | **RLS gate** (`db test:rls`) | **188** | tenant isolation, as `insurimple_app`, over every table carrying `tenant_id` |
-| API (`api test`) | 70 | boundaries over HTTP against a real Nest app + real Postgres |
+| API (`api test`) | 71 | boundaries over HTTP against a real Nest app + real Postgres |
 | contracts | 24 | client-code stem, transitions |
 | frontend | 26 | preview snapshot, metrics arithmetic |
 | export round trip | CI gate | `ai_action` → Parquet → read back |
 
-Everything below DB.8 runs on local and CI Postgres. **No AWS resources exist and none were created.**
+Everything except DB.8 runs on local and CI Postgres. **No AWS resources exist and none were created.**
 
 ---
 
