@@ -1,7 +1,7 @@
-# Brief for chat — `tickets-DB` DB.0 → DB.7 complete
+# Brief for chat — `tickets-DB` DB.0 → DB.8 complete
 
 **Date:** 2026-08-28 · **Branch:** `claude/vscode-claude-chat-continue-2xx3p9` · **11 commits, pushed**
-**Repo state:** 18 migrations · 42 tables · 5 test suites, all green on virgin databases
+**Repo state:** 18 migrations · 42 tables · 5 test suites green on virgin databases · `infra/` written, **nothing applied**
 
 | suite | assertions | what it proves |
 |---|---|---|
@@ -124,14 +124,42 @@ table.
    search service.
 3. **Grant-modal UX.** Which roles need which licence class is currently discovered by hitting a 403.
 4. **Component-level rendering tests** for the BMS screens — flagged twice, never scheduled.
-5. **DB.8 — RDS provisioning.** Correctly deferred; the trigger is the first real client record. The
-   ticket says write the IaC now and apply later. **I have not written it.** Ready to, on request:
-   RDS PG16 `ca-central-1` db.t4g.small Single-AZ, ECS Fargate same VPC, S3 with Object Lock and a
-   ≥6-year lifecycle for `pg_dump` archives, PITR 35 days, plus the rehearsed-restore runbook.
+5. **DB.8 — the IaC is written; nothing is applied.** `infra/` has the VPC, RDS PG16 `ca-central-1`
+   db.t4g.small Single-AZ with a customer-managed KMS key and PITR 35 days, ECS Fargate in the same
+   VPC, two S3 buckets (archive under Object Lock COMPLIANCE for six years; training on an ordinary
+   lifecycle, because those are two different obligations), and two IAM roles so the application
+   cannot read the credential that can drop the policies protecting every tenant.
+
+   **Two caveats, stated rather than buried.** `terraform validate` did **not** run — the proxy
+   denies `registry.terraform.io` with a 403, so provider schemas could not be fetched. HCL parses
+   and `fmt -check` is clean; resource attributes are unverified. And `infra/RUNBOOK.md` is
+   **unrehearsed**, which the ticket itself calls a hypothesis; it says so at the top.
+
+   Still missing before go-live, listed in the runbook §4: CI/CD to ECS, CloudWatch alarms, the
+   scheduled archive job, and DNS.
 
 ---
 
-## 5. Two corrections to earlier reporting
+## 5. Audit against the ticket's literal acceptance
+
+Re-read against the authoritative text, two gaps were open and are now closed:
+
+- **DB.3** said *"insert 10k rows and confirm IDs are monotonically increasing."* I had tested the
+  generator, not the database. Now 10,000 rows are inserted and read back in insertion order by
+  `id`, with `EXPLAIN` confirming no sort step — because monotonic as a *string* is necessary but
+  not sufficient; what matters is Postgres sorting the `uuid` column with its own comparator.
+- **DB.4** said to evaluate `document` on one question: does anything FK to it? Five tables do —
+  `signature`, `carrier_submission`, `disclosure_record`, `loss_history`, `licence` — so it stays
+  unpartitioned, same composite-FK reason as `txn`. I had done this implicitly; it is now written
+  into ADR 0002 §2a-ter.
+
+**One acceptance I did not meet and cannot.** DB.4 asks that *"the party-search `EXPLAIN` as app
+role shows a bitmap index scan, not a seq scan."* It never will. The ticket correctly predicted the
+`LEAKPROOF` problem and then assumed a fix existed; measurement says none does short of real
+superuser, which RDS does not grant. The suite asserts the true behaviour in both directions
+instead — see §2.
+
+## 6. Two corrections to earlier reporting
 
 - I labelled the client-code work "DB.6". **It is gate item 1**, which DB.6 depends on. DB.6 is the
   txn spine — mostly built in Phase 0; what was missing was the exhaustive transition proof.
