@@ -62,8 +62,18 @@ export class TeamService {
            JOIN app_role r ON r.code = g.role_code
           WHERE g.revoked_at IS NULL`,
       );
+      // Which licence classes can carry each role. A role with no rows in
+      // role_licence_class needs no anchor at all; a role with rows MUST be
+      // anchored to a licence of one of them (0011). Both facts were only
+      // discoverable by attempting a grant and reading the 403.
       const roles = await q(
-        `SELECT code, name, description FROM app_role ORDER BY name`,
+        `SELECT r.code, r.name, r.description,
+                coalesce(
+                  (SELECT array_agg(rlc.licence_class ORDER BY rlc.licence_class)
+                     FROM role_licence_class rlc WHERE rlc.role_code = r.code),
+                  ARRAY[]::text[]
+                ) AS licence_classes
+           FROM app_role r ORDER BY r.name`,
       );
       const byStaff = <T extends { staff_id: string }>(rows: T[], id: string) =>
         rows.filter((r) => r.staff_id === id);

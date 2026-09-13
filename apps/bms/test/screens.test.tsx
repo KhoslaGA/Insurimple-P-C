@@ -207,3 +207,46 @@ describe('the preview badge is not decorative', () => {
       'a live book is being labelled as preview, which is the same lie in reverse');
   });
 });
+
+describe('the grant form states the licence rule instead of hiding it', () => {
+  // The DB guard (0011) refuses an unanchored grant for a licensed role, and
+  // refuses an anchor whose class cannot carry the role. Until now neither rule
+  // reached the screen, so a principal broker learned them by submitting the
+  // form and reading a 403 — once per role.
+  const teamHtml = (canManage: boolean) =>
+    renderToStaticMarkup(<TeamView preview={false} roster={DEMO_TEAM} canManage={canManage} />);
+
+  it('every role in the roster carries its licence classes', () => {
+    // The screen cannot state a rule the API does not send. This is the
+    // contract field, asserted on the snapshot the screen is built from.
+    for (const role of DEMO_TEAM.roles) {
+      assert.ok(
+        Array.isArray(role.licence_classes),
+        `${role.code} has no licence_classes — the grant form has nothing to say`,
+      );
+    }
+    const principal = DEMO_TEAM.roles.find((r) => r.code === 'admin_principal');
+    assert.deepEqual(
+      principal?.licence_classes, ['ribo_l2', 'ribo_l3'],
+      'the principal broker must hold RIBO Level 2 or 3 (0011) — the snapshot disagrees with the schema',
+    );
+    const support = DEMO_TEAM.roles.find((r) => r.code === 'llqp_no_life');
+    assert.deepEqual(
+      support?.licence_classes, [],
+      'llqp_no_life carries no licensed capability, so it needs no anchor',
+    );
+  });
+
+  // The rule itself is asserted in src/lib/role-eligibility.test.ts. It cannot
+  // be asserted here: the grant form is a modal, closed on first paint, so a
+  // static render never contains it. That is the honest boundary of this
+  // approach — driving it open needs a browser, and pretending otherwise would
+  // mean testing a re-implementation of the component rather than the component.
+
+  it('renders the roster read-only without the grant controls', () => {
+    const html = teamHtml(false);
+    assert.ok(html.length > 200);
+    assert.match(html, /not change it|view the roster/,
+      'a user without team.manage gets no explanation of why nothing is editable');
+  });
+});

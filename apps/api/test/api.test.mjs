@@ -270,6 +270,53 @@ describe('entitlement is the commercial boundary (invariant 4)', () => {
   });
 });
 
+describe('the roster states the licence rule the DB enforces', () => {
+  it('carries each role\'s accepted licence classes, matching role_licence_class', async () => {
+    // The screen tells a principal broker which licence a role needs, so that
+    // rule must be the schema's rule and not a copy that drifted. Asserted
+    // against the live table rather than a fixture: 0011 is the authority.
+    const r = await call('/team');
+    assert.equal(r.status, 200);
+
+    const expected = await client.query(
+      `SELECT r.code,
+              coalesce((SELECT array_agg(rlc.licence_class ORDER BY rlc.licence_class)
+                          FROM role_licence_class rlc WHERE rlc.role_code = r.code),
+                       ARRAY[]::text[]) AS licence_classes
+         FROM app_role r ORDER BY r.code`);
+
+    const fromApi = Object.fromEntries(
+      r.body.roles.map((role) => [role.code, role.licence_classes]));
+    for (const row of expected.rows) {
+      assert.deepEqual(
+        fromApi[row.code], row.licence_classes,
+        `role ${row.code}: the API's licence classes disagree with role_licence_class, ` +
+        'so the grant form would state a rule the database does not apply',
+      );
+    }
+  });
+
+  it('reports the unlicensed support role as needing no anchor', async () => {
+    const r = await call('/team');
+    const support = r.body.roles.find((x) => x.code === 'llqp_no_life');
+    assert.deepEqual(support.licence_classes, [],
+      'llqp_no_life carries no licensed capability; an anchor requirement here would be invented');
+  });
+
+  it('still refuses a wrong-class grant, because the form is not the enforcement', async () => {
+    // Invariant 1. The form now blocks this before submitting, which is a
+    // courtesy; the database refusing it is the control.
+    const lifeLicence = await client.query(
+      `SELECT id FROM licence WHERE licence_class = 'llqp' LIMIT 1`);
+    const r = await call('/team/grants', {
+      method: 'POST',
+      body: { staffId: LIFE_ONLY, roleCode: 'pc_sales', licenceId: lifeLicence.rows[0].id },
+    });
+    assert.equal(r.status, 403);
+    assert.match(String(r.body.message), /wrong licence class/);
+  });
+});
+
 describe('managing the boundary is inside the boundary', () => {
   it('stops a user without team.manage granting themselves a role', async () => {
     const r = await call('/team/grants', {

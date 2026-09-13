@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { Avatar, Badge, Button, Field, Input, Modal, Select } from '@insurimple/design-system';
 import type { TeamRoster, TeamMember, LicenceRow } from '@insurimple/contracts';
 import { grantRole, recordLicence, revokeGrant } from '../app/(app)/team/actions';
+import { roleEligibility, classList, eligibilityMessage } from '../lib/role-eligibility';
 
 const CLASS_LABEL: Record<string, string> = {
   ribo_l1: 'RIBO Level 1',
@@ -61,6 +62,20 @@ export function TeamView({
   };
 
   const disabled = !canManage || preview || pending;
+
+  // Derived during render rather than stored: keeping an `eligibility` in state
+  // means remembering to recompute it whenever the role or the member changes,
+  // and the one time it is forgotten the form shows the previous role's rule.
+  const selectedRole = roster.roles.find((r) => r.code === gRole) ?? null;
+  const eligibility = selectedRole
+    ? roleEligibility(selectedRole, grantFor)
+    : { needsLicence: false, eligible: [], live: [] };
+
+  // The database will refuse a licensed role with no eligible licence. Refusing
+  // it here too turns a 403 into a sentence the principal broker can act on —
+  // while leaving the DB guard as the thing that actually enforces it
+  // (invariant 1: UI blocking is not enforcement).
+  const grantImpossible = eligibility.needsLicence && eligibility.eligible.length === 0;
 
   return (
     <>
@@ -195,7 +210,7 @@ export function TeamView({
           <>
             <Button variant="secondary" onClick={() => setGrantFor(null)} disabled={pending}>Cancel</Button>
             <Button
-              disabled={disabled}
+              disabled={disabled || grantImpossible}
               onClick={() =>
                 run(
                   () => grantRole({
@@ -216,19 +231,32 @@ export function TeamView({
           <Field label="Role" required>
             <Select value={gRole} onChange={(e) => setGRole(e.target.value)}>
               {roster.roles.map((r) => (
-                <option key={r.code} value={r.code}>{r.name}</option>
+                <option key={r.code} value={r.code}>
+                  {r.name}
+                  {r.licence_classes.length ? ` — needs ${classList(r.licence_classes)}` : ''}
+                </option>
               ))}
             </Select>
           </Field>
+
+          {selectedRole ? (
+            <p className={`m-0 text-small ${eligibility.needsLicence ? 'text-text-2' : 'text-text-3'}`}>
+              {eligibilityMessage(selectedRole, eligibility)}
+            </p>
+          ) : null}
+
           <Field
             label="Anchor to licence"
             help="Anchored grants stop working the moment the licence lapses. Leave unset only for non-transacting roles."
           >
             <Select value={gLicence} onChange={(e) => setGLicence(e.target.value)}>
               <option value="">No licence anchor</option>
-              {(grantFor?.licences ?? []).map((l) => (
+              {/* Only licences that can actually carry the selected role. An
+                  ineligible one in this list is an offer to be refused. */}
+              {(eligibility.needsLicence ? eligibility.eligible : (grantFor?.licences ?? [])).map((l) => (
                 <option key={l.id} value={l.id}>
                   {CLASS_LABEL[l.licence_class] ?? l.licence_class} · exp {fmtDate(l.expires_on)}
+                  {l.expired ? ' · LAPSED' : ''}
                 </option>
               ))}
             </Select>

@@ -1502,32 +1502,38 @@ export const DEMO_TEAM = ({
     {
       "code": "admin_principal",
       "name": "Admin / Principal broker",
-      "description": "Full access incl. compliance sign-off"
+      "description": "Full access incl. compliance sign-off",
+      "licence_classes": ["ribo_l2", "ribo_l3"]
     },
     {
       "code": "llqp_no_life",
       "name": "LLQP (no life sales)",
-      "description": "Support role; no life or P&C transaction authority"
+      "description": "Support role; no life or P&C transaction authority",
+      "licence_classes": []
     },
     {
       "code": "life_only",
       "name": "Life only",
-      "description": "Life/A&S business only — no P&C authority"
+      "description": "Life/A&S business only — no P&C authority",
+      "licence_classes": ["llqp"]
     },
     {
       "code": "mortgage",
       "name": "Mortgage",
-      "description": "Mortgage referrals only"
+      "description": "Mortgage referrals only",
+      "licence_classes": ["mortgage_agent"]
     },
     {
       "code": "pc_sales",
       "name": "P&C sales",
-      "description": "Quotes and new P&C business"
+      "description": "Quotes and new P&C business",
+      "licence_classes": ["ribo_l1", "ribo_l2", "ribo_l3"]
     },
     {
       "code": "pc_service",
       "name": "P&C service",
-      "description": "Services the existing P&C book"
+      "description": "Services the existing P&C book",
+      "licence_classes": ["ribo_l1", "ribo_l2", "ribo_l3"]
     }
   ],
   "members": [

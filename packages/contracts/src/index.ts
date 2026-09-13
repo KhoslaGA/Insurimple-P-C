@@ -772,6 +772,14 @@ export const teamRoster = z.object({
       code: z.string(),
       name: z.string(),
       description: z.string().nullable(),
+      /**
+       * The licence classes that can carry this role (0011 role_licence_class).
+       * EMPTY means the role needs no licence anchor; non-empty means a grant
+       * MUST be anchored to a licence of one of these classes or the database
+       * refuses it. Carried in the roster so the grant form can say so, rather
+       * than leaving it to be discovered by submitting and reading the 403.
+       */
+      licence_classes: z.array(z.string()),
     }),
   ),
   members: z.array(teamMember),
