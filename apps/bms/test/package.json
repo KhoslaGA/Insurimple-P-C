@@ -1,0 +1,4 @@
+{
+  "//": "ESM only for the test directory. The bms package itself is CJS-by-default because Next owns its config files; scoping the module type here lets the tests use top-level await and node:test module mocking without changing how the app is built.",
+  "type": "module"
+}
