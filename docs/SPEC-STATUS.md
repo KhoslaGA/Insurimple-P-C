@@ -63,6 +63,16 @@ a problem a 30M-row table does not have. Recorded as **invariant 13**.
 
 ## Still open — the human decides, the agent must not guess
 
+### The AI action layer — ADR 0003, Proposed
+
+One assistant with a tool registry, not per-tab assistants; tools call the service layer,
+never the database; `app.current_actor` is the approving human and never `system`. The
+reasoning is accepted in principle and **nothing has been built** — five open decisions, and
+four of the ADR's factual claims describe schema that does not exist (`ai_model_binding`,
+the CASL `message_class` constraint, a deliverable state on `document`, and any notion of a
+superseded proof). See §A of the ADR. AI.0 and AI.1 are unblocked; AI.5 and AI.6 depend on
+spine tickets that have not been written.
+
 ### The quoter — "native" vs Rate Family independence
 
 The parity map calls the quoter NATIVE — *"our quoter is the platform — Rate Family front
