@@ -14,6 +14,17 @@ GRANT USAGE ON SCHEMA public TO app;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app;
 
+-- 0014 converges a legacy `app` onto insurimple_app's privileges and session
+-- guards, but that block only fires for a role that already exists when the
+-- migration runs. This role is created afterwards, so it has to converge
+-- itself. Without this, a virgin server ends up with an app role carrying no
+-- statement_timeout — which assert_app_role_timeouts() correctly refuses,
+-- while a server where `app` happened to predate 0014 passes. The assertion
+-- was right; the two paths were producing different roles.
+GRANT insurimple_app TO app;
+ALTER ROLE app SET statement_timeout = '30s';
+ALTER ROLE app SET idle_in_transaction_session_timeout = '60s';
+
 -- Tenants are created by a privileged path (not tenant-scoped).
 INSERT INTO tenant (id, legal_name, trade_name, ribo_licence)
 VALUES ('11111111-1111-1111-1111-111111111111','Insurimple Brokerage Inc.','Insurimple','RIBO-XXXX');

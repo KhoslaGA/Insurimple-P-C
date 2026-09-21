@@ -10,6 +10,14 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO app;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO app;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO app;
 
+-- Same convergence as test.sql: 0014 only configures a legacy `app` that
+-- already exists when it runs, so a role created after the migrations must
+-- adopt insurimple_app's grant and session guards itself. A seeded dev
+-- database otherwise hands the API an app role with no statement_timeout.
+GRANT insurimple_app TO app;
+ALTER ROLE app SET statement_timeout = '30s';
+ALTER ROLE app SET idle_in_transaction_session_timeout = '60s';
+
 -- Seeding is tenant provisioning, which acts as `system` — the actor that
 -- bypasses the licence, entitlement and team.manage guards. It has to be asked
 -- for explicitly: current_actor() defaults to `anonymous`, which can do
