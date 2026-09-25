@@ -1,5 +1,10 @@
 # CLAUDE.md — Insurimple Platform
 
+**Frozen. The live spine is Insurimpleplatform-backend; do not add features here.**
+This repository is kept as the record of the decisions below (invariant 11, the client
+code, was ported to the spine on 2026-09-25). A task that adds a feature here is the wrong
+repository: stop and point at `KhoslaGA/Insurimpleplatform-backend` instead.
+
 You are building Insurimple: a standalone multi-tenant B2B SaaS for Canadian brokerages.
 One platform, four subscription modules (P&C, Life/LLQP, Mortgage, Marketing/CRM) on one shared spine.
 This file is a contract. Violating an invariant fails the task regardless of feature completeness.
