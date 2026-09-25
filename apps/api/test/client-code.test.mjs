@@ -17,8 +17,8 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import pg from 'pg';
-import { CASES } from '../../../packages/contracts/src/client-code.test.ts';
-import { normalizeNameToStem } from '../../../packages/contracts/src/client-code.ts';
+import { ACCOUNT_CASES, CASES } from '../../../packages/contracts/src/client-code.test.ts';
+import { clientCodeStemForAccount, normalizeNameToStem } from '../../../packages/contracts/src/client-code.ts';
 import { newId } from '../dist/db/id.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -70,6 +70,21 @@ describe('client code: the two implementations agree', () => {
       assert.equal(normalizeNameToStem(last, first), expected);
     }
   });
+
+  it('derives the same stem from an account row in SQL as in TypeScript, for every case', async () => {
+    const r = await client.query(
+      `SELECT client_code_stem_for_account(c.kind, c.display_name) AS stem
+         FROM unnest($1::text[], $2::text[]) AS c(kind, display_name)`,
+      [ACCOUNT_CASES.map((c) => c[0]), ACCOUNT_CASES.map((c) => c[1])],
+    );
+    const disagreements = ACCOUNT_CASES
+      .map(([kind, name, expected], i) => ({ kind, name, expected, sql: r.rows[i].stem }))
+      .filter((x) => x.sql !== x.expected);
+    assert.deepEqual(disagreements, [], 'the SQL and TypeScript account stems disagree');
+    for (const [kind, name, expected] of ACCOUNT_CASES) {
+      assert.equal(clientCodeStemForAccount(kind, name), expected);
+    }
+  });
 });
 
 describe('client code: issuance', () => {
@@ -105,6 +120,59 @@ describe('client code: issuance', () => {
     assert.match(r.rows[0].lookup_code, /^KAPOORPR\d{2}$/);
   });
 
+  it('issues an organization code from eight letters of the whole name', async () => {
+    const a = await client.query(
+      `INSERT INTO account (id, tenant_id, display_name, kind, status)
+       VALUES (uuidv7(), $1, 'Maple Ridge Dental Professional Corp.', 'commercial', 'active') RETURNING lookup_code`,
+      [TENANT]);
+    assert.equal(a.rows[0].lookup_code, 'MAPLERID01');
+    const b = await client.query(
+      `INSERT INTO account (id, tenant_id, display_name, kind, status)
+       VALUES (uuidv7(), $1, 'Maple Ridge Dental Professional Corp.', 'commercial', 'active') RETURNING lookup_code`,
+      [TENANT]);
+    assert.equal(b.rows[0].lookup_code, 'MAPLERID02');
+    const c = await client.query(
+      `INSERT INTO account (id, tenant_id, display_name, kind, status)
+       VALUES (uuidv7(), $1, 'Northfield Logistics Inc.', 'benefits', 'active') RETURNING lookup_code`,
+      [TENANT]);
+    assert.equal(c.rows[0].lookup_code, 'NORTHFIE01');
+  });
+
+  it('issues a single-name person from eight letters, and a short name from what there is', async () => {
+    const a = await insert('Madonna');
+    assert.equal(a.rows[0].lookup_code, 'MADONNA01');
+    const b = await insert('Li Ng');
+    assert.equal(b.rows[0].lookup_code, 'NGLI01');
+  });
+
+  it('folds a hyphenated surname, an apostrophe and a Mc prefix into the stem', async () => {
+    assert.equal((await insert('Al Smith-Jones')).rows[0].lookup_code, 'SMITHJAL01');
+    assert.equal((await insert("Sean O'Brien")).rows[0].lookup_code, 'OBRIENSE01');
+    assert.equal((await insert('Ronald McDonald')).rows[0].lookup_code, 'MCDONARO01');
+  });
+
+  it('widens the counter to three digits after 99, never truncating', async () => {
+    // 99 sequential inserts of one stem, then the 100th and 101st.
+    for (let i = 1; i <= 99; i++) {
+      const r = await insert('Wide Widening');
+      assert.equal(r.rows[0].lookup_code, `WIDENIWI${String(i).padStart(2, '0')}`);
+    }
+    assert.equal((await insert('Wide Widening')).rows[0].lookup_code, 'WIDENIWI100');
+    assert.equal((await insert('Wide Widening')).rows[0].lookup_code, 'WIDENIWI101');
+  });
+
+  it('continues after an imported code and never back-fills its gaps', async () => {
+    await client.query(
+      `INSERT INTO account (id, tenant_id, display_name, lookup_code, kind, status)
+       VALUES (uuidv7(), $1, 'Gary Gapste', 'GAPSTEGA05', 'personal', 'active')`, [TENANT]);
+    assert.equal((await insert('Gary Gapste')).rows[0].lookup_code, 'GAPSTEGA06');
+    // an imported counter of another width still parses and is still skipped
+    await client.query(
+      `INSERT INTO account (id, tenant_id, display_name, lookup_code, kind, status)
+       VALUES (uuidv7(), $1, 'Wilma Widthx', 'WIDTHXWI0007', 'personal', 'active')`, [TENANT]);
+    assert.equal((await insert('Wilma Widthx')).rows[0].lookup_code, 'WIDTHXWI08');
+  });
+
   it('keeps a supplied code, so a migrated book carries its own numbering', async () => {
     const r = await client.query(
       `INSERT INTO account (id, tenant_id, display_name, lookup_code, kind, status)
@@ -123,6 +191,26 @@ describe('client code: issuance', () => {
       /immutable/,
       'the code is printed on the client documents and joins six years of records',
     );
+  });
+
+  it('refuses to clear a code, so nothing can regenerate an imported one', async () => {
+    await assert.rejects(
+      () => client.query(`UPDATE account SET lookup_code = NULL WHERE lookup_code = 'LEGACY0042'`),
+      /immutable/,
+    );
+    const r = await client.query(`SELECT lookup_code FROM account WHERE display_name = 'Legacy Client'`);
+    assert.equal(r.rows[0].lookup_code, 'LEGACY0042');
+  });
+
+  it('leaves every seeded (migrated) code exactly as the seed supplied it', async () => {
+    // The dev seed is a stand-in for a migrated Epic book: every one of its
+    // codes was supplied, and the migration set must never touch them.
+    const r = await client.query(
+      `SELECT lookup_code FROM account WHERE id = 'a0000000-0000-0000-0000-000000000001'`);
+    assert.equal(r.rows[0].lookup_code, 'ABTAHISE01');
+    const regenerated = await client.query(
+      `SELECT count(*)::int AS n FROM account WHERE lookup_code IS NULL`);
+    assert.equal(regenerated.rows[0].n, 0, 'an account without a code would be re-issued on the next touch');
   });
 
   it('lets a name change update display_name, leaving the code alone', async () => {

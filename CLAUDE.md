@@ -46,15 +46,26 @@ This file is a contract. Violating an invariant fails the task regardless of fea
 9. TESTS ARE THE ACCEPTANCE CRITERIA. A ticket is done when its assertions pass in CI.
 10. EVERY SCREEN CONSUMES `packages/design-system` ONLY. No local styles, no hardcoded
     colors — tenant theming reads CSS variables from the token layer. Adherence lint enforces this.
-11. CLIENT CODE IS CANONICAL AND IMMUTABLE: `first6(last) + first2(first) + counter`,
-    e.g. `ABTAHISE01`. This matches the live Epic book, so a migrated client keeps the code
-    already printed on their documents — code continuity across migration outranks a shorter
-    stem. Normalization (NFKD fold, A–Z only, never pad), the per-stem collision counter,
-    tenant-scoped uniqueness, immutability (a name change updates display name only), and the
-    two-function contract (`normalizeNameToStem` / `issueClientCode`) are all as specified.
-    Only the slice lengths differ from the original spec. Decided 2026-07-29 (tickets-DB gate 1).
-    Issued by a BEFORE INSERT trigger (0017) so no import path can skip it, serialised on
+11. CLIENT CODE IS CANONICAL AND IMMUTABLE — LOCKED by operator decision 2026-09-25.
+    Persons: `first6(last) + first2(first) + counter`, e.g. `ABTAHISE01`. No given name
+    (organizations, benefits groups, single-name persons): `first8(name) + counter`, e.g.
+    `MAPLERID01`. Uppercase; ASCII-fold (stroke/ligature letters transliterated first, then
+    NFKD, then A–Z only — Đặng is DANG, not ANG); never pad, short names use what there is;
+    counter from `01`, unique per tenant, two digits until `99` then three (`100`), never
+    truncated. This is the format of the operator's live Epic seat: a migrated book keeps
+    every code verbatim, the migration set never regenerates one, and the generator only
+    issues codes for new clients, continuing after the highest counter already in use on
+    the stem (imported gaps are never back-filled). The `first4 + first2` spec is superseded
+    (docs/SPEC-STATUS.md §1). Immutability (a name change updates display name only) and the
+    two-implementation contract (`normalizeNameToStem` / `clientCodeStemForAccount` in
+    contracts, `normalize_name_to_stem()` / `client_code_stem_for_account()` /
+    `issue_client_code()` in 0017, one shared table of cases) stay as before. Issued by a
+    BEFORE INSERT trigger (0017) so no import path can skip it, serialised on
     `pg_advisory_xact_lock(tenant || stem)` because the counter is a read-then-write.
+    Choices awaiting confirmation against live Epic: hyphens, apostrophes and Mc/O' prefixes
+    fold into the stem (SMITHJAL, OBRIENSE, MCDONARO); a compound surname typed with spaces
+    in a display name stems on its last token (BERGAN); a single-name person takes the
+    eight-letter rule (MADONNA); organization suffix words are kept (TDAUTOFI).
     The fold handles stroke and ligature letters (Đ Ø Ł Þ Æ ß) that NFKD leaves intact —
     dropping one loses the first letter of a surname in a code that is immutable forever.
 12. MIGRATIONS ARE REWRITTEN IN PLACE, NOT LAYERED. There is no production data and no

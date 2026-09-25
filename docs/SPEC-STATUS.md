@@ -32,11 +32,11 @@ building. Never build against inferred shapes."*
 
 ## Resolved — formerly open contradictions
 
-### 1. Client code format — **RESOLVED 2026-07-29**
+### 1. Client code format — **RESOLVED 2026-07-29 · LOCKED 2026-09-25**
 
-The spec proposed `first4(last) + first2(first) + counter` → `NAULSU001`. Every code in
-the seeded book and the operator's live Epic seat uses `first6 + first2 + counter` →
-`ABTAHISE01`, `KAPOORGA01`, `MEHTARA01`.
+The spec proposed `first4(last) + first2(first) + counter` → `NAULSU001`. **That spec is
+superseded.** Every code in the seeded book and the operator's live Epic seat uses
+`first6 + first2 + counter` → `ABTAHISE01`, `KAPOORGA01`, `MEHTARA01`.
 
 **Decision: match Epic.** Code continuity across migration outranks a shorter stem — a
 migrated client keeps the code already printed on their documents and quoted in their
@@ -44,6 +44,30 @@ correspondence, and "we move your book without changing a single client code" is
 migration sales point. Recorded as **`CLAUDE.md` invariant 11**. Only the slice lengths
 changed; the collision-counter semantics, normalization rules, tenant-scoped uniqueness,
 immutability and the two-function contract are all as originally specified.
+
+**Locked 2026-09-25 (operator decision; reason: migrated-book continuity and operator
+familiarity).** The lock adds what the 07-29 resolution left implicit, all implemented in
+0017 and pinned by `client-code.test.ts` / `client-code.test.mjs`:
+
+- no given name (organizations, benefits groups, single-name persons): `first8(name) +
+  counter` — `TD Auto Finance` → `TDAUTOFI01` (was `TDAUTO01`);
+- the counter widens to three digits after `99` (`100`, `101`, …). The previous
+  `lpad(n, 2, '0')` **truncated** `100` to `10`, so the 100th client on a stem collided
+  with the 10th; found by the new hundred-insert test and fixed;
+- imported codes are preserved verbatim, the migration set never regenerates one, and the
+  generator continues after the highest counter in use on the stem (gaps never back-filled);
+- the advisory lock per (tenant, stem) stays.
+
+Choices made where Epic's behaviour was not measured — **confirm against the live seat**:
+
+| Case | Choice | Example |
+|---|---|---|
+| hyphenated / compound surname typed as one field | hyphen dropped, not split | `Smith-Jones, Al` → `SMITHJAL` |
+| compound surname with spaces in a display name | last whitespace token is the surname | `Ann-Marie Van der Berg` → `BERGAN` (structured last/first gives `VANDERAN`) |
+| `Mc` / `O'` prefixes | folded in, apostrophe dropped | `McDonald, Ronald` → `MCDONARO`; `O'Brien, Sean` → `OBRIENSE` |
+| single-name person | treated as "no given name": eight letters | `Madonna` → `MADONNA01` |
+| organization suffix words | kept, not stripped | `Maple Ridge Dental Professional Corp.` → `MAPLERID01` |
+| digits in a name | dropped before the slice | `A1 Towing` → `ATOWING01` |
 
 ### 2. Migration policy — **RESOLVED 2026-07-29**
 

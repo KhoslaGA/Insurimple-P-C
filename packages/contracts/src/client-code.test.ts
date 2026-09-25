@@ -9,7 +9,13 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeNameToStem, foldLatin } from './client-code.ts';
+import {
+  clientCodeStemForAccount,
+  foldLatin,
+  formatClientCodeCounter,
+  normalizeNameToStem,
+  type AccountKind,
+} from './client-code.ts';
 
 /** last, first, expected stem — the shared table both implementations must satisfy. */
 export const CASES: Array<[string, string | null, string]> = [
@@ -35,11 +41,44 @@ export const CASES: Array<[string, string | null, string]> = [
   ['Þórsdóttir', 'Æsa', 'TORSDOAS'],
   ['Straße', 'Œuvre', 'STRASEOU'],
 
+  // hyphens, apostrophes and prefixes are folded, never split (locked 2026-09-25;
+  // to be confirmed against the live Epic seat)
+  ['Smith-Jones', 'Al', 'SMITHJAL'],
+  ['McDonald', 'Ronald', 'MCDONARO'],
+  ["O'Neil", 'Seán', 'ONEILSE'],
+
+  // no given name: eight letters of the one name (organizations, benefits
+  // groups, single-name persons), never padded
+  ['TD Auto Finance', null, 'TDAUTOFI'],
+  ['Maple Ridge Dental Professional Corp.', null, 'MAPLERID'],
+  ['Madonna', null, 'MADONNA'],
+  ['A1 Towing', null, 'ATOWING'],           // digits dropped, then the slice
+  ['Smith', '', 'SMITH'],
+
   // short and degenerate
   ['Ng', 'Li', 'NGLI'],
   ['Wu', 'A', 'WUA'],
-  ['TD Auto Finance', null, 'TDAUTO'],      // organization: no given name
-  ['Smith', '', 'SMITH'],
+];
+
+/** kind, display_name, expected stem — what the INSERT trigger derives from an account row. */
+export const ACCOUNT_CASES: Array<[AccountKind, string, string]> = [
+  ['personal', 'Seyed Moein Abtahi', 'ABTAHISE'],
+  ['personal', 'Rahul Mehta', 'MEHTARA'],
+  ['personal', '  Jas Singh  ', 'SINGHJA'],
+  ['personal', 'Thị Đặng', 'DANGTH'],
+  ['personal', 'Al Smith-Jones', 'SMITHJAL'],
+  ['personal', "Sean O'Brien", 'OBRIENSE'],
+  ['personal', 'Ronald McDonald', 'MCDONARO'],
+  // a compound surname typed with spaces stems on its last token — structured
+  // first/last input (normalizeNameToStem) gives VANDERAN instead
+  ['personal', 'Ann-Marie Van der Berg', 'BERGAN'],
+  // a single-name person has no given name and takes the eight-letter rule
+  ['personal', 'Madonna', 'MADONNA'],
+  // organizations and benefits groups are one name, whatever their spacing
+  ['commercial', 'TD Auto Finance', 'TDAUTOFI'],
+  ['commercial', 'Maple Ridge Dental Professional Corp.', 'MAPLERID'],
+  ['commercial', 'Ng Holdings', 'NGHOLDIN'],
+  ['benefits', 'Northfield Logistics Inc.', 'NORTHFIE'],
 ];
 
 describe('client code stem', () => {
@@ -65,5 +104,28 @@ describe('client code stem', () => {
   it('handles null and undefined without throwing', () => {
     assert.equal(normalizeNameToStem(null), '');
     assert.equal(normalizeNameToStem(undefined, undefined), '');
+  });
+
+  it('uses eight letters only when the given name folds to nothing', () => {
+    assert.equal(normalizeNameToStem('Abcdefghij', null), 'ABCDEFGH');
+    assert.equal(normalizeNameToStem('Abcdefghij', '-'), 'ABCDEFGH');   // punctuation-only given name
+    assert.equal(normalizeNameToStem('Abcdefghij', 'K'), 'ABCDEFK');
+  });
+});
+
+describe('client code stem for an account row', () => {
+  for (const [kind, displayName, expected] of ACCOUNT_CASES) {
+    it(`${kind} / ${displayName} -> ${expected}`, () => {
+      assert.equal(clientCodeStemForAccount(kind, displayName), expected);
+    });
+  }
+});
+
+describe('client code counter', () => {
+  it('is two digits from 01 and widens to three after 99, never truncated', () => {
+    assert.equal(formatClientCodeCounter(1), '01');
+    assert.equal(formatClientCodeCounter(99), '99');
+    assert.equal(formatClientCodeCounter(100), '100');
+    assert.equal(formatClientCodeCounter(1000), '1000');
   });
 });
